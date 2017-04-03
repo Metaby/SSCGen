@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Architecture WordSize="32">
+	<!--
+		Components:
+		Interrupt
+		Timer
+		Stack
+		Register
+		RegisterFile
+		ALU
+		Memory
+	-->
+	<Register>
+		<ID>PortA</ID>
+		<Inputs>
+			<Input>reg.out1</Input>
+			<Input>reg.out2</Input>
+		</Inputs>
+		<Output>out</Output>
+		<GPIO>True</GPIO>
+	</Register>
+	<Stack>
+		<ID>pcStack</ID>
+		<Size>32</Size>
+		<Inputs>
+			<Input>pp.pc</Input>
+		</Inputs>
+		<Output>out</Output>
+	</Stack>
+	<RegisterFile>
+		<ID>reg</ID>
+		<AddressSize>5</AddressSize>
+		<Port>
+			<Type>Out</Type>
+			<Addressing>
+				<Address>ir.inst[0,5]</Address>
+				<Address>reg.out1</Address>
+				<Address>reg.out2</Address>
+			</Addressing>
+			<Output>out1</Output>
+		</Port>
+		<Port>
+			<Type>Out</Type>
+			<Addressing>
+				<Address>ir.inst[6,10]</Address>
+				<Address>reg.out1</Address>
+				<Address>reg.out2</Address>
+			</Addressing>
+			<Output>out2</Output>
+		</Port>
+		<Port>
+			<Type>In</Type>
+			<Addressing>
+				<Address>ir.inst[11,15]</Address>
+			</Addressing>
+			<Inputs>
+				<Input>mainMem.out</Input>
+				<Input>alu.out</Input>
+				<Input>ir.inst[16,31]</Input>
+				<Input>reg.out1</Input>
+				<Input>reg.out2</Input>
+				<Input>PortA.out</Input>
+			</Inputs>
+		</Port>
+	</RegisterFile>
+	<Register>
+		<ID>pp</ID>
+		<Inputs>
+			<Input>alu.out</Input>
+			<Input>pcStack.out</Input>
+		</Inputs>
+		<Output>pc</Output>
+		<GPIO>False</GPIO>
+	</Register>
+	<Register>
+		<ID>ir</ID>
+		<Inputs>
+			<Input>mainMem.out</Input>
+		</Inputs>
+		<Output>inst</Output>
+		<GPIO>False</GPIO>
+	</Register>
+	<ALU>
+		<ID>alu</ID>
+		<Inputs>
+			<Input Operand="A">reg.out1</Input>
+			<Input Operand="B">reg.out2</Input>
+			<Input Operand="AB">pcStack.out</Input>
+			<Input Operand="AB">alu.out</Input>
+			<Input Operand="A">pp.pc</Input>
+			<Input Operand="B">const.0</Input>
+			<Input Operand="B">const.1</Input>
+		</Inputs>
+		<Output>out</Output>
+		<!--
+			Operations:
+			Add, Sub, LLS, LRS, ALS, Div, Mul, RotL, RotR, bAnd, bOr,	bXor, bNot
+		-->
+		<Operations>
+			<Operation>Add</Operation>
+			<Operation>Sub</Operation>
+			<Operation>LLS</Operation>
+			<Operation>LRS</Operation>
+			<Operation>bAnd</Operation>
+			<Operation>bOr</Operation>
+			<Operation>bNot</Operation>
+		</Operations>
+		<!--
+			Conditions:
+			Zero, nZero, Equal, nEqual, Lower, Higher
+		-->
+		<Conditionals>
+			<Condition>Zero</Condition>
+			<Condition>Equal</Condition>
+			<Condition>Lower</Condition>
+			<Condition>Higher</Condition>
+		</Conditionals>
+	</ALU>
+	<Memory>
+		<ID>mainMem</ID>
+		<AddressSize>32</AddressSize>
+		<!--
+			Types:
+			OnChip, Extern
+		-->
+		<Type>OnChip</Type>
+		<Port>
+			<Type>InOut</Type>
+			<Addressing>
+				<Address>reg.out1</Address>
+				<Address>reg.out2</Address>
+			</Addressing>
+			<Inputs>
+				<Input>reg.out1</Input>
+				<Input>reg.out2</Input>
+				<Input>alu.out</Input>
+				<Input>pp.pc</Input>
+			</Inputs>
+			<Output>out</Output>
+		</Port>
+	</Memory>
+</Architecture>
+<!--
+	Falls noch Zeit ist
+	<Interrupt></Interrupt>
+	<Timer></Timer>
+-->

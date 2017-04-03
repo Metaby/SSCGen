@@ -1,0 +1,15 @@
+[FileComment]
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+[Libraries]
+    
+ENTITY [ComponentName] IS
+  [Generic]
+  [Port]
+END [ComponentName];
+
+ARCHITECTURE behavior OF [ComponentName] IS
+[Signals]
+BEGIN
+  [Behavior]
+END behavior;
