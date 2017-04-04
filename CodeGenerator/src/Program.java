@@ -1,4 +1,4 @@
-
+import jaxbClasses.Architecture;
 
 public class Program {
 	
@@ -14,7 +14,19 @@ public class Program {
 	
 	public static void main(String[] args) {
 		SystemBuilder sb = new SystemBuilder();
+		System.out.println("Validating specification");
+		boolean passed = sb.ValidateSpecification("Processors/mips/architecture.xml", "Templates/specification.xsd");
+		if (!passed) {
+			System.out.println("Error: validation of specification failed");
+			return;
+		}
 		System.out.println("Reading specification");
-		sb.ReadSpecification("Processors/mips/specification.xml", "Templates/specification.xsd");
+		Architecture arch = sb.ReadSpecification("Processors/mips/architecture.xml");
+		System.out.println("Validating connections");
+		passed = sb.ValidateConnections(arch);
+		if (!passed) {
+			System.out.println("Error: validation of connections failed");
+			return;
+		}
 	}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<architecture WordSize="32">
+<architecture>
 	<!--
 		Components:
 		Interrupt
@@ -21,7 +21,7 @@
 	</register>
 	<stack>
 		<id>pcStack</id>
-		<Size>32</Size>
+		<size>32</size>
 		<inputs>
 			<input>pp.pc</input>
 		</inputs>
@@ -30,38 +30,40 @@
 	<registerFile>
 		<id>reg</id>
 		<addressSize>5</addressSize>
-		<port>
-			<type>out</type>
-			<addresses>
-				<address>ir.inst[0,5]</address>
-				<address>reg.out1</address>
-				<address>reg.out2</address>
-			</addresses>
-			<output>out1</output>
-		</port>
-		<port>
-			<type>out</type>
-			<addresses>
-				<address>ir.inst[6,10]</address>
-				<address>reg.out1</address>
-				<address>reg.out2</address>
-			</addresses>
-			<output>out2</output>
-		</port>
-		<port>
-			<type>in</type>
-			<addresses>
-				<address>ir.inst[11,15]</address>
-			</addresses>
-			<inputs>
-				<input>mainMem.out</input>
-				<input>alu.out</input>
-				<input>ir.inst[16,31]</input>
-				<input>reg.out1</input>
-				<input>reg.out2</input>
-				<input>portA.out</input>
-			</inputs>
-		</port>
+		<ports>
+			<port>
+				<type>out</type>
+				<addresses>
+					<address>ir.inst[0,5]</address>
+					<address>reg.out1</address>
+					<address>reg.out2</address>
+				</addresses>
+				<output>out1</output>
+			</port>
+			<port>
+				<type>out</type>
+				<addresses>
+					<address>ir.inst[6,10]</address>
+					<address>reg.out1</address>
+					<address>reg.out2</address>
+				</addresses>
+				<output>out2</output>
+			</port>
+			<port>
+				<type>in</type>
+				<addresses>
+					<address>ir.inst[11,15]</address>
+				</addresses>
+				<inputs>
+					<input>mainMem.out</input>
+					<input>alu.out</input>
+					<input>ir.inst[16,31]</input>
+					<input>reg.out1</input>
+					<input>reg.out2</input>
+					<input>portA.out</input>
+				</inputs>
+			</port>
+		</ports>
 	</registerFile>
 	<register>
 		<id>pp</id>
@@ -70,7 +72,7 @@
 			<input>pcStack.out</input>
 		</inputs>
 		<output>pc</output>
-		<GPIO>false</GPIO>
+		<gpio>false</gpio>
 	</register>
 	<register>
 		<id>ir</id>
@@ -78,7 +80,7 @@
 			<input>mainMem.out</input>
 		</inputs>
 		<output>inst</output>
-		<GPIO>false</GPIO>
+		<gpio>false</gpio>
 	</register>
 	<alu>
 		<id>alu</id>
@@ -124,20 +126,22 @@
 			OnChip, Extern
 		-->
 		<type>intern</type>
-		<port>
-			<type>inout</type>
-			<addresses>
-				<address>reg.out1</address>
-				<address>reg.out2</address>
-			</addresses>
-			<inputs>
-				<input>reg.out1</input>
-				<input>reg.out2</input>
-				<input>alu.out</input>
-				<input>pp.pc</input>
-			</inputs>
-			<output>out</output>
-		</port>
+		<ports>
+			<port>
+				<type>inOut</type>
+				<addresses>
+					<address>reg.out1</address>
+					<address>reg.out2</address>
+				</addresses>
+				<inputs>
+					<input>reg.out1</input>
+					<input>reg.out2</input>
+					<input>alu.out</input>
+					<input>pp.pc</input>
+				</inputs>
+				<output>out</output>
+			</port>			
+		</ports>
 	</memory>
 </architecture>
 <!--

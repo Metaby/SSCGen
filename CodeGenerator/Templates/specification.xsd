@@ -3,11 +3,13 @@
 	<xsd:element  name="architecture">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="register" type="register" minOccurs="1" maxOccurs="unbounded" />
-				<xsd:element name="stack" type="stack" minOccurs="0" maxOccurs="unbounded" />
-				<xsd:element name="registerFile" minOccurs="1" type="registerFile" maxOccurs="unbounded" />
-				<xsd:element name="alu" type="alu" minOccurs="1" maxOccurs="unbounded" />
-				<xsd:element name="memory" type="memory" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:choice maxOccurs="unbounded">
+						<xsd:element name="register" type="register" minOccurs="1" maxOccurs="unbounded" />
+						<xsd:element name="stack" type="stack" minOccurs="0" maxOccurs="unbounded" />
+						<xsd:element name="registerFile" minOccurs="1" type="registerFile" maxOccurs="unbounded" />
+						<xsd:element name="alu" type="alu" minOccurs="1" maxOccurs="unbounded" />
+						<xsd:element name="memory" type="memory" minOccurs="0" maxOccurs="unbounded" />		
+				</xsd:choice>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -78,21 +80,21 @@
 	<xsd:complexType name="port">
 		<xsd:sequence>
 			<xsd:element name="type" type="portDirection" />
-			<xsd:element name="addresses" type="addressList" />
-			<xsd:element name="inputs" type="inputList" />
-			<xsd:element name="output" type="xsd:string" />
+			<xsd:element name="addresses" type="addressList" minOccurs="1" />
+			<xsd:element name="inputs" type="inputList" minOccurs="0" />
+			<xsd:element name="output" type="xsd:string" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
 	<xsd:complexType name="operationList">
 		<xsd:sequence>
-			<xsd:element name="operation" type="operation" />
+			<xsd:element name="operation" type="operation" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
 	<xsd:complexType name="conditionList">
 		<xsd:sequence>
-			<xsd:element name="condition" type="condition" />
+			<xsd:element name="condition" type="condition" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
