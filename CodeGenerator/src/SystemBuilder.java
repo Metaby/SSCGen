@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;
@@ -110,5 +112,48 @@ public class SystemBuilder {
 			}
 		}
 		return true;
+	}
+	
+	public List<String> GenerateControlVector(Architecture arch) {
+		List<String> cv = new LinkedList<String>();
+		for (int i = 0; i < arch.getRegister().size(); i++) {
+			Register reg = arch.getRegister().get(i);
+			cv.add(reg.getId() + "_" + "write");
+			int adrBits = (int)Math.ceil(Math.log(reg.getInputs().getInput().size()) / Math.log(2));
+			for (int j = 0; j < adrBits; j++) {
+				cv.add(reg.getId() + "_isel_" + j);
+			}
+		}
+		for (int i = 0; i < arch.getStack().size(); i++) {
+			Stack stk = arch.getStack().get(i);
+			cv.add(stk.getId() + "_" + "incr");
+			cv.add(stk.getId() + "_" + "decr");
+			cv.add(stk.getId() + "_" + "write");
+			int adrBits = (int)Math.ceil(Math.log(stk.getInputs().getInput().size()) / Math.log(2));
+			for (int j = 0; j < adrBits; j++) {
+				cv.add(stk.getId() + "_isel_" + j);
+			}
+		}
+
+		for (int i = 0; i < arch.getAlu().size(); i++) {
+			Alu alu = arch.getAlu().get(i);
+			int adrBits = (int)Math.ceil(Math.log(alu.getInputs().getInput().size()) / Math.log(2));
+			for (int j = 0; j < adrBits; j++) {
+				cv.add(alu.getId() + "_op1_isel_" + j);
+			}
+			for (int j = 0; j < adrBits; j++) {
+				cv.add(alu.getId() + "_op2_isel_" + j);
+			}
+			// TODO: alu in xsd fixen, operations und conditions sind keine listen wie vorgesehen
+			// TODO: xsd nochmal überarbeiten damit weniger zwischen klassen existieren -> direkt listen
+			// TODO: Operand A und B als attribut o.ä.
+			// TODO: wordSize als Attribut in der Architektur
+			// TODO: restlichen CV erzeugen
+			int cmdCnt = alu.getOperations().getOperation().ordinal();
+			int cndCnt = alu.getConditions().getCondition().ordinal();
+			int cmdBits = (int)Math.ceil(Math.log(cmdCnt + cndCnt) / Math.log(2));
+			System.out.println(cmdCnt + " . " + cndCnt + ". " + cmdBits);
+		}
+		return cv;
 	}
 }

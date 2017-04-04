@@ -1,3 +1,5 @@
+import java.util.List;
+
 import jaxbClasses.Architecture;
 
 public class Program {
@@ -27,6 +29,10 @@ public class Program {
 		if (!passed) {
 			System.out.println("Error: validation of connections failed");
 			return;
+		}
+		List<String> cv = sb.GenerateControlVector(arch);
+		for (int i = 0; i < cv.size(); i++) {
+			System.out.println(cv.get(i));
 		}
 	}
 }
