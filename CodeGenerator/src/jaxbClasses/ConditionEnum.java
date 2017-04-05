@@ -14,31 +14,43 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für memoryType.
+ * <p>Java-Klasse für conditionEnum.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * <p>
  * <pre>
- * &lt;simpleType name="memoryType">
+ * &lt;simpleType name="conditionEnum">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="intern"/>
- *     &lt;enumeration value="extern"/>
+ *     &lt;enumeration value="zero"/>
+ *     &lt;enumeration value="notZero"/>
+ *     &lt;enumeration value="equal"/>
+ *     &lt;enumeration value="notEqual"/>
+ *     &lt;enumeration value="lower"/>
+ *     &lt;enumeration value="higher"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "memoryType")
+@XmlType(name = "conditionEnum")
 @XmlEnum
-public enum MemoryType {
+public enum ConditionEnum {
 
-    @XmlEnumValue("intern")
-    INTERN("intern"),
-    @XmlEnumValue("extern")
-    EXTERN("extern");
+    @XmlEnumValue("zero")
+    ZERO("zero"),
+    @XmlEnumValue("notZero")
+    NOT_ZERO("notZero"),
+    @XmlEnumValue("equal")
+    EQUAL("equal"),
+    @XmlEnumValue("notEqual")
+    NOT_EQUAL("notEqual"),
+    @XmlEnumValue("lower")
+    LOWER("lower"),
+    @XmlEnumValue("higher")
+    HIGHER("higher");
     private final String value;
 
-    MemoryType(String v) {
+    ConditionEnum(String v) {
         value = v;
     }
 
@@ -46,8 +58,8 @@ public enum MemoryType {
         return value;
     }
 
-    public static MemoryType fromValue(String v) {
-        for (MemoryType c: MemoryType.values()) {
+    public static ConditionEnum fromValue(String v) {
+        for (ConditionEnum c: ConditionEnum.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

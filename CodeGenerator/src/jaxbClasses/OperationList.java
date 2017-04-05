@@ -2,12 +2,14 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.03 um 05:44:57 PM CEST 
+// Generiert: 2017.04.05 um 05:22:40 PM CEST 
 //
 
 
 package jaxbClasses;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="operation" type="{}operation"/>
+ *         &lt;element name="operation" type="{}operationEnum" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -42,30 +44,35 @@ public class OperationList {
 
     @XmlElement(required = true)
     @XmlSchemaType(name = "string")
-    protected Operation operation;
+    protected List<OperationEnum> operation;
 
     /**
-     * Ruft den Wert der operation-Eigenschaft ab.
+     * Gets the value of the operation property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Operation }
-     *     
-     */
-    public Operation getOperation() {
-        return operation;
-    }
-
-    /**
-     * Legt den Wert der operation-Eigenschaft fest.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the operation property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Operation }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getOperation().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link OperationEnum }
+     * 
+     * 
      */
-    public void setOperation(Operation value) {
-        this.operation = value;
+    public List<OperationEnum> getOperation() {
+        if (operation == null) {
+            operation = new ArrayList<OperationEnum>();
+        }
+        return this.operation;
     }
 
 }

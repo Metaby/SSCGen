@@ -17,13 +17,13 @@ public class Program {
 	public static void main(String[] args) {
 		SystemBuilder sb = new SystemBuilder();
 		System.out.println("Validating specification");
-		boolean passed = sb.ValidateSpecification("Processors/mips/architecture.xml", "Templates/specification.xsd");
+		boolean passed = sb.ValidateSpecification("processors/mips/architecture.xml", "templates/specification.xsd");
 		if (!passed) {
 			System.out.println("Error: validation of specification failed");
 			return;
 		}
 		System.out.println("Reading specification");
-		Architecture arch = sb.ReadSpecification("Processors/mips/architecture.xml");
+		Architecture arch = sb.ReadSpecification("processors/mips/architecture.xml");
 		System.out.println("Validating connections");
 		passed = sb.ValidateConnections(arch);
 		if (!passed) {
@@ -34,5 +34,6 @@ public class Program {
 		for (int i = 0; i < cv.size(); i++) {
 			System.out.println(cv.get(i));
 		}
+		System.out.println("CV-Length: " + cv.size());
 	}
 }

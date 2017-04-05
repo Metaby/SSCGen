@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<architecture>
+<architecture wordSize="32">
 	<!--
 		Components:
 		Interrupt
@@ -18,6 +18,23 @@
 		</inputs>
 		<output>out</output>
 		<gpio>true</gpio>
+	</register>
+	<register>
+		<id>pp</id>
+		<inputs>
+			<input>alu.out</input>
+			<input>pcStack.out</input>
+		</inputs>
+		<output>pc</output>
+		<gpio>false</gpio>
+	</register>
+	<register>
+		<id>ir</id>
+		<inputs>
+			<input>mainMem.out</input>
+		</inputs>
+		<output>inst</output>
+		<gpio>false</gpio>
 	</register>
 	<stack>
 		<id>pcStack</id>
@@ -65,34 +82,19 @@
 			</port>
 		</ports>
 	</registerFile>
-	<register>
-		<id>pp</id>
-		<inputs>
-			<input>alu.out</input>
-			<input>pcStack.out</input>
-		</inputs>
-		<output>pc</output>
-		<gpio>false</gpio>
-	</register>
-	<register>
-		<id>ir</id>
-		<inputs>
-			<input>mainMem.out</input>
-		</inputs>
-		<output>inst</output>
-		<gpio>false</gpio>
-	</register>
 	<alu>
 		<id>alu</id>
-		<inputs>
+		<inputsOperandA>
 			<input>reg.out1</input>
-			<input>reg.out2</input>
 			<input>pcStack.out</input>
 			<input>alu.out</input>
 			<input>pp.pc</input>
+		</inputsOperandA>
+		<inputsOperandB>
+			<input>reg.out2</input>
 			<input>const.0</input>
-			<input>const.1</input>
-		</inputs>
+			<input>const.1</input>			
+		</inputsOperandB>
 		<output>out</output>
 		<!--
 			operations:

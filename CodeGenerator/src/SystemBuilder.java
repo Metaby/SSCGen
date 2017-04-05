@@ -57,8 +57,8 @@ public class SystemBuilder {
 		}
 		for (int i = 0; i < arch.getAlu().size(); i++) {
 			Alu alu = arch.getAlu().get(i);
-			for (int j = 0; j < alu.getInputs().getInput().size(); j++) {
-				inputs.add(alu.getInputs().getInput().get(j));
+			for (int j = 0; j < alu.getInputsOperandA().getInput().size(); j++) {
+				inputs.add(alu.getInputsOperandA().getInput().get(j));
 			}
 			outputs.add(alu.getId() + "." + alu.getOutput());
 		}
@@ -134,25 +134,65 @@ public class SystemBuilder {
 				cv.add(stk.getId() + "_isel_" + j);
 			}
 		}
-
+		for (int i = 0; i < arch.getRegisterFile().size(); i++) {
+			RegisterFile rf = arch.getRegisterFile().get(i);
+			for (int j = 0; j < rf.getPorts().getPort().size(); j++) {
+				Port p = rf.getPorts().getPort().get(j);
+				if (p.getInputs() != null) {
+					int adrBits = (int)Math.ceil(Math.log(p.getInputs().getInput().size()) / Math.log(2));
+					for (int k = 0; k < adrBits; k++) {
+						cv.add(rf.getId() + "_p" + j + "_isel_" + k);
+					}					
+				}
+				if (p.getAddresses() != null) {
+					int adrBits = (int)Math.ceil(Math.log(p.getAddresses().getAddress().size()) / Math.log(2));
+					for (int k = 0; k < adrBits; k++) {
+						cv.add(rf.getId() + "_p" + j + "_asel_" + k);
+					}					
+				}
+				if (p.getType() == PortDirection.IN || p.getType() == PortDirection.IN_OUT) {
+					cv.add(rf.getId() + "_p" + j + "_write");
+				}
+			}
+		}
 		for (int i = 0; i < arch.getAlu().size(); i++) {
 			Alu alu = arch.getAlu().get(i);
-			int adrBits = (int)Math.ceil(Math.log(alu.getInputs().getInput().size()) / Math.log(2));
+			int adrBits = (int)Math.ceil(Math.log(alu.getInputsOperandA().getInput().size()) / Math.log(2));
 			for (int j = 0; j < adrBits; j++) {
 				cv.add(alu.getId() + "_op1_isel_" + j);
 			}
+			adrBits = (int)Math.ceil(Math.log(alu.getInputsOperandB().getInput().size()) / Math.log(2));
 			for (int j = 0; j < adrBits; j++) {
 				cv.add(alu.getId() + "_op2_isel_" + j);
 			}
-			// TODO: alu in xsd fixen, operations und conditions sind keine listen wie vorgesehen
-			// TODO: xsd nochmal überarbeiten damit weniger zwischen klassen existieren -> direkt listen
-			// TODO: Operand A und B als attribut o.ä.
-			// TODO: wordSize als Attribut in der Architektur
-			// TODO: restlichen CV erzeugen
-			int cmdCnt = alu.getOperations().getOperation().ordinal();
-			int cndCnt = alu.getConditions().getCondition().ordinal();
-			int cmdBits = (int)Math.ceil(Math.log(cmdCnt + cndCnt) / Math.log(2));
-			System.out.println(cmdCnt + " . " + cndCnt + ". " + cmdBits);
+			// TODO: xsd nochmal überarbeiten damit weniger zwischen klassen existieren -> direkt listen; jaxb-xew-plugin
+			int opsCnt = alu.getOperations().getOperation().size();
+			int cndCnt = alu.getConditions().getCondition().size();
+			int cmdBits = (int)Math.ceil(Math.log(opsCnt + cndCnt) / Math.log(2));
+			for (int j = 0; j < cmdBits; j++) {
+				cv.add(alu.getId() + "_csel_" + j);
+			}
+		}
+		for (int i = 0; i < arch.getRegisterFile().size(); i++) {
+			Memory mem = arch.getMemory().get(i);
+			for (int j = 0; j < mem.getPorts().getPort().size(); j++) {
+				Port p = mem.getPorts().getPort().get(j);
+				if (p.getInputs() != null) {
+					int adrBits = (int)Math.ceil(Math.log(p.getInputs().getInput().size()) / Math.log(2));
+					for (int k = 0; k < adrBits; k++) {
+						cv.add(mem.getId() + "_p" + j + "_isel_" + k);
+					}					
+				}
+				if (p.getAddresses() != null) {
+					int adrBits = (int)Math.ceil(Math.log(p.getAddresses().getAddress().size()) / Math.log(2));
+					for (int k = 0; k < adrBits; k++) {
+						cv.add(mem.getId() + "_p" + j + "_asel_" + k);
+					}					
+				}
+				if (p.getType() == PortDirection.IN || p.getType() == PortDirection.IN_OUT) {
+					cv.add(mem.getId() + "_p" + j + "_write");
+				}
+			}
 		}
 		return cv;
 	}

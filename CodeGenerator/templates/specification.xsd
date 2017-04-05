@@ -3,14 +3,13 @@
 	<xsd:element  name="architecture">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:choice maxOccurs="unbounded">
-						<xsd:element name="register" type="register" minOccurs="1" maxOccurs="unbounded" />
-						<xsd:element name="stack" type="stack" minOccurs="0" maxOccurs="unbounded" />
-						<xsd:element name="registerFile" minOccurs="1" type="registerFile" maxOccurs="unbounded" />
-						<xsd:element name="alu" type="alu" minOccurs="1" maxOccurs="unbounded" />
-						<xsd:element name="memory" type="memory" minOccurs="0" maxOccurs="unbounded" />		
-				</xsd:choice>
+				<xsd:element name="register" type="register" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="stack" type="stack" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="registerFile" minOccurs="1" type="registerFile" maxOccurs="unbounded" />
+				<xsd:element name="alu" type="alu" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="memory" type="memory" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
+			<xsd:attribute name="wordSize" type="xsd:integer" />
 		</xsd:complexType>
 	</xsd:element>
 	
@@ -43,10 +42,11 @@
 	<xsd:complexType name="alu">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="inputs" type="inputList" />
+			<xsd:element name="inputsOperandA" type="inputList" />
+			<xsd:element name="inputsOperandB" type="inputList" />
 			<xsd:element name="output" type="xsd:string" />
 			<xsd:element name="operations" type="operationList" />
-			<xsd:element name="conditions" type="conditionList" />
+			<xsd:element name="conditions" type="conditionList" />
 		</xsd:all>
 	</xsd:complexType>
 	
@@ -88,13 +88,13 @@
 	
 	<xsd:complexType name="operationList">
 		<xsd:sequence>
-			<xsd:element name="operation" type="operation" maxOccurs="unbounded" />
+			<xsd:element name="operation" type="operationEnum" minOccurs="1" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
 	<xsd:complexType name="conditionList">
 		<xsd:sequence>
-			<xsd:element name="condition" type="condition" maxOccurs="unbounded" />
+			<xsd:element name="condition" type="conditionEnum" minOccurs="1" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -113,7 +113,7 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="operation">
+	<xsd:simpleType name="operationEnum">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="add" />
 			<xsd:enumeration value="subtract" />
@@ -131,7 +131,7 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="condition">
+	<xsd:simpleType name="conditionEnum">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="zero" />
 			<xsd:enumeration value="notZero" />
@@ -140,6 +140,7 @@
 			<xsd:enumeration value="lower" />
 			<xsd:enumeration value="higher" />
 		</xsd:restriction>
-	</xsd:simpleType>
-				
+	</xsd:simpleType>				
+
 </xsd:schema>
+<!-- xjc D:\OneDrive\Projekte\git\CodeGenerator\Templates\specification.xsd -d D:\OneDrive\Projekte\git\CodeGenerator\src\jaxbClasses -->

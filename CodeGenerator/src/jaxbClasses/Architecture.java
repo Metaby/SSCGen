@@ -2,16 +2,18 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.03 um 05:44:57 PM CEST 
+// Generiert: 2017.04.05 um 05:22:40 PM CEST 
 //
 
 
 package jaxbClasses;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -33,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="alu" type="{}alu" maxOccurs="unbounded"/>
  *         &lt;element name="memory" type="{}memory" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="wordSize" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -59,6 +62,8 @@ public class Architecture {
     @XmlElement(required = true)
     protected List<Alu> alu;
     protected List<Memory> memory;
+    @XmlAttribute(name = "wordSize")
+    protected BigInteger wordSize;
 
     /**
      * Gets the value of the register property.
@@ -203,6 +208,30 @@ public class Architecture {
             memory = new ArrayList<Memory>();
         }
         return this.memory;
+    }
+
+    /**
+     * Ruft den Wert der wordSize-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigInteger }
+     *     
+     */
+    public BigInteger getWordSize() {
+        return wordSize;
+    }
+
+    /**
+     * Legt den Wert der wordSize-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigInteger }
+     *     
+     */
+    public void setWordSize(BigInteger value) {
+        this.wordSize = value;
     }
 
 }
