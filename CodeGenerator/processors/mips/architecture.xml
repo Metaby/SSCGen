@@ -12,6 +12,7 @@
 	-->
 	<register>
 		<id>portA</id>
+		<size>32</size>
 		<inputs>
 			<input>reg.out1</input>
 			<input>reg.out2</input>
@@ -21,6 +22,7 @@
 	</register>
 	<register>
 		<id>pp</id>
+		<size>32</size>
 		<inputs>
 			<input>alu.out</input>
 			<input>pcStack.out</input>
@@ -30,10 +32,29 @@
 	</register>
 	<register>
 		<id>ir</id>
+		<size>32</size>
 		<inputs>
 			<input>mainMem.out</input>
 		</inputs>
 		<output>inst</output>
+		<gpio>false</gpio>
+	</register>
+	<register>
+		<id>mcPc</id>
+		<size>32</size>
+		<inputs>
+			<input>alu.out</input>
+		</inputs>
+		<output>out</output>
+		<gpio>false</gpio>
+	</register>
+	<register>
+		<id>jmpBuffer</id>
+		<size>32</size>
+		<inputs>
+			<input>alu.out</input>
+		</inputs>
+		<output>out</output>
 		<gpio>false</gpio>
 	</register>
 	<stack>
@@ -44,6 +65,16 @@
 		</inputs>
 		<output>out</output>
 	</stack>
+	<rom>
+		<id>microcode</id>
+		<wordSize>28</wordSize>
+		<addressSize>32</addressSize>
+		<contentFile>microcode.xml</contentFile>
+		<addresses>
+			<address>mcPc.out</address>
+		</addresses>
+		<output>out</output>
+	</rom>
 	<registerFile>
 		<id>reg</id>
 		<addressSize>5</addressSize>
@@ -119,6 +150,7 @@
 			<condition>lower</condition>
 			<condition>higher</condition>
 		</conditions>
+		<statusFlags>flags</statusFlags>
 	</alu>
 	<memory>
 		<id>mainMem</id>
@@ -145,9 +177,23 @@
 			</port>			
 		</ports>
 	</memory>
+	<jumpLogic>
+		<id>jmpLgc</id>
+		<wordSize>32</wordSize>
+		<programTargetA>
+			<input>alu.out</input>
+		</programTargetA>
+		<programTargetB>
+			<input>jmpBuffer.out</input>
+		</programTargetB>
+		<output>out</output>
+		<inputFlagsCnt>4</inputFlagsCnt>
+		<inputFlags>alu.flags</inputFlags>
+	</jumpLogic>
 </architecture>
 <!--
 	Falls noch Zeit ist
 	<Interrupt></Interrupt>
 	<Timer></Timer>
 -->
+<!-- D:\Programme\Java\jdk1.8.0_121\bin xjc D:\OneDrive\Projekte\git\CodeGenerator\Templates\specification.xsd -d D:\OneDrive\Projekte\git\CodeGenerator\src\jaxbClasses -->

@@ -15,7 +15,7 @@ public class Program {
 	}
 	
 	public static void main(String[] args) {
-		SystemBuilder sb = new SystemBuilder();
+		ArchitectureFactory sb = new ArchitectureFactory();
 		System.out.println("Validating specification");
 		boolean passed = sb.ValidateSpecification("processors/mips/architecture.xml", "templates/specification.xsd");
 		if (!passed) {

@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.05 um 05:22:40 PM CEST 
+// Generiert: 2017.04.06 um 03:58:22 PM CEST 
 //
 
 
@@ -31,9 +31,11 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="register" type="{}register" maxOccurs="unbounded"/>
  *         &lt;element name="stack" type="{}stack" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="rom" type="{}rom" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="registerFile" type="{}registerFile" maxOccurs="unbounded"/>
  *         &lt;element name="alu" type="{}alu" maxOccurs="unbounded"/>
  *         &lt;element name="memory" type="{}memory" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="jumpLogic" type="{}jumpLogic" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *       &lt;attribute name="wordSize" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *     &lt;/restriction>
@@ -47,9 +49,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "register",
     "stack",
+    "rom",
     "registerFile",
     "alu",
-    "memory"
+    "memory",
+    "jumpLogic"
 })
 @XmlRootElement(name = "architecture")
 public class Architecture {
@@ -57,11 +61,14 @@ public class Architecture {
     @XmlElement(required = true)
     protected List<Register> register;
     protected List<Stack> stack;
+    protected List<Rom> rom;
     @XmlElement(required = true)
     protected List<RegisterFile> registerFile;
     @XmlElement(required = true)
     protected List<Alu> alu;
     protected List<Memory> memory;
+    @XmlElement(required = true)
+    protected List<JumpLogic> jumpLogic;
     @XmlAttribute(name = "wordSize")
     protected BigInteger wordSize;
 
@@ -121,6 +128,35 @@ public class Architecture {
             stack = new ArrayList<Stack>();
         }
         return this.stack;
+    }
+
+    /**
+     * Gets the value of the rom property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the rom property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRom().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Rom }
+     * 
+     * 
+     */
+    public List<Rom> getRom() {
+        if (rom == null) {
+            rom = new ArrayList<Rom>();
+        }
+        return this.rom;
     }
 
     /**
@@ -208,6 +244,35 @@ public class Architecture {
             memory = new ArrayList<Memory>();
         }
         return this.memory;
+    }
+
+    /**
+     * Gets the value of the jumpLogic property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the jumpLogic property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getJumpLogic().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link JumpLogic }
+     * 
+     * 
+     */
+    public List<JumpLogic> getJumpLogic() {
+        if (jumpLogic == null) {
+            jumpLogic = new ArrayList<JumpLogic>();
+        }
+        return this.jumpLogic;
     }
 
     /**

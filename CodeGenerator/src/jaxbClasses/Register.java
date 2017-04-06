@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.05 um 05:22:40 PM CEST 
+// Generiert: 2017.04.06 um 03:58:22 PM CEST 
 //
 
 
@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;all>
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="size" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="gpio" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element name="inputs" type="{}inputList"/>
  *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
@@ -44,6 +45,7 @@ public class Register {
 
     @XmlElement(required = true)
     protected String id;
+    protected int size;
     protected boolean gpio;
     @XmlElement(required = true)
     protected InputList inputs;
@@ -72,6 +74,22 @@ public class Register {
      */
     public void setId(String value) {
         this.id = value;
+    }
+
+    /**
+     * Ruft den Wert der size-Eigenschaft ab.
+     * 
+     */
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * Legt den Wert der size-Eigenschaft fest.
+     * 
+     */
+    public void setSize(int value) {
+        this.size = value;
     }
 
     /**

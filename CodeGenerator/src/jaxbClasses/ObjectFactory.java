@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.05 um 05:22:40 PM CEST 
+// Generiert: 2017.04.06 um 03:58:22 PM CEST 
 //
 
 
@@ -61,6 +61,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Rom }
+     * 
+     */
+    public Rom createRom() {
+        return new Rom();
+    }
+
+    /**
      * Create an instance of {@link RegisterFile }
      * 
      */
@@ -82,6 +90,14 @@ public class ObjectFactory {
      */
     public Memory createMemory() {
         return new Memory();
+    }
+
+    /**
+     * Create an instance of {@link JumpLogic }
+     * 
+     */
+    public JumpLogic createJumpLogic() {
+        return new JumpLogic();
     }
 
     /**

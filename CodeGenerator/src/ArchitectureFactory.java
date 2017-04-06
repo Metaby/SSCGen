@@ -12,7 +12,8 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import jaxbClasses.*;
 
-public class SystemBuilder {
+// TODO: Wrapper-Classes selber schreiben
+public class ArchitectureFactory {
 	
 	public Architecture ReadSpecification(String SpecPath) {
 		try {
@@ -61,6 +62,7 @@ public class SystemBuilder {
 				inputs.add(alu.getInputsOperandA().getInput().get(j));
 			}
 			outputs.add(alu.getId() + "." + alu.getOutput());
+			outputs.add(alu.getId() + "." + alu.getStatusFlags());
 		}
 		for (int i = 0; i < arch.getMemory().size(); i++) {
 			Memory mem = arch.getMemory().get(i);
@@ -99,6 +101,24 @@ public class SystemBuilder {
 					outputs.add(rf.getId() + "." + p.getOutput());					
 				}
 			}
+		}
+		for (int i = 0; i < arch.getRom().size(); i++) {
+			Rom rom = arch.getRom().get(i);
+			for (int j = 0; j < rom.getAddresses().getAddress().size(); j++) {
+				inputs.add(rom.getAddresses().getAddress().get(j));
+			}
+			outputs.add(rom.getId() + "." + rom.getOutput());
+		}
+		for (int i = 0; i < arch.getJumpLogic().size(); i++) {
+			JumpLogic jl = arch.getJumpLogic().get(i);
+			for (int j = 0; j < jl.getProgramTargetA().getInput().size(); j++) {
+				inputs.add(jl.getProgramTargetA().getInput().get(j));
+			}
+			for (int j = 0; j < jl.getProgramTargetB().getInput().size(); j++) {
+				inputs.add(jl.getProgramTargetB().getInput().get(j));
+			}
+			inputs.add(jl.getInputFlags());
+			outputs.add(jl.getId() + "." + jl.getOutput());
 		}
 		for (int i = 0; i < inputs.size(); i++) {
 			String con = inputs.toArray()[i].toString();
@@ -165,7 +185,6 @@ public class SystemBuilder {
 			for (int j = 0; j < adrBits; j++) {
 				cv.add(alu.getId() + "_op2_isel_" + j);
 			}
-			// TODO: xsd nochmal überarbeiten damit weniger zwischen klassen existieren -> direkt listen; jaxb-xew-plugin
 			int opsCnt = alu.getOperations().getOperation().size();
 			int cndCnt = alu.getConditions().getCondition().size();
 			int cmdBits = (int)Math.ceil(Math.log(opsCnt + cndCnt) / Math.log(2));
@@ -192,6 +211,21 @@ public class SystemBuilder {
 				if (p.getType() == PortDirection.IN || p.getType() == PortDirection.IN_OUT) {
 					cv.add(mem.getId() + "_p" + j + "_write");
 				}
+			}
+		}
+		for (int i = 0; i < arch.getJumpLogic().size(); i++) {
+			JumpLogic jl = arch.getJumpLogic().get(i);
+			int adrBits = (int)Math.ceil(Math.log(jl.getProgramTargetA().getInput().size()) / Math.log(2));
+			for (int j = 0; j < adrBits; j++) {
+				cv.add(jl.getId() + "_pt1_isel_" + j);
+			}
+			adrBits = (int)Math.ceil(Math.log(jl.getProgramTargetB().getInput().size()) / Math.log(2));
+			for (int j = 0; j < adrBits; j++) {
+				cv.add(jl.getId() + "_pt2_isel_" + j);
+			}
+			int jcBits = (int)Math.ceil(Math.log(jl.getInputFlagsCnt().intValue()) / Math.log(2));
+			for (int j = 0; j < jcBits; j++) {
+				cv.add(jl.getId() + "_jcsel_" + j);
 			}
 		}
 		return cv;
