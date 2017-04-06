@@ -2,13 +2,12 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 03:58:22 PM CEST 
+// Generiert: 2017.04.06 um 09:19:00 PM CEST 
 //
 
 
-package jaxbClasses;
+package jaxb;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,22 +15,23 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für jumpLogic complex type.
+ * <p>Java-Klasse für alu complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="jumpLogic">
+ * &lt;complexType name="alu">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;all>
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}integer"/>
- *         &lt;element name="programTargetA" type="{}inputList"/>
- *         &lt;element name="programTargetB" type="{}inputList"/>
+ *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="inputsOperandA" type="{}inputList"/>
+ *         &lt;element name="inputsOperandB" type="{}inputList"/>
  *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="inputFlagsCnt" type="{http://www.w3.org/2001/XMLSchema}integer"/>
- *         &lt;element name="inputFlags" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="operations" type="{}operationList"/>
+ *         &lt;element name="conditions" type="{}conditionList"/>
+ *         &lt;element name="statusFlags" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -41,25 +41,26 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "jumpLogic", propOrder = {
+@XmlType(name = "alu", propOrder = {
 
 })
-public class JumpLogic {
+public class Alu {
 
     @XmlElement(required = true)
     protected String id;
+    protected int wordSize;
     @XmlElement(required = true)
-    protected BigInteger wordSize;
+    protected InputList inputsOperandA;
     @XmlElement(required = true)
-    protected InputList programTargetA;
-    @XmlElement(required = true)
-    protected InputList programTargetB;
+    protected InputList inputsOperandB;
     @XmlElement(required = true)
     protected String output;
     @XmlElement(required = true)
-    protected BigInteger inputFlagsCnt;
+    protected OperationList operations;
     @XmlElement(required = true)
-    protected String inputFlags;
+    protected ConditionList conditions;
+    @XmlElement(required = true)
+    protected String statusFlags;
 
     /**
      * Ruft den Wert der id-Eigenschaft ab.
@@ -88,73 +89,65 @@ public class JumpLogic {
     /**
      * Ruft den Wert der wordSize-Eigenschaft ab.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
      */
-    public BigInteger getWordSize() {
+    public int getWordSize() {
         return wordSize;
     }
 
     /**
      * Legt den Wert der wordSize-Eigenschaft fest.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
      */
-    public void setWordSize(BigInteger value) {
+    public void setWordSize(int value) {
         this.wordSize = value;
     }
 
     /**
-     * Ruft den Wert der programTargetA-Eigenschaft ab.
+     * Ruft den Wert der inputsOperandA-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link InputList }
      *     
      */
-    public InputList getProgramTargetA() {
-        return programTargetA;
+    public InputList getInputsOperandA() {
+        return inputsOperandA;
     }
 
     /**
-     * Legt den Wert der programTargetA-Eigenschaft fest.
+     * Legt den Wert der inputsOperandA-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link InputList }
      *     
      */
-    public void setProgramTargetA(InputList value) {
-        this.programTargetA = value;
+    public void setInputsOperandA(InputList value) {
+        this.inputsOperandA = value;
     }
 
     /**
-     * Ruft den Wert der programTargetB-Eigenschaft ab.
+     * Ruft den Wert der inputsOperandB-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link InputList }
      *     
      */
-    public InputList getProgramTargetB() {
-        return programTargetB;
+    public InputList getInputsOperandB() {
+        return inputsOperandB;
     }
 
     /**
-     * Legt den Wert der programTargetB-Eigenschaft fest.
+     * Legt den Wert der inputsOperandB-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link InputList }
      *     
      */
-    public void setProgramTargetB(InputList value) {
-        this.programTargetB = value;
+    public void setInputsOperandB(InputList value) {
+        this.inputsOperandB = value;
     }
 
     /**
@@ -182,51 +175,75 @@ public class JumpLogic {
     }
 
     /**
-     * Ruft den Wert der inputFlagsCnt-Eigenschaft ab.
+     * Ruft den Wert der operations-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link OperationList }
      *     
      */
-    public BigInteger getInputFlagsCnt() {
-        return inputFlagsCnt;
+    public OperationList getOperations() {
+        return operations;
     }
 
     /**
-     * Legt den Wert der inputFlagsCnt-Eigenschaft fest.
+     * Legt den Wert der operations-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link OperationList }
      *     
      */
-    public void setInputFlagsCnt(BigInteger value) {
-        this.inputFlagsCnt = value;
+    public void setOperations(OperationList value) {
+        this.operations = value;
     }
 
     /**
-     * Ruft den Wert der inputFlags-Eigenschaft ab.
+     * Ruft den Wert der conditions-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ConditionList }
+     *     
+     */
+    public ConditionList getConditions() {
+        return conditions;
+    }
+
+    /**
+     * Legt den Wert der conditions-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ConditionList }
+     *     
+     */
+    public void setConditions(ConditionList value) {
+        this.conditions = value;
+    }
+
+    /**
+     * Ruft den Wert der statusFlags-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getInputFlags() {
-        return inputFlags;
+    public String getStatusFlags() {
+        return statusFlags;
     }
 
     /**
-     * Legt den Wert der inputFlags-Eigenschaft fest.
+     * Legt den Wert der statusFlags-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setInputFlags(String value) {
-        this.inputFlags = value;
+    public void setStatusFlags(String value) {
+        this.statusFlags = value;
     }
 
 }

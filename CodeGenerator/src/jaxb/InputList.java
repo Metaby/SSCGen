@@ -2,32 +2,30 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 03:58:22 PM CEST 
+// Generiert: 2017.04.06 um 09:19:00 PM CEST 
 //
 
 
-package jaxbClasses;
+package jaxb;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für operationList complex type.
+ * <p>Java-Klasse für inputList complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="operationList">
+ * &lt;complexType name="inputList">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="operation" type="{}operationEnum" maxOccurs="unbounded"/>
+ *         &lt;element name="input" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -37,42 +35,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "operationList", propOrder = {
-    "operation"
+@XmlType(name = "inputList", propOrder = {
+    "input"
 })
-public class OperationList {
+public class InputList {
 
-    @XmlElement(required = true)
-    @XmlSchemaType(name = "string")
-    protected List<OperationEnum> operation;
+    protected List<String> input;
 
     /**
-     * Gets the value of the operation property.
+     * Gets the value of the input property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the operation property.
+     * This is why there is not a <CODE>set</CODE> method for the input property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getOperation().add(newItem);
+     *    getInput().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link OperationEnum }
+     * {@link String }
      * 
      * 
      */
-    public List<OperationEnum> getOperation() {
-        if (operation == null) {
-            operation = new ArrayList<OperationEnum>();
+    public List<String> getInput() {
+        if (input == null) {
+            input = new ArrayList<String>();
         }
-        return this.operation;
+        return this.input;
     }
 
 }

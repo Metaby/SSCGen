@@ -2,33 +2,34 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 03:58:22 PM CEST 
+// Generiert: 2017.04.06 um 09:19:00 PM CEST 
 //
 
 
-package jaxbClasses;
+package jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für register complex type.
+ * <p>Java-Klasse für memory complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="register">
+ * &lt;complexType name="memory">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;all>
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="size" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="gpio" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         &lt;element name="inputs" type="{}inputList"/>
- *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="addressSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="type" type="{}memoryType"/>
+ *         &lt;element name="ports" type="{}portList"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,19 +39,20 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "register", propOrder = {
+@XmlType(name = "memory", propOrder = {
 
 })
-public class Register {
+public class Memory {
 
     @XmlElement(required = true)
     protected String id;
-    protected int size;
-    protected boolean gpio;
+    protected int addressSize;
+    protected int wordSize;
     @XmlElement(required = true)
-    protected InputList inputs;
+    @XmlSchemaType(name = "string")
+    protected MemoryType type;
     @XmlElement(required = true)
-    protected String output;
+    protected PortList ports;
 
     /**
      * Ruft den Wert der id-Eigenschaft ab.
@@ -77,83 +79,83 @@ public class Register {
     }
 
     /**
-     * Ruft den Wert der size-Eigenschaft ab.
+     * Ruft den Wert der addressSize-Eigenschaft ab.
      * 
      */
-    public int getSize() {
-        return size;
+    public int getAddressSize() {
+        return addressSize;
     }
 
     /**
-     * Legt den Wert der size-Eigenschaft fest.
+     * Legt den Wert der addressSize-Eigenschaft fest.
      * 
      */
-    public void setSize(int value) {
-        this.size = value;
+    public void setAddressSize(int value) {
+        this.addressSize = value;
     }
 
     /**
-     * Ruft den Wert der gpio-Eigenschaft ab.
+     * Ruft den Wert der wordSize-Eigenschaft ab.
      * 
      */
-    public boolean isGpio() {
-        return gpio;
+    public int getWordSize() {
+        return wordSize;
     }
 
     /**
-     * Legt den Wert der gpio-Eigenschaft fest.
+     * Legt den Wert der wordSize-Eigenschaft fest.
      * 
      */
-    public void setGpio(boolean value) {
-        this.gpio = value;
+    public void setWordSize(int value) {
+        this.wordSize = value;
     }
 
     /**
-     * Ruft den Wert der inputs-Eigenschaft ab.
+     * Ruft den Wert der type-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link InputList }
+     *     {@link MemoryType }
      *     
      */
-    public InputList getInputs() {
-        return inputs;
+    public MemoryType getType() {
+        return type;
     }
 
     /**
-     * Legt den Wert der inputs-Eigenschaft fest.
+     * Legt den Wert der type-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link InputList }
+     *     {@link MemoryType }
      *     
      */
-    public void setInputs(InputList value) {
-        this.inputs = value;
+    public void setType(MemoryType value) {
+        this.type = value;
     }
 
     /**
-     * Ruft den Wert der output-Eigenschaft ab.
+     * Ruft den Wert der ports-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link PortList }
      *     
      */
-    public String getOutput() {
-        return output;
+    public PortList getPorts() {
+        return ports;
     }
 
     /**
-     * Legt den Wert der output-Eigenschaft fest.
+     * Legt den Wert der ports-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link PortList }
      *     
      */
-    public void setOutput(String value) {
-        this.output = value;
+    public void setPorts(PortList value) {
+        this.ports = value;
     }
 
 }

@@ -2,13 +2,12 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 03:58:22 PM CEST 
+// Generiert: 2017.04.06 um 09:19:00 PM CEST 
 //
 
 
-package jaxbClasses;
+package jaxb;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,7 +25,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;all>
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="addressSize" type="{http://www.w3.org/2001/XMLSchema}integer"/>
+ *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="addressSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="ports" type="{}portList"/>
  *       &lt;/all>
  *     &lt;/restriction>
@@ -44,8 +44,8 @@ public class RegisterFile {
 
     @XmlElement(required = true)
     protected String id;
-    @XmlElement(required = true)
-    protected BigInteger addressSize;
+    protected int wordSize;
+    protected int addressSize;
     @XmlElement(required = true)
     protected PortList ports;
 
@@ -74,26 +74,34 @@ public class RegisterFile {
     }
 
     /**
+     * Ruft den Wert der wordSize-Eigenschaft ab.
+     * 
+     */
+    public int getWordSize() {
+        return wordSize;
+    }
+
+    /**
+     * Legt den Wert der wordSize-Eigenschaft fest.
+     * 
+     */
+    public void setWordSize(int value) {
+        this.wordSize = value;
+    }
+
+    /**
      * Ruft den Wert der addressSize-Eigenschaft ab.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
      */
-    public BigInteger getAddressSize() {
+    public int getAddressSize() {
         return addressSize;
     }
 
     /**
      * Legt den Wert der addressSize-Eigenschaft fest.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
      */
-    public void setAddressSize(BigInteger value) {
+    public void setAddressSize(int value) {
         this.addressSize = value;
     }
 

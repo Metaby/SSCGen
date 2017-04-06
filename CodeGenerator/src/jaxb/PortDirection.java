@@ -2,11 +2,11 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 03:58:22 PM CEST 
+// Generiert: 2017.04.06 um 09:19:00 PM CEST 
 //
 
 
-package jaxbClasses;
+package jaxb;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
@@ -14,43 +14,34 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für conditionEnum.
+ * <p>Java-Klasse für portDirection.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * <p>
  * <pre>
- * &lt;simpleType name="conditionEnum">
+ * &lt;simpleType name="portDirection">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="zero"/>
- *     &lt;enumeration value="notZero"/>
- *     &lt;enumeration value="equal"/>
- *     &lt;enumeration value="notEqual"/>
- *     &lt;enumeration value="lower"/>
- *     &lt;enumeration value="higher"/>
+ *     &lt;enumeration value="in"/>
+ *     &lt;enumeration value="out"/>
+ *     &lt;enumeration value="inOut"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "conditionEnum")
+@XmlType(name = "portDirection")
 @XmlEnum
-public enum ConditionEnum {
+public enum PortDirection {
 
-    @XmlEnumValue("zero")
-    ZERO("zero"),
-    @XmlEnumValue("notZero")
-    NOT_ZERO("notZero"),
-    @XmlEnumValue("equal")
-    EQUAL("equal"),
-    @XmlEnumValue("notEqual")
-    NOT_EQUAL("notEqual"),
-    @XmlEnumValue("lower")
-    LOWER("lower"),
-    @XmlEnumValue("higher")
-    HIGHER("higher");
+    @XmlEnumValue("in")
+    IN("in"),
+    @XmlEnumValue("out")
+    OUT("out"),
+    @XmlEnumValue("inOut")
+    IN_OUT("inOut");
     private final String value;
 
-    ConditionEnum(String v) {
+    PortDirection(String v) {
         value = v;
     }
 
@@ -58,8 +49,8 @@ public enum ConditionEnum {
         return value;
     }
 
-    public static ConditionEnum fromValue(String v) {
-        for (ConditionEnum c: ConditionEnum.values()) {
+    public static PortDirection fromValue(String v) {
+        for (PortDirection c: PortDirection.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

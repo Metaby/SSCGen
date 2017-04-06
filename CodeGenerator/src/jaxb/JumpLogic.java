@@ -2,13 +2,12 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 03:58:22 PM CEST 
+// Generiert: 2017.04.06 um 09:19:00 PM CEST 
 //
 
 
-package jaxbClasses;
+package jaxb;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,21 +15,22 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für rom complex type.
+ * <p>Java-Klasse für jumpLogic complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="rom">
+ * &lt;complexType name="jumpLogic">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;all>
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}integer"/>
- *         &lt;element name="addressSize" type="{http://www.w3.org/2001/XMLSchema}integer"/>
- *         &lt;element name="contentFile" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="addresses" type="{}addressList"/>
+ *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="programTargetA" type="{}inputList"/>
+ *         &lt;element name="programTargetB" type="{}inputList"/>
  *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="inputFlagsCnt" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="inputFlags" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -40,23 +40,23 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "rom", propOrder = {
+@XmlType(name = "jumpLogic", propOrder = {
 
 })
-public class Rom {
+public class JumpLogic {
 
     @XmlElement(required = true)
     protected String id;
+    protected int wordSize;
     @XmlElement(required = true)
-    protected BigInteger wordSize;
+    protected InputList programTargetA;
     @XmlElement(required = true)
-    protected BigInteger addressSize;
-    @XmlElement(required = true)
-    protected String contentFile;
-    @XmlElement(required = true)
-    protected AddressList addresses;
+    protected InputList programTargetB;
     @XmlElement(required = true)
     protected String output;
+    protected int inputFlagsCnt;
+    @XmlElement(required = true)
+    protected String inputFlags;
 
     /**
      * Ruft den Wert der id-Eigenschaft ab.
@@ -85,97 +85,65 @@ public class Rom {
     /**
      * Ruft den Wert der wordSize-Eigenschaft ab.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
      */
-    public BigInteger getWordSize() {
+    public int getWordSize() {
         return wordSize;
     }
 
     /**
      * Legt den Wert der wordSize-Eigenschaft fest.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
      */
-    public void setWordSize(BigInteger value) {
+    public void setWordSize(int value) {
         this.wordSize = value;
     }
 
     /**
-     * Ruft den Wert der addressSize-Eigenschaft ab.
+     * Ruft den Wert der programTargetA-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link InputList }
      *     
      */
-    public BigInteger getAddressSize() {
-        return addressSize;
+    public InputList getProgramTargetA() {
+        return programTargetA;
     }
 
     /**
-     * Legt den Wert der addressSize-Eigenschaft fest.
+     * Legt den Wert der programTargetA-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link InputList }
      *     
      */
-    public void setAddressSize(BigInteger value) {
-        this.addressSize = value;
+    public void setProgramTargetA(InputList value) {
+        this.programTargetA = value;
     }
 
     /**
-     * Ruft den Wert der contentFile-Eigenschaft ab.
+     * Ruft den Wert der programTargetB-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link InputList }
      *     
      */
-    public String getContentFile() {
-        return contentFile;
+    public InputList getProgramTargetB() {
+        return programTargetB;
     }
 
     /**
-     * Legt den Wert der contentFile-Eigenschaft fest.
+     * Legt den Wert der programTargetB-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link InputList }
      *     
      */
-    public void setContentFile(String value) {
-        this.contentFile = value;
-    }
-
-    /**
-     * Ruft den Wert der addresses-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link AddressList }
-     *     
-     */
-    public AddressList getAddresses() {
-        return addresses;
-    }
-
-    /**
-     * Legt den Wert der addresses-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link AddressList }
-     *     
-     */
-    public void setAddresses(AddressList value) {
-        this.addresses = value;
+    public void setProgramTargetB(InputList value) {
+        this.programTargetB = value;
     }
 
     /**
@@ -200,6 +168,46 @@ public class Rom {
      */
     public void setOutput(String value) {
         this.output = value;
+    }
+
+    /**
+     * Ruft den Wert der inputFlagsCnt-Eigenschaft ab.
+     * 
+     */
+    public int getInputFlagsCnt() {
+        return inputFlagsCnt;
+    }
+
+    /**
+     * Legt den Wert der inputFlagsCnt-Eigenschaft fest.
+     * 
+     */
+    public void setInputFlagsCnt(int value) {
+        this.inputFlagsCnt = value;
+    }
+
+    /**
+     * Ruft den Wert der inputFlags-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getInputFlags() {
+        return inputFlags;
+    }
+
+    /**
+     * Legt den Wert der inputFlags-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setInputFlags(String value) {
+        this.inputFlags = value;
     }
 
 }

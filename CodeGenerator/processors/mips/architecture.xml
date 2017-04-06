@@ -78,6 +78,7 @@
 	<registerFile>
 		<id>reg</id>
 		<addressSize>5</addressSize>
+		<wordSize>32</wordSize>
 		<ports>
 			<port>
 				<type>out</type>
@@ -115,6 +116,7 @@
 	</registerFile>
 	<alu>
 		<id>alu</id>
+		<wordSize>32</wordSize>
 		<inputsOperandA>
 			<input>reg.out1</input>
 			<input>pcStack.out</input>
@@ -155,9 +157,10 @@
 	<memory>
 		<id>mainMem</id>
 		<addressSize>32</addressSize>
+		<wordSize>32</wordSize>
 		<!--
 			types:
-			OnChip, Extern
+			intern, extern
 		-->
 		<type>intern</type>
 		<ports>

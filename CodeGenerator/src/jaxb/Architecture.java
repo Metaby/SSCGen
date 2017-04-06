@@ -2,13 +2,12 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 03:58:22 PM CEST 
+// Generiert: 2017.04.06 um 09:19:00 PM CEST 
 //
 
 
-package jaxbClasses;
+package jaxb;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -37,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="memory" type="{}memory" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="jumpLogic" type="{}jumpLogic" maxOccurs="unbounded"/>
  *       &lt;/sequence>
- *       &lt;attribute name="wordSize" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *       &lt;attribute name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -70,7 +69,7 @@ public class Architecture {
     @XmlElement(required = true)
     protected List<JumpLogic> jumpLogic;
     @XmlAttribute(name = "wordSize")
-    protected BigInteger wordSize;
+    protected Integer wordSize;
 
     /**
      * Gets the value of the register property.
@@ -280,10 +279,10 @@ public class Architecture {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public BigInteger getWordSize() {
+    public Integer getWordSize() {
         return wordSize;
     }
 
@@ -292,10 +291,10 @@ public class Architecture {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public void setWordSize(BigInteger value) {
+    public void setWordSize(Integer value) {
         this.wordSize = value;
     }
 

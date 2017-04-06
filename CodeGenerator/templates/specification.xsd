@@ -11,7 +11,7 @@
 				<xsd:element name="memory" type="memory" minOccurs="0" maxOccurs="unbounded" />				
 				<xsd:element name="jumpLogic" type="jumpLogic" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
-			<xsd:attribute name="wordSize" type="xsd:integer" />
+			<xsd:attribute name="wordSize" type="xsd:int" />
 		</xsd:complexType>
 	</xsd:element>
 	
@@ -28,7 +28,7 @@
 	<xsd:complexType name="stack">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="size" type="xsd:integer" />
+			<xsd:element name="size" type="xsd:int" />
 			<xsd:element name="inputs" type="inputList" />
 			<xsd:element name="output" type="xsd:string" />
 		</xsd:all>
@@ -37,8 +37,8 @@
 	<xsd:complexType name="rom">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="wordSize" type="xsd:integer" />
-			<xsd:element name="addressSize" type="xsd:integer" />
+			<xsd:element name="wordSize" type="xsd:int" />
+			<xsd:element name="addressSize" type="xsd:int" />
 			<xsd:element name="contentFile" type="xsd:string" />
 			<xsd:element name="addresses" type="addressList" minOccurs="1" />
 			<xsd:element name="output" type="xsd:string" />
@@ -48,7 +48,8 @@
 	<xsd:complexType name="registerFile">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="addressSize" type="xsd:integer" />
+			<xsd:element name="wordSize" type="xsd:int" />
+			<xsd:element name="addressSize" type="xsd:int" />
 			<xsd:element name="ports" type="portList" />
 		</xsd:all>
 	</xsd:complexType>
@@ -56,6 +57,7 @@
 	<xsd:complexType name="alu">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
+			<xsd:element name="wordSize" type="xsd:int" />
 			<xsd:element name="inputsOperandA" type="inputList" />
 			<xsd:element name="inputsOperandB" type="inputList" />
 			<xsd:element name="output" type="xsd:string" />
@@ -68,7 +70,8 @@
 	<xsd:complexType name="memory">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="addressSize" type="xsd:integer" />
+			<xsd:element name="addressSize" type="xsd:int" />
+			<xsd:element name="wordSize" type="xsd:int" />
 			<xsd:element name="type" type="memoryType" />
 			<xsd:element name="ports" type="portList" />
 		</xsd:all>
@@ -77,11 +80,11 @@
 	<xsd:complexType name="jumpLogic">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="wordSize" type="xsd:integer" />
+			<xsd:element name="wordSize" type="xsd:int" />
 			<xsd:element name="programTargetA" type="inputList" />
 			<xsd:element name="programTargetB" type="inputList" />
 			<xsd:element name="output" type="xsd:string" />
-			<xsd:element name="inputFlagsCnt" type="xsd:integer" />
+			<xsd:element name="inputFlagsCnt" type="xsd:int" />
 			<xsd:element name="inputFlags" type="xsd:string" />
 		</xsd:all>
 	</xsd:complexType>

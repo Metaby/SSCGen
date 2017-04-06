@@ -10,7 +10,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
-import jaxbClasses.*;
+
+import jaxb.*;
 
 // TODO: Wrapper-Classes selber schreiben
 public class ArchitectureFactory {
@@ -223,7 +224,7 @@ public class ArchitectureFactory {
 			for (int j = 0; j < adrBits; j++) {
 				cv.add(jl.getId() + "_pt2_isel_" + j);
 			}
-			int jcBits = (int)Math.ceil(Math.log(jl.getInputFlagsCnt().intValue()) / Math.log(2));
+			int jcBits = (int)Math.ceil(Math.log(jl.getInputFlagsCnt()) / Math.log(2));
 			for (int j = 0; j < jcBits; j++) {
 				cv.add(jl.getId() + "_jcsel_" + j);
 			}
