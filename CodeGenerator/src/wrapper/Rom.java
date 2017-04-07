@@ -34,7 +34,16 @@ public class Rom {
 			addresses.add(inCon);
 		}		
 	}
-
+	
+	public List<String> getControlVector() {
+		List<String> cv = new ArrayList<String>();
+		for (int i = 0; i < (int)Math.ceil(Math.log(addresses.size()) / Math.log(2)); i++) {
+			cv.add(id + "_asel_" + i);
+		}
+		cv.add(id + "_write");
+		return cv;
+	}
+	
 	public List<Connector> getAddresses() {
 		return addresses;
 	}

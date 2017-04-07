@@ -1,7 +1,6 @@
 import java.util.List;
 
-import jaxb.Architecture;
-import wrapper.Connector;
+import wrapper.*;
 
 public class Program {
 	
@@ -34,9 +33,5 @@ public class Program {
 		List<String> cv = sb.GenerateControlVector(arch);
 		System.out.println("CV-Length: " + cv.size());
 		System.out.println(cv);
-		wrapper.Architecture a = new wrapper.Architecture(arch);
-		List<Connector> ics = a.getInputConnectors();
-		List<Connector> ocs = a.getOutputConnectors();
-		System.out.println(a.toString());
 	}
 }

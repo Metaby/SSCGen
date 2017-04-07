@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class ComponentFactory {
 		String component = "";
 		if (ComponentFilePath != "Blank") {
 			Map<String, String> tags = ReadTags(ComponentFilePath);
-			List<String> template = new LinkedList<String>(baseComponent);
+			List<String> template = new ArrayList<String>(baseComponent);
 			for (int i = 0; i < template.size(); i++) {
 				for (int j = 0; j < templateTags.length; j++) {					
 					String tag = templateTags[j];

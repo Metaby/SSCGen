@@ -59,6 +59,20 @@ public class Alu {
 			inputsB.add(inCon);
 		}
 	}
+	
+	public List<String> getControlVector() {
+		List<String> cv = new ArrayList<String>();
+		for (int i = 0; i < (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2)); i++) {
+			cv.add(id + "_op1_isel_" + i);
+		}
+		for (int i = 0; i < (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2)); i++) {
+			cv.add(id + "_op2_isel_" + i);
+		}
+		for (int i = 0; i < (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2)); i++) {
+			cv.add(id + "_csel_" + i);			
+		}
+		return cv;
+	}
 
 	public List<Connector> getInputsA() {
 		return inputsA;

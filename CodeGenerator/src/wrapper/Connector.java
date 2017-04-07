@@ -13,9 +13,10 @@ public class Connector {
 		c++;
 		return c - 1;
 	}
-
-	public String toCleanString() {
-		String str = toString();
+	
+	@Override
+	public String toString() {
+		String str = origin + "." + pin;
 		if (str.contains("[")) {
 			return str.substring(0, str.indexOf("["));
 		} else {
@@ -24,23 +25,16 @@ public class Connector {
 	}
 	
 	@Override
-	public String toString() {
-		return origin + "." + pin;
-	}
-	
-	// TODO: HashSet enthält doppelte Werte -> Fixen
-	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Connector) {
-			return ((Connector)obj).toCleanString() == this.toCleanString();
-		} else {
+		if (obj == null) {
 			return false;
 		}
+		return obj.hashCode() == this.hashCode();
 	}
 
 	@Override
 	public int hashCode() {
-		return this.toCleanString().hashCode();
+		return this.toString().hashCode();
 	}
 	
 }

@@ -50,7 +50,21 @@ public class JumpLogic {
 			programTargetB.add(inCon);
 		}
 	}
-
+	
+	public List<String> getControlVector() {
+		List<String> cv = new ArrayList<String>();
+		for (int i = 0; i < (int)Math.ceil(Math.log(programTargetA.size()) / Math.log(2)); i++) {
+			cv.add(id + "_pt1_isel_" + i);
+		}
+		for (int i = 0; i < (int)Math.ceil(Math.log(programTargetB.size()) / Math.log(2)); i++) {
+			cv.add(id + "_pt2_isel_" + i);
+		}
+		for (int i = 0; i < (int)Math.ceil(Math.log(inputFlagsCnt) / Math.log(2)); i++) {
+			cv.add(id + "_jcsel_" + i);			
+		}
+		return cv;
+	}
+	
 	public List<Connector> getProgramTargetsA() {
 		return programTargetA;
 	}
