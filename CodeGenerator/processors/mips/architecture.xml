@@ -67,9 +67,9 @@
 	</stack>
 	<rom>
 		<id>microcode</id>
-		<wordSize>28</wordSize>
+		<wordSize>31</wordSize>
 		<addressSize>32</addressSize>
-		<contentFile>microcode.xml</contentFile>
+		<contentFile>processors/mips/program.hex</contentFile>
 		<addresses>
 			<address>mcPc.out</address>
 		</addresses>

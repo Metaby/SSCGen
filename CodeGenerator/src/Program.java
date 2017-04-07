@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.List;
 
 import wrapper.*;
@@ -33,5 +34,7 @@ public class Program {
 		List<String> cv = sb.GenerateControlVector(arch);
 		System.out.println("CV-Length: " + cv.size());
 		System.out.println(cv);
+		ComponentFactory cf = new ComponentFactory("templates/component.tmpl");
+		cf.GenerateArchitecture("processors/mips/code/", arch);
 	}
 }
