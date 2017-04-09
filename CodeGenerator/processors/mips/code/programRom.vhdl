@@ -1,5 +1,5 @@
 -- Auto generated ROM
--- Date: 
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
@@ -15,7 +15,7 @@ ENTITY microcode IS
 END microcode;
 
 ARCHITECTURE behavior OF microcode IS
-
+  
 BEGIN
   WITH p_address SELECT p_word <=
     "0000000000000000000000000000001" WHEN "00000000000000000000000000000000",

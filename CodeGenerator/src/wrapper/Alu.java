@@ -23,8 +23,10 @@ public class Alu {
 		}
 		int conditionsCnt = 0;
 		conditions = new ArrayList<String>();
-		for (int i = 0; i < alu.getConditions().getCondition().size(); i++) {
-			conditions.add(alu.getConditions().getCondition().get(i).name());
+		if (alu.getConditions() != null) {
+			for (int i = 0; i < alu.getConditions().getCondition().size(); i++) {
+				conditions.add(alu.getConditions().getCondition().get(i).name());
+			}			
 		}
 		Connector outCon = new Connector();
 		outCon.origin = alu.getId();
@@ -32,12 +34,14 @@ public class Alu {
 		outCon.size = wordSize;
 		outCon.id = Connector.getNewId();
 		output = outCon;
-		Connector flagsCon = new Connector();
-		flagsCon.origin = alu.getId();
-		flagsCon.pin = alu.getStatusFlags();
-		flagsCon.size = conditionsCnt;
-		flagsCon.id = Connector.getNewId();
-		status = flagsCon;
+		if (alu.getStatusFlags() != null) {
+			Connector flagsCon = new Connector();
+			flagsCon.origin = alu.getId();
+			flagsCon.pin = alu.getStatusFlags();
+			flagsCon.size = conditionsCnt;
+			flagsCon.id = Connector.getNewId();
+			status = flagsCon;			
+		}
 		inputsA = new ArrayList<Connector>();
 		for (int i = 0; i < alu.getInputsOperandA().getInput().size(); i++) {
 			Connector inCon = new Connector();

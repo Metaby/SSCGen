@@ -62,8 +62,8 @@
 			<xsd:element name="inputsOperandB" type="inputList" />
 			<xsd:element name="output" type="xsd:string" />
 			<xsd:element name="operations" type="operationList" />
-			<xsd:element name="conditions" type="conditionList" />
-			<xsd:element name="statusFlags" type="xsd:string" />
+			<xsd:element name="conditions" type="conditionList" minOccurs="0" />
+			<xsd:element name="statusFlags" type="xsd:string" minOccurs="0" />
 		</xsd:all>
 	</xsd:complexType>
 	

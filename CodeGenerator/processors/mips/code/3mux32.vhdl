@@ -1,5 +1,5 @@
 -- Auto generated Multiplexer
--- Date: 
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
@@ -23,7 +23,7 @@ ENTITY 3mux32 IS
 END 3mux32;
 
 ARCHITECTURE behavior OF 3mux32 IS
-
+  
 BEGIN
   WITH p_address SELECT p_output <=
     p_input0 WHEN "000",

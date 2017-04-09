@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.List;
 
 import wrapper.*;
@@ -36,5 +35,7 @@ public class Program {
 		System.out.println(cv);
 		ComponentFactory cf = new ComponentFactory("templates/component.tmpl");
 		cf.GenerateArchitecture("processors/mips/code/", arch);
+		cf.GenerateComponent("processors/mips/code/register.vhdl", "templates/register.tmpl");
+		cf.GenerateComponent("processors/mips/code/stack.vhdl", "templates/stack.tmpl");
 	}
 }

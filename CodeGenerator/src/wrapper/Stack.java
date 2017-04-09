@@ -36,6 +36,8 @@ public class Stack {
 		for (int i = 0; i < (int)Math.ceil(Math.log(inputs.size()) / Math.log(2)); i++) {
 			cv.add(id + "_isel_" + i);
 		}
+		cv.add(id + "_incr");
+		cv.add(id + "_decr");
 		cv.add(id + "_write");
 		return cv;
 	}

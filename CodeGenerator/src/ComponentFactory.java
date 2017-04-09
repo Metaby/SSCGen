@@ -62,6 +62,17 @@ public class ComponentFactory {
 		return Component;
 	}
 	
+	public void GenerateComponent(String targetFile, String templateFile) {
+		String component = CleanComponent(CreateComponent(templateFile));
+		File outputFile = new File(targetFile);
+		try {
+			Files.write(outputFile.toPath(), component.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+		}
+	}
+	
 	public void GenerateROM(String targetFile, Rom rom) {
 		String romName = rom.getId();
 		int addressSize = rom.getAddressSize();
@@ -94,7 +105,7 @@ public class ComponentFactory {
 			return;
 		}
 		String component = CreateComponent("Blank");
-		component = component.replace("[FileComment]", "-- Auto generated ROM" + System.lineSeparator() + "-- Date: ");
+		component = component.replace("[FileComment]", "-- Auto generated ROM" + System.lineSeparator());
 		String port = 	"PORT" + System.lineSeparator()
 						+ "  (" + System.lineSeparator()
 						+ "    p_address  :  in  std_logic_vector(" + (addressSize - 1) + " DOWNTO 0);" + System.lineSeparator()
@@ -129,7 +140,7 @@ public class ComponentFactory {
 	
 	public void GenerateMux(String targetFile, String muxName, int addressSize, int wordSize) {
 		String component = CreateComponent("Blank");
-		component = component.replace("[FileComment]", "-- Auto generated Multiplexer" + System.lineSeparator() + "-- Date: ");
+		component = component.replace("[FileComment]", "-- Auto generated Multiplexer" + System.lineSeparator());
 		String port = 	"PORT" + System.lineSeparator() + "  (" + System.lineSeparator();
 		if (addressSize > 1) {
 			port += "    p_address    :  in  std_logic_vector(" + (addressSize - 1) + " DOWNTO 0);" + System.lineSeparator();			

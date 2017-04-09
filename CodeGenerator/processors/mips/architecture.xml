@@ -43,6 +43,7 @@
 		<id>mcPc</id>
 		<size>32</size>
 		<inputs>
+			<input>mcPcIncr.out</input>
 			<input>alu.out</input>
 		</inputs>
 		<output>out</output>
@@ -114,6 +115,20 @@
 			</port>
 		</ports>
 	</registerFile>
+	<alu>
+		<id>mcPcIncr</id>
+		<wordSize>32</wordSize>
+		<inputsOperandA>
+			<input>mcPc.out</input>
+		</inputsOperandA>
+		<inputsOperandB>
+			<input>const.1</input>			
+		</inputsOperandB>
+		<output>out</output>
+		<operations>
+			<operation>add</operation>
+		</operations>
+	</alu>
 	<alu>
 		<id>alu</id>
 		<wordSize>32</wordSize>
