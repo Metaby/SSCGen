@@ -1,6 +1,7 @@
 package wrapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Rom {
@@ -37,10 +38,12 @@ public class Rom {
 	
 	public List<String> getControlVector() {
 		List<String> cv = new ArrayList<String>();
-		for (int i = 0; i < (int)Math.ceil(Math.log(addresses.size()) / Math.log(2)); i++) {
-			cv.add(id + "_asel_" + i);
-		}
+//		for (int i = 0; i < (int)Math.ceil(Math.log(addresses.size()) / Math.log(2)); i++) {
+//			cv.add(id + "_asel_" + i);
+//		}
+		cv.add(Wrapper.IntToRange(id + "_asel", (int)Math.ceil(Math.log(addresses.size()) / Math.log(2))));
 		cv.add(id + "_write");
+		cv.removeAll(Arrays.asList("", null));
 		return cv;
 	}
 	

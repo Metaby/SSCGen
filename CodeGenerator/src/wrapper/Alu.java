@@ -1,6 +1,7 @@
 package wrapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Alu {
@@ -66,15 +67,19 @@ public class Alu {
 	
 	public List<String> getControlVector() {
 		List<String> cv = new ArrayList<String>();
-		for (int i = 0; i < (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2)); i++) {
-			cv.add(id + "_op1_isel_" + i);
-		}
-		for (int i = 0; i < (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2)); i++) {
-			cv.add(id + "_op2_isel_" + i);
-		}
-		for (int i = 0; i < (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2)); i++) {
-			cv.add(id + "_csel_" + i);			
-		}
+		cv.add(Wrapper.IntToRange(id + "_op1", (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2))));
+		cv.add(Wrapper.IntToRange(id + "_op2", (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2))));
+		cv.add(Wrapper.IntToRange(id + "_csel", (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2))));
+		cv.removeAll(Arrays.asList("", null));
+//		for (int i = 0; i < (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2)); i++) {
+//			cv.add(id + "_op1_isel_" + i);
+//		}
+//		for (int i = 0; i < (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2)); i++) {
+//			cv.add(id + "_op2_isel_" + i);
+//		}
+//		for (int i = 0; i < (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2)); i++) {
+//			cv.add(id + "_csel_" + i);			
+//		}
 		return cv;
 	}
 
