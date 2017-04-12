@@ -78,6 +78,7 @@ public class Program {
 	}
 	
 	public static void GenerateProcessor(String architectureFile, String mdf, String outputDirectory) {
+		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory sb = new ArchitectureFactory();
 		System.out.println("Validating specification");
 		boolean passed = sb.ValidateSpecification(architectureFile, "processors/specification.xsd");
@@ -95,5 +96,19 @@ public class Program {
 		}
 		ComponentFactory cf = new ComponentFactory();
 		cf.GenerateArchitecture(outputDirectory, arch);		
+	}
+	
+	public static void deleteFolder(File folder) {
+	    File[] files = folder.listFiles();
+	    if(files != null) {
+	        for(File f: files) {
+	            if(f.isDirectory()) {
+	                deleteFolder(f);
+	            } else {
+	                f.delete();
+	            }
+	        }
+	    }
+	    folder.delete();
 	}
 }
