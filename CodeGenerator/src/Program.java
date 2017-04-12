@@ -20,6 +20,7 @@ public class Program {
 	public static void main(String[] args) {
 		StartTimeMeasuring();
 		CreateMDF("processors/mips/architecture.xml", "processors/mips/mips_microprogram.mdf");
+		GenerateProcessor("processors/mips/architecture.xml", "", "processors/mips/code/");
 		StopTimeMeasureing();
 //		System.out.println("-- Mikrocode-Design-Filge");
 //		System.out.println("--");
@@ -77,6 +78,22 @@ public class Program {
 	}
 	
 	public static void GenerateProcessor(String architectureFile, String mdf, String outputDirectory) {
-		
+		ArchitectureFactory sb = new ArchitectureFactory();
+		System.out.println("Validating specification");
+		boolean passed = sb.ValidateSpecification(architectureFile, "processors/specification.xsd");
+		if (!passed) {
+			System.out.println("Error: validation of specification failed");
+			return;
+		}
+		System.out.println("Reading specification");
+		Architecture arch = sb.ReadSpecification(architectureFile);
+		System.out.println("Validating connections");
+		passed = sb.ValidateConnections(arch);
+		if (!passed) {
+			System.out.println("Error: validation of connections failed");
+			return;
+		}
+		ComponentFactory cf = new ComponentFactory();
+		cf.GenerateArchitecture(outputDirectory, arch);		
 	}
 }

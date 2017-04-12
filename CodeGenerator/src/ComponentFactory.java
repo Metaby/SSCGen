@@ -1,80 +1,16 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import wrapper.Architecture;
 import wrapper.Rom;
 
+import static java.nio.file.StandardCopyOption.*;
+
 public class ComponentFactory {	
-	
-	private List<String> baseComponent;
-	private String templateTags[] = new String[] {
-		"[FileComment]", "[ComponentName]", "[Generic]",
-		"[Port]", "[Signals]", "[Behavior]", "[Libraries]"
-		};
-	
-	public ComponentFactory(String TemplateFilePath) {
-		File f = new File(TemplateFilePath);
-		if (Files.exists(f.toPath(), LinkOption.NOFOLLOW_LINKS)) {
-			try {
-				baseComponent = Files.readAllLines(f.toPath());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("ERROR: Template not found");
-		}
-	}
-	
-	public String CreateComponent(String ComponentFilePath) {
-		String component = "";
-		if (ComponentFilePath != "Blank") {
-			Map<String, String> tags = ReadTags(ComponentFilePath);
-			List<String> template = new ArrayList<String>(baseComponent);
-			for (int i = 0; i < template.size(); i++) {
-				for (int j = 0; j < templateTags.length; j++) {					
-					String tag = templateTags[j];
-					if (template.get(i).contains(tag)) {
-						if (!tags.get(tag).isEmpty()) {
-							template.set(i, template.get(i).replace(tag, tags.get(tag)));
-						}
-					}
-				}
-				component += template.get(i) + System.lineSeparator();	
-			}
-		} else {
-			for (int i = 0; i < baseComponent.size(); i++) {
-				component += baseComponent.get(i) + System.lineSeparator();
-			}
-		}
-		return component;
-	}
-	
-	public String CleanComponent(String Component) {
-		for (int j = 0; j < templateTags.length; j++) {
-			Component = Component.replace(templateTags[j], "");
-		}
-		return Component;
-	}
-	
-	public void GenerateComponent(String targetFile, String templateFile) {
-		String component = CleanComponent(CreateComponent(templateFile));
-		File outputFile = new File(targetFile);
-		try {
-			Files.write(outputFile.toPath(), component.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
-		}
-	}
-	
+
 	public void GenerateROM(String targetFile, Rom rom) {
-		String romName = rom.getId();
 		int addressSize = rom.getAddressSize();
 		int wordSize = rom.getWordSize();
 		int content[] = new int[] { 1 };
@@ -104,14 +40,10 @@ public class ComponentFactory {
 			System.out.println("Error: Reading content file. (" + rom.getContentFile() + ")");
 			return;
 		}
-		String component = CreateComponent("Blank");
-		component = component.replace("[FileComment]", "-- Auto generated ROM" + System.lineSeparator());
-		String port = 	"PORT" + System.lineSeparator()
-						+ "  (" + System.lineSeparator()
-						+ "    p_address  :  in  std_logic_vector(" + (addressSize - 1) + " DOWNTO 0);" + System.lineSeparator()
-						+ "    p_word     :  out std_logic_vector(" + (wordSize - 1) + " DOWNTO 0)" + System.lineSeparator()
-						+ "  );" + System.lineSeparator();
-		String behavior = "WITH p_address SELECT p_word <=" + System.lineSeparator();
+		ComponentBuilder component = new ComponentBuilder(rom.getId());
+		component.AddPort("p_address  :  in  std_logic_vector(" + (addressSize - 1) + " DOWNTO 0)");
+		component.AddPort("p_word     :  out std_logic_vector(" + (wordSize - 1) + " DOWNTO 0)");
+		String behavior = "  WITH p_address SELECT p_word <=" + System.lineSeparator();
 		for (int i = 0; i < content.length; i++) {
 			behavior += "    \"" + String.format("%" + wordSize + "s", Integer.toBinaryString(content[i])).replace(' ', '0') + "\" WHEN \""
 						+ String.format("%" + addressSize + "s",Integer.toBinaryString(i)).replace(' ', '0');
@@ -125,13 +57,10 @@ public class ComponentFactory {
 			ca[behavior.length() - 3] = ';';
 			behavior = new String(ca);
 		}
-		component = component.replace("[ComponentName]", romName);
-		component = component.replace("[Port]", port);
-		component = component.replace("[Behavior]", behavior);
-		component = CleanComponent(component);
+		component.setBehavior(behavior.substring(0, behavior.length() - 2));
 		File outputFile = new File(targetFile);
 		try {
-			Files.write(outputFile.toPath(), component.getBytes());
+			Files.write(outputFile.toPath(), component.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
@@ -139,72 +68,52 @@ public class ComponentFactory {
 	}
 	
 	public void GenerateMux(String targetFile, String muxName, int addressSize, int wordSize) {
-		String component = CreateComponent("Blank");
-		component = component.replace("[FileComment]", "-- Auto generated Multiplexer" + System.lineSeparator());
-		String port = 	"PORT" + System.lineSeparator() + "  (" + System.lineSeparator();
+		ComponentBuilder c = new ComponentBuilder(muxName);
 		if (addressSize > 1) {
-			port += "    p_address    :  in  std_logic_vector(" + (addressSize - 1) + " DOWNTO 0);" + System.lineSeparator();			
+			c.AddPort("p_address    :  in  std_logic_vector(" + (addressSize - 1) + " DOWNTO 0)");
 		} else {
-			port += "    p_address    :  in  std_logic;" + System.lineSeparator();			
+			c.AddPort("p_address    :  in  std_logic;");
 		}
 		for (int i = 0; i < Math.pow(2, addressSize); i++) {						
-			port += "    p_input" + i + "     :  in  std_logic_vector(" + (wordSize - 1) + " DOWNTO 0);" + System.lineSeparator();
+			c.AddPort("p_input" + i + "     :  in  std_logic_vector(" + (wordSize - 1) + " DOWNTO 0)");
 		}
-		port += "    p_output     :  out std_logic_vector(" + (wordSize - 1) + " DOWNTO 0)" + System.lineSeparator();
-		port += "  );" + System.lineSeparator();
-		String behavior = "WITH p_address SELECT p_output <=" + System.lineSeparator();
+		c.AddPort("p_output     :  out std_logic_vector(" + (wordSize - 1) + " DOWNTO 0)");
+		String behavior = "  WITH p_address SELECT p_output <=" + System.lineSeparator();
 		for (int i = 0; i < Math.pow(2, addressSize); i++) {
 			behavior += "    p_input" + i + " WHEN \"" + String.format("%" + addressSize + "s", Integer.toBinaryString(i)).replace(' ', '0') + "\"," + System.lineSeparator();
 		}
 		char ca[] = behavior.toCharArray();
 		ca[behavior.length() - 3] = ';';
 		behavior = new String(ca);
-		component = component.replace("[ComponentName]", muxName);
-		component = component.replace("[Port]", port);
-		component = component.replace("[Behavior]", behavior);		
-		component = CleanComponent(component);
+		c.setBehavior(behavior.substring(0, behavior.length() - 2));
 		File outputFile = new File(targetFile);
 		try {
-			Files.write(outputFile.toPath(), component.getBytes());
+			Files.write(outputFile.toPath(), c.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
 		}
 	}
-
-	private Map<String, String> ReadTags(String TagDefinition) {
-		File f = new File(TagDefinition);
-		if (Files.exists(f.toPath(), LinkOption.NOFOLLOW_LINKS)) {
-			try {
-				List<String> definition = Files.readAllLines(f.toPath());
-				Map<String, String> tags = new HashMap<String, String>();
-				for (int i = 0; i < definition.size(); i++) {
-					if (definition.get(i).matches("\\[[a-zA-Z0-9]+\\]")) {
-						String tag = definition.get(i);
-						String ins = "";
-						i++;
-						while (i < definition.size() && !definition.get(i).matches("\\[[a-zA-Z0-9]+\\]")) {
-							ins += definition.get(i) + System.lineSeparator();
-							i++;
-						}
-						i--;
-						tags.put(tag, ins.trim());
-					}
-				}
-				return tags;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("ERROR: Tag definition not found");
-		}
-		return new HashMap<String, String>();
-	}
 	
 	public void GenerateArchitecture(String directory, Architecture arch) {
 		new File(directory).mkdirs();
-		GenerateROM(directory + "programRom.vhdl", arch.getRoms().get(0));
-		String muxName = "3mux32";
-		GenerateMux(directory + muxName + ".vhdl", muxName, 3, 32);		
+		if (arch.getRegisters().size() > 0) {
+			try {
+				Files.copy(new File("processors/components/Register.vhdl").toPath(), new File(directory + "Register.vhdl").toPath(), REPLACE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (arch.getStacks().size() > 0) {
+			try {
+				Files.copy(new File("processors/components/Stack.vhdl").toPath(), new File(directory + "Stack.vhdl").toPath(), REPLACE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}		
+		}
+		GenerateMux(directory + "4t1mux8.vhdl", "4t1mux8", 2, 8);
+		for (Rom rom : arch.getRoms()) {
+			GenerateROM(directory + rom.getId() + ".vhdl", rom);			
+		}
 	}
 }

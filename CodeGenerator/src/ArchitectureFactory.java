@@ -42,6 +42,14 @@ public class ArchitectureFactory {
 		for (Connector c : inputConnectors) {
 			if (!outputConnectors.contains(c)) {
 				if (!c.origin.equals("const")) {
+					System.out.println("Error: Output-Connection \"" + c.origin + "." + c.pin + "\" used as input does not exist");
+					return false;					
+				}
+			} else {
+				int oSize = outputConnectors.get(outputConnectors.indexOf(c)).size;
+				int iSize = c.size;
+				if (iSize > oSize) {
+					System.out.println("Error: Output-Connection-Size \"" + c.origin + "." + c.pin + "\" does not fit size of Input-Connection");
 					return false;					
 				}
 			}
