@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 09:19:00 PM CEST 
+// Generiert: 2017.04.13 um 03:09:49 AM CEST 
 //
 
 
@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="inputsOperandB" type="{}inputList"/>
  *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="operations" type="{}operationList"/>
- *         &lt;element name="conditions" type="{}conditionList"/>
- *         &lt;element name="statusFlags" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="conditions" type="{}conditionList" minOccurs="0"/>
+ *         &lt;element name="statusFlags" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/all>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -57,9 +57,7 @@ public class Alu {
     protected String output;
     @XmlElement(required = true)
     protected OperationList operations;
-    @XmlElement(required = true)
     protected ConditionList conditions;
-    @XmlElement(required = true)
     protected String statusFlags;
 
     /**

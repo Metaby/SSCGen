@@ -3,13 +3,13 @@
 	<xsd:element  name="architecture">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="register" type="register" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="register" type="register" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element name="stack" type="stack" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element name="rom" type="rom" minOccurs="0" maxOccurs="unbounded" />
-				<xsd:element name="registerFile" minOccurs="1" type="registerFile" maxOccurs="unbounded" />
-				<xsd:element name="alu" type="alu" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="registerFile" minOccurs="0" type="registerFile" maxOccurs="unbounded" />
+				<xsd:element name="alu" type="alu" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element name="memory" type="memory" minOccurs="0" maxOccurs="unbounded" />				
-				<xsd:element name="jumpLogic" type="jumpLogic" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="jumpLogic" type="jumpLogic" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 			<xsd:attribute name="wordSize" type="xsd:int" />
 		</xsd:complexType>
@@ -132,7 +132,6 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="in" />
 			<xsd:enumeration value="out" />
-			<xsd:enumeration value="inOut" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -145,30 +144,38 @@
 	
 	<xsd:simpleType name="operationEnum">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="add" />
-			<xsd:enumeration value="subtract" />
-			<xsd:enumeration value="lShiftLeft" />
-			<xsd:enumeration value="lShiftRight" />
-			<xsd:enumeration value="aShiftRight" />
-			<xsd:enumeration value="divide" />
-			<xsd:enumeration value="multiply" />
-			<xsd:enumeration value="rotateL" />
-			<xsd:enumeration value="rotateR" />
-			<xsd:enumeration value="bitAnd" />
-			<xsd:enumeration value="bitOr" />
-			<xsd:enumeration value="bitXor" />
-			<xsd:enumeration value="bitNot" />
+			<xsd:enumeration value="add" />		<!-- Add 					 -->
+			<xsd:enumeration value="add_u" />	<!-- Add 			unsigned -->
+			<xsd:enumeration value="sub" />		<!-- Subtract				 -->
+			<xsd:enumeration value="sub_u" />	<!-- Subtract 		unsigned -->
+			<xsd:enumeration value="mul" />		<!-- Multiply 				 -->
+			<xsd:enumeration value="mul_u" />	<!-- Multiply 		unsigned -->
+			<xsd:enumeration value="div" />		<!-- Divide 				 -->
+			<xsd:enumeration value="div_u" />	<!-- Divide 		unsigned -->
+			<xsd:enumeration value="rr" />		<!-- Rotate Right 			 -->
+			<xsd:enumeration value="rl" />		<!-- Rotate Left 			 -->
+			<xsd:enumeration value="srl" />		<!-- Shift Right Logic 		 -->
+			<xsd:enumeration value="sll" />		<!-- Shift Left Logic 		 -->
+			<xsd:enumeration value="sra" />		<!-- Shift Right Arithmetic  -->
+			<xsd:enumeration value="and" />		<!-- Bitwise AND 			 -->
+			<xsd:enumeration value="or" />		<!-- Bitwise OR 			 -->
+			<xsd:enumeration value="xor" />		<!-- Bitwise XOR 			 -->
+			<xsd:enumeration value="not" />		<!-- Bitwise NOT 			 -->
 		</xsd:restriction>
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="conditionEnum">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="zero" />
-			<xsd:enumeration value="notZero" />
-			<xsd:enumeration value="equal" />
-			<xsd:enumeration value="notEqual" />
-			<xsd:enumeration value="lower" />
-			<xsd:enumeration value="higher" />
+			<xsd:enumeration value="zero" /> 	<!-- A == 0 		 -->
+			<xsd:enumeration value="gt" />		<!-- A > B 			 -->
+			<xsd:enumeration value="gt_u" />	<!-- A > B 	unsigned -->
+			<xsd:enumeration value="lt" />		<!-- A < B 			 -->
+			<xsd:enumeration value="lt_u" />	<!-- A < B 	unsigned -->
+			<xsd:enumeration value="geq" />		<!-- A >= B 		 -->
+			<xsd:enumeration value="geq_u" />	<!-- A >= B unsigned -->
+			<xsd:enumeration value="leq" />		<!-- A <= B 		 -->
+			<xsd:enumeration value="leq_u" />	<!-- A <= B unsigned -->
+			<xsd:enumeration value="eq" />		<!-- A == B 		 -->
 		</xsd:restriction>
 	</xsd:simpleType>				
 

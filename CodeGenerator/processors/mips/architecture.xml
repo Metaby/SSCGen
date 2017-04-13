@@ -2,13 +2,19 @@
 <architecture wordSize="32">
 	<!--
 		Components:
-		Interrupt
-		Timer
-		Stack
+		stack
 		register	
 		registerFile
-		ALU
+		alu
 		memory
+		rom
+		jumpLogic
+	-->
+	<!--
+		=> Each input has to be an output somewhere else
+		=> Except constants starting with :const. (e.g.: :const.0, :const.1, :const.4, ...)
+		=> Outputs within a component have to be unique
+		=> Special output :cv can only be once used and refers to the control-vector used later
 	-->
 	<register>
 		<id>portA</id>
@@ -74,7 +80,7 @@
 		<addresses>
 			<address>mcPc.out</address>
 		</addresses>
-		<output>out</output>
+		<output>:cv</output>
 	</rom>
 	<registerFile>
 		<id>reg</id>
@@ -122,7 +128,7 @@
 			<input>mcPc.out</input>
 		</inputsOperandA>
 		<inputsOperandB>
-			<input>const.1</input>			
+			<input>:const.1</input>			
 		</inputsOperandB>
 		<output>out</output>
 		<operations>
@@ -140,32 +146,24 @@
 		</inputsOperandA>
 		<inputsOperandB>
 			<input>reg.out2</input>
-			<input>const.0</input>
-			<input>const.1</input>			
+			<input>:const.0</input>
+			<input>:const.1</input>			
 		</inputsOperandB>
 		<output>out</output>
-		<!--
-			operations:
-			add, subtract, lShiftLeft, lShiftRight, aShiftRight, divide, multiply, rotateL, rotateR, bitAnd, bitOr, bitXor, bitNot
-		-->
 		<operations>
 			<operation>add</operation>
-			<operation>subtract</operation>
-			<operation>lShiftLeft</operation>
-			<operation>lShiftRight</operation>
-			<operation>bitAnd</operation>
-			<operation>bitOr</operation>
-			<operation>bitNot</operation>
+			<operation>sub</operation>
+			<operation>srl</operation>
+			<operation>sll</operation>
+			<operation>and</operation>
+			<operation>or</operation>
+			<operation>not</operation>
 		</operations>
-		<!--
-			conditions:
-			zero, notZero, equal, notEqual, lower, higher
-		-->
 		<conditions>
 			<condition>zero</condition>
-			<condition>equal</condition>
-			<condition>lower</condition>
-			<condition>higher</condition>
+			<condition>eq</condition>
+			<condition>lt</condition>
+			<condition>gt</condition>
 		</conditions>
 		<statusFlags>flags</statusFlags>
 	</alu>
@@ -180,7 +178,20 @@
 		<type>intern</type>
 		<ports>
 			<port>
-				<type>inOut</type>
+				<type>in</type>
+				<addresses>
+					<address>reg.out1</address>
+					<address>reg.out2</address>
+				</addresses>
+				<inputs>
+					<input>reg.out1</input>
+					<input>reg.out2</input>
+					<input>alu.out</input>
+					<input>pp.pc</input>
+				</inputs>
+			</port>		
+			<port>
+				<type>out</type>
 				<addresses>
 					<address>reg.out1</address>
 					<address>reg.out2</address>
@@ -209,9 +220,3 @@
 		<inputFlags>alu.flags</inputFlags>
 	</jumpLogic>
 </architecture>
-<!--
-	Falls noch Zeit ist
-	<Interrupt></Interrupt>
-	<Timer></Timer>
--->
-<!-- D:\Programme\Java\jdk1.8.0_121\bin xjc D:\OneDrive\Projekte\git\CodeGenerator\Templates\specification.xsd -d D:\OneDrive\Projekte\git\CodeGenerator\src\jaxbClasses -->

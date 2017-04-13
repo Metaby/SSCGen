@@ -17,6 +17,7 @@ public class ComponentBuilder {
 		signals = new ArrayList<String>();
 		ports = new ArrayList<String>();
 		this.name = name;
+		behavior = "";
 		nl = System.lineSeparator();
 	}
 

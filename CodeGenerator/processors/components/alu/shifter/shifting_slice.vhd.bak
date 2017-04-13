@@ -1,0 +1,36 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+ENTITY logic_left_shift IS
+	GENERIC (
+		size : integer := 7
+	);
+	PORT (
+		cin	:	in	std_logic;
+		op1	:	in std_logic_vector(size DOWNTO 0);
+		op2	:	in std_logic_vector(size DOWNTO 0);
+		res	:	out std_logic_vector(size DOWNTO 0);
+		car	:	out std_logic
+	);
+END logic_left_shift;
+
+ARCHITECTURE arch OF logic_left_shift IS
+	COMPONENT full_adder PORT (
+		x	:	in std_logic;
+		y	:	in	std_logic;
+		ci	:	in std_logic;
+		s	:	out std_logic;
+		co	:	out std_logic
+	);
+	END COMPONENT;
+BEGIN
+	gen_cra	:	FOR i IN 0 TO size GENERATE
+		lsb	:	IF i = 0 GENERATE
+			fa0	:	full_adder PORT MAP(op1(0), op2(0), cin, res(0), c(0));
+		END GENERATE lsb;
+		msbs	:	IF i > 0 GENERATE
+			fai	:	full_adder PORT MAP(op1(i), op2(i), c(i - 1), res(i), c(i));
+		END GENERATE msbs;
+	END GENERATE gen_cra;
+	car	<= c(size);
+END arch;

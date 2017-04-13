@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 09:19:00 PM CEST 
+// Generiert: 2017.04.13 um 03:09:49 AM CEST 
 //
 
 
@@ -13,7 +13,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -28,13 +27,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="register" type="{}register" maxOccurs="unbounded"/>
+ *         &lt;element name="register" type="{}register" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="stack" type="{}stack" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="rom" type="{}rom" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="registerFile" type="{}registerFile" maxOccurs="unbounded"/>
- *         &lt;element name="alu" type="{}alu" maxOccurs="unbounded"/>
+ *         &lt;element name="registerFile" type="{}registerFile" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="alu" type="{}alu" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="memory" type="{}memory" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="jumpLogic" type="{}jumpLogic" maxOccurs="unbounded"/>
+ *         &lt;element name="jumpLogic" type="{}jumpLogic" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
@@ -57,16 +56,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "architecture")
 public class Architecture {
 
-    @XmlElement(required = true)
     protected List<Register> register;
     protected List<Stack> stack;
     protected List<Rom> rom;
-    @XmlElement(required = true)
     protected List<RegisterFile> registerFile;
-    @XmlElement(required = true)
     protected List<Alu> alu;
     protected List<Memory> memory;
-    @XmlElement(required = true)
     protected List<JumpLogic> jumpLogic;
     @XmlAttribute(name = "wordSize")
     protected Integer wordSize;

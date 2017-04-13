@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.06 um 09:19:00 PM CEST 
+// Generiert: 2017.04.13 um 03:09:49 AM CEST 
 //
 
 
@@ -22,11 +22,15 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="conditionEnum">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="zero"/>
- *     &lt;enumeration value="notZero"/>
- *     &lt;enumeration value="equal"/>
- *     &lt;enumeration value="notEqual"/>
- *     &lt;enumeration value="lower"/>
- *     &lt;enumeration value="higher"/>
+ *     &lt;enumeration value="gt"/>
+ *     &lt;enumeration value="gt_u"/>
+ *     &lt;enumeration value="lt"/>
+ *     &lt;enumeration value="lt_u"/>
+ *     &lt;enumeration value="geq"/>
+ *     &lt;enumeration value="geq_u"/>
+ *     &lt;enumeration value="leq"/>
+ *     &lt;enumeration value="leq_u"/>
+ *     &lt;enumeration value="eq"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -38,16 +42,24 @@ public enum ConditionEnum {
 
     @XmlEnumValue("zero")
     ZERO("zero"),
-    @XmlEnumValue("notZero")
-    NOT_ZERO("notZero"),
-    @XmlEnumValue("equal")
-    EQUAL("equal"),
-    @XmlEnumValue("notEqual")
-    NOT_EQUAL("notEqual"),
-    @XmlEnumValue("lower")
-    LOWER("lower"),
-    @XmlEnumValue("higher")
-    HIGHER("higher");
+    @XmlEnumValue("gt")
+    GT("gt"),
+    @XmlEnumValue("gt_u")
+    GT_U("gt_u"),
+    @XmlEnumValue("lt")
+    LT("lt"),
+    @XmlEnumValue("lt_u")
+    LT_U("lt_u"),
+    @XmlEnumValue("geq")
+    GEQ("geq"),
+    @XmlEnumValue("geq_u")
+    GEQ_U("geq_u"),
+    @XmlEnumValue("leq")
+    LEQ("leq"),
+    @XmlEnumValue("leq_u")
+    LEQ_U("leq_u"),
+    @XmlEnumValue("eq")
+    EQ("eq");
     private final String value;
 
     ConditionEnum(String v) {

@@ -16,7 +16,7 @@ public class ArchitectureFactory {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(jaxb.Architecture.class);
 			Unmarshaller u = jc.createUnmarshaller();
-			jaxb.Architecture arch = (jaxb.Architecture)u.unmarshal(new File("Processors/mips/architecture.xml"));
+			jaxb.Architecture arch = (jaxb.Architecture)u.unmarshal(new File(SpecPath));
 			return new Architecture(arch);
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -41,7 +41,7 @@ public class ArchitectureFactory {
 		List<Connector> outputConnectors = arch.getOutputConnectors();
 		for (Connector c : inputConnectors) {
 			if (!outputConnectors.contains(c)) {
-				if (!c.origin.equals("const")) {
+				if (!c.origin.startsWith(":")) {
 					System.out.println("Error: Output-Connection \"" + c.origin + "." + c.pin + "\" used as input does not exist");
 					return false;					
 				}

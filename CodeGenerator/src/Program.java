@@ -9,19 +9,20 @@ public class Program {
 	
 	private static long time;
 	
-	public static void StartTimeMeasuring() {
+	public static void startTimeMeasuring() {
 		time = System.nanoTime();
 	}
 	
-	public static void StopTimeMeasureing() {
+	public static void stopTimeMeasureing() {
 		System.out.println((System.nanoTime() - time) / 1000000.0 + " ms");		
 	}
 	
 	public static void main(String[] args) {
-		StartTimeMeasuring();
-		CreateMDF("processors/mips/architecture.xml", "processors/mips/mips_microprogram.mdf");
-		GenerateProcessor("processors/mips/architecture.xml", "", "processors/mips/code/");
-		StopTimeMeasureing();
+		startTimeMeasuring();
+		String processor = "mips";
+		createMDF("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
+		generateProcessor("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
+		stopTimeMeasureing();
 //		System.out.println("-- Mikrocode-Design-Filge");
 //		System.out.println("--");
 //		System.out.println("-- csel = condition-select (JumpLogic)");
@@ -46,7 +47,7 @@ public class Program {
 //		System.out.println("alu_op1_isel(reg.out1), alu_op2_isel(reg.out2), alu_csel(subtract), reg_p0_asel(ir.inst), reg_p1_asel(ir.inst), reg_p2_asel(ir.inst), reg_p2_isel(alu.out), reg_p2_write");
 	}
 	
-	public static void CreateMDF(String architectureFile, String outputFile) {
+	public static void createMDF(String architectureFile, String outputFile) {
 		ArchitectureFactory sb = new ArchitectureFactory();
 		System.out.println("Validating specification");
 		boolean passed = sb.ValidateSpecification(architectureFile, "processors/specification.xsd");
@@ -73,11 +74,11 @@ public class Program {
 		}
 	}
 	
-	public static void CompileMDF(String architectureFile, String mdf, String outputFile) {
+	public static void compileMDF(String architectureFile, String mdf, String outputFile) {
 		
 	}
 	
-	public static void GenerateProcessor(String architectureFile, String mdf, String outputDirectory) {
+	public static void generateProcessor(String architectureFile, String mdf, String outputDirectory) {
 		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory sb = new ArchitectureFactory();
 		System.out.println("Validating specification");
