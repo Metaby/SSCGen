@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.13 um 03:09:49 AM CEST 
+// Generiert: 2017.04.15 um 05:20:48 PM CEST 
 //
 
 
@@ -11,7 +11,6 @@ package jaxb;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -28,7 +27,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="addressSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="type" type="{}memoryType"/>
  *         &lt;element name="ports" type="{}portList"/>
  *       &lt;/all>
  *     &lt;/restriction>
@@ -48,9 +46,6 @@ public class Memory {
     protected String id;
     protected int addressSize;
     protected int wordSize;
-    @XmlElement(required = true)
-    @XmlSchemaType(name = "string")
-    protected MemoryType type;
     @XmlElement(required = true)
     protected PortList ports;
 
@@ -108,30 +103,6 @@ public class Memory {
      */
     public void setWordSize(int value) {
         this.wordSize = value;
-    }
-
-    /**
-     * Ruft den Wert der type-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link MemoryType }
-     *     
-     */
-    public MemoryType getType() {
-        return type;
-    }
-
-    /**
-     * Legt den Wert der type-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link MemoryType }
-     *     
-     */
-    public void setType(MemoryType value) {
-        this.type = value;
     }
 
     /**

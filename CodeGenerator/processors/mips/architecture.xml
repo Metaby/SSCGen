@@ -17,115 +17,109 @@
 		=> Special output :cv can only be once used and refers to the control-vector used later
 	-->
 	<register>
-		<id>portA</id>
+		<id>PortA_Register</id>
 		<size>32</size>
 		<inputs>
-			<input>reg.out1</input>
-			<input>reg.out2</input>
+			<input>Cache_RegisterFile.out1</input>
+			<input>Cache_RegisterFile.out2</input>
 		</inputs>
-		<output>out</output>
-		<gpio>true</gpio>
+		<output>:out.PortA</output>
 	</register>
 	<register>
-		<id>pp</id>
+		<id>ProgramPointer_Register</id>
 		<size>32</size>
 		<inputs>
-			<input>alu.out</input>
-			<input>pcStack.out</input>
+			<input>Calculator_Alu.out</input>
+			<input>ProgrammCounter_Stack.out</input>
 		</inputs>
 		<output>pc</output>
-		<gpio>false</gpio>
 	</register>
 	<register>
-		<id>ir</id>
+		<id>InstructionWord_Register</id>
 		<size>32</size>
 		<inputs>
-			<input>mainMem.out</input>
+			<input>Ram_Memory.out</input>
 		</inputs>
 		<output>inst</output>
-		<gpio>false</gpio>
 	</register>
 	<register>
-		<id>mcPc</id>
+		<id>MicroProgrammPointer</id>
 		<size>32</size>
 		<inputs>
-			<input>mcPcIncr.out</input>
-			<input>alu.out</input>
+			<input>mpPointerIncrementer_Alu.out</input>
+			<input>Calculator_Alu.out</input>
 		</inputs>
 		<output>out</output>
-		<gpio>false</gpio>
 	</register>
 	<register>
-		<id>jmpBuffer</id>
+		<id>JumpBuffer_Register</id>
 		<size>32</size>
 		<inputs>
-			<input>alu.out</input>
+			<input>Calculator_Alu.out</input>
 		</inputs>
 		<output>out</output>
-		<gpio>false</gpio>
 	</register>
 	<stack>
-		<id>pcStack</id>
+		<id>ProgrammCounter_Stack</id>
 		<size>32</size>
 		<inputs>
-			<input>pp.pc</input>
+			<input>ProgramPointer_Register.pc</input>
 		</inputs>
 		<output>out</output>
 	</stack>
 	<rom>
-		<id>microcode</id>
+		<id>Microcode_Rom</id>
 		<wordSize>31</wordSize>
 		<addressSize>32</addressSize>
 		<contentFile>processors/mips/program.hex</contentFile>
 		<addresses>
-			<address>mcPc.out</address>
+			<address>MicroProgrammPointer.out</address>
 		</addresses>
 		<output>:cv</output>
 	</rom>
 	<registerFile>
-		<id>reg</id>
+		<id>Cache_RegisterFile</id>
 		<addressSize>5</addressSize>
 		<wordSize>32</wordSize>
 		<ports>
 			<port>
 				<type>out</type>
 				<addresses>
-					<address>ir.inst[0,5]</address>
-					<address>reg.out1</address>
-					<address>reg.out2</address>
+					<address>InstructionWord_Register.inst[0,5]</address>
+					<address>Cache_RegisterFile.out1</address>
+					<address>Cache_RegisterFile.out2</address>
 				</addresses>
 				<output>out1</output>
 			</port>
 			<port>
 				<type>out</type>
 				<addresses>
-					<address>ir.inst[6,10]</address>
-					<address>reg.out1</address>
-					<address>reg.out2</address>
+					<address>InstructionWord_Register.inst[6,10]</address>
+					<address>Cache_RegisterFile.out1</address>
+					<address>Cache_RegisterFile.out2</address>
 				</addresses>
 				<output>out2</output>
 			</port>
 			<port>
 				<type>in</type>
 				<addresses>
-					<address>ir.inst[11,15]</address>
+					<address>InstructionWord_Register.inst[11,15]</address>
 				</addresses>
 				<inputs>
-					<input>mainMem.out</input>
-					<input>alu.out</input>
-					<input>ir.inst[16,31]</input>
-					<input>reg.out1</input>
-					<input>reg.out2</input>
-					<input>portA.out</input>
+					<input>Ram_Memory.out</input>
+					<input>Calculator_Alu.out</input>
+					<input>InstructionWord_Register.inst[16,31]</input>
+					<input>Cache_RegisterFile.out1</input>
+					<input>Cache_RegisterFile.out2</input>
 				</inputs>
 			</port>
 		</ports>
 	</registerFile>
 	<alu>
-		<id>mcPcIncr</id>
+		<id>mpPointerIncrementer_Alu</id>
 		<wordSize>32</wordSize>
 		<inputsOperandA>
-			<input>mcPc.out</input>
+			<input>MicroProgrammPointer.out</input>
 		</inputsOperandA>
 		<inputsOperandB>
 			<input>:const.1</input>			
@@ -136,16 +130,16 @@
 		</operations>
 	</alu>
 	<alu>
-		<id>alu</id>
+		<id>Calculator_Alu</id>
 		<wordSize>32</wordSize>
 		<inputsOperandA>
-			<input>reg.out1</input>
-			<input>pcStack.out</input>
-			<input>alu.out</input>
-			<input>pp.pc</input>
+			<input>Cache_RegisterFile.out1</input>
+			<input>ProgrammCounter_Stack.out</input>
+			<input>Calculator_Alu.out</input>
+			<input>ProgramPointer_Register.pc</input>
 		</inputsOperandA>
 		<inputsOperandB>
-			<input>reg.out2</input>
+			<input>Cache_RegisterFile.out2</input>
 			<input>:const.0</input>
 			<input>:const.1</input>			
 		</inputsOperandB>
@@ -168,55 +162,50 @@
 		<statusFlags>flags</statusFlags>
 	</alu>
 	<memory>
-		<id>mainMem</id>
+		<id>Ram_Memory</id>
 		<addressSize>32</addressSize>
 		<wordSize>32</wordSize>
-		<!--
-			types:
-			intern, extern
-		-->
-		<type>intern</type>
 		<ports>
 			<port>
 				<type>in</type>
 				<addresses>
-					<address>reg.out1</address>
-					<address>reg.out2</address>
+					<address>Cache_RegisterFile.out1</address>
+					<address>Cache_RegisterFile.out2</address>
 				</addresses>
 				<inputs>
-					<input>reg.out1</input>
-					<input>reg.out2</input>
-					<input>alu.out</input>
-					<input>pp.pc</input>
+					<input>Cache_RegisterFile.out1</input>
+					<input>Cache_RegisterFile.out2</input>
+					<input>Calculator_Alu.out</input>
+					<input>ProgramPointer_Register.pc</input>
 				</inputs>
 			</port>		
 			<port>
 				<type>out</type>
 				<addresses>
-					<address>reg.out1</address>
-					<address>reg.out2</address>
+					<address>Cache_RegisterFile.out1</address>
+					<address>Cache_RegisterFile.out2</address>
 				</addresses>
 				<inputs>
-					<input>reg.out1</input>
-					<input>reg.out2</input>
-					<input>alu.out</input>
-					<input>pp.pc</input>
+					<input>Cache_RegisterFile.out1</input>
+					<input>Cache_RegisterFile.out2</input>
+					<input>Calculator_Alu.out</input>
+					<input>ProgramPointer_Register.pc</input>
 				</inputs>
 				<output>out</output>
 			</port>			
 		</ports>
 	</memory>
 	<jumpLogic>
-		<id>jmpLgc</id>
+		<id>ProgramPath_JumpLogic</id>
 		<wordSize>32</wordSize>
 		<programTargetA>
-			<input>alu.out</input>
+			<input>Calculator_Alu.out</input>
 		</programTargetA>
 		<programTargetB>
-			<input>jmpBuffer.out</input>
+			<input>JumpBuffer_Register.out</input>
 		</programTargetB>
 		<output>out</output>
 		<inputFlagsCnt>4</inputFlagsCnt>
-		<inputFlags>alu.flags</inputFlags>
+		<inputFlags>Calculator_Alu.flags</inputFlags>
 	</jumpLogic>
 </architecture>

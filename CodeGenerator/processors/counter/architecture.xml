@@ -7,7 +7,6 @@
 			<input>incrementer.out</input>
 		</inputs>
 		<output>out</output>
-		<gpio>true</gpio>
 	</register>
 	<alu>
 		<id>incrementer</id>

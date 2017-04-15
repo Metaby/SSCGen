@@ -1,3 +1,4 @@
+package tool;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -95,8 +96,7 @@ public class Program {
 			System.out.println("Error: validation of connections failed");
 			return;
 		}
-		ComponentFactory cf = new ComponentFactory();
-		cf.GenerateArchitecture(outputDirectory, arch);		
+		sb.GenerateArchitecture(outputDirectory, arch);		
 	}
 	
 	public static void deleteFolder(File folder) {

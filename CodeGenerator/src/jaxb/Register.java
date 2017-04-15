@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.13 um 03:09:49 AM CEST 
+// Generiert: 2017.04.15 um 05:20:48 PM CEST 
 //
 
 
@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;all>
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="size" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="gpio" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element name="inputs" type="{}inputList"/>
  *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/all>
@@ -46,7 +45,6 @@ public class Register {
     @XmlElement(required = true)
     protected String id;
     protected int size;
-    protected boolean gpio;
     @XmlElement(required = true)
     protected InputList inputs;
     @XmlElement(required = true)
@@ -90,22 +88,6 @@ public class Register {
      */
     public void setSize(int value) {
         this.size = value;
-    }
-
-    /**
-     * Ruft den Wert der gpio-Eigenschaft ab.
-     * 
-     */
-    public boolean isGpio() {
-        return gpio;
-    }
-
-    /**
-     * Legt den Wert der gpio-Eigenschaft fest.
-     * 
-     */
-    public void setGpio(boolean value) {
-        this.gpio = value;
     }
 
     /**

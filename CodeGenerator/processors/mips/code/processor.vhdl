@@ -7,18 +7,17 @@ ENTITY processor IS
 END processor;
 
 ARCHITECTURE behavior OF processor IS
-  s_reg_out2 : std_logic_vector(31 DOWNTO 0);
-  s_alu_out : std_logic_vector(31 DOWNTO 0);
-  s_pcStack_out : std_logic_vector(31 DOWNTO 0);
-  s_reg_out1 : std_logic_vector(31 DOWNTO 0);
-  s_mainMem_out : std_logic_vector(31 DOWNTO 0);
-  s_jmpLgc_out : std_logic_vector(31 DOWNTO 0);
-  s_mcPcIncr_out : std_logic_vector(31 DOWNTO 0);
-  s_portA_out : std_logic_vector(31 DOWNTO 0);
-  s_ir_inst : std_logic_vector(31 DOWNTO 0);
-  s_pp_pc : std_logic_vector(31 DOWNTO 0);
-  s_mcPc_out : std_logic_vector(31 DOWNTO 0);
-  s_jmpBuffer_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_Calculator_Alu_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_MicroProgrammPointer_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_Ram_Memory_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_mpPointerIncrementer_Alu_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_InstructionWord_Register_inst : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_ProgramPath_JumpLogic_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_JumpBuffer_Register_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_Cache_RegisterFile_out2 : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_ProgrammCounter_Stack_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_Cache_RegisterFile_out1 : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_ProgramPointer_Register_pc : std_logic_vector(31 DOWNTO 0);
 BEGIN
 
 END behavior;

@@ -19,7 +19,6 @@
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
 			<xsd:element name="size" type="xsd:int" />
-			<xsd:element name="gpio" type="xsd:boolean" />
 			<xsd:element name="inputs" type="inputList" />		
 			<xsd:element name="output" type="xsd:string" />
 		</xsd:all>
@@ -72,7 +71,6 @@
 			<xsd:element name="id" type="xsd:string" />
 			<xsd:element name="addressSize" type="xsd:int" />
 			<xsd:element name="wordSize" type="xsd:int" />
-			<xsd:element name="type" type="memoryType" />
 			<xsd:element name="ports" type="portList" />
 		</xsd:all>
 	</xsd:complexType>
@@ -132,13 +130,6 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="in" />
 			<xsd:enumeration value="out" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="memoryType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="intern" />
-			<xsd:enumeration value="extern" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	

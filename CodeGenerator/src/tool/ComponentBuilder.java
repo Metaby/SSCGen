@@ -1,3 +1,4 @@
+package tool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,6 +7,7 @@ public class ComponentBuilder {
 	private List<String> libraries;
 	private List<String> generics;
 	private List<String> signals;
+	private List<String> types;
 	private List<String> ports;
 	private String behavior;
 	private String name;
@@ -15,6 +17,7 @@ public class ComponentBuilder {
 		libraries = new ArrayList<String>();
 		generics = new ArrayList<String>();
 		signals = new ArrayList<String>();
+		types = new ArrayList<String>();
 		ports = new ArrayList<String>();
 		this.name = name;
 		behavior = "";
@@ -35,6 +38,10 @@ public class ComponentBuilder {
 	
 	public void AddSignal(String signal) {
 		signals.add(signal);
+	}
+	
+	public void AddType(String type) {
+		types.add(type);
 	}
 	
 	public String getComponent() {
@@ -72,7 +79,12 @@ public class ComponentBuilder {
 		component.append("ARCHITECTURE behavior OF " + name + " IS" + nl);
 		if (signals.size() > 0) {
 			for (int i = 0; i < signals.size(); i++) {
-				component.append("  " + signals.get(i) + ";" + nl);
+				component.append("  SIGNAL " + signals.get(i) + ";" + nl);
+			}
+		}
+		if (types.size() > 0) {
+			for (int i = 0; i < types.size(); i++) {
+				component.append("  TYPE " + types.get(i) + ";" + nl);
 			}
 		}	
 		component.append("BEGIN" + nl);
@@ -83,5 +95,31 @@ public class ComponentBuilder {
 
 	public void setBehavior(String behavior) {
 		this.behavior = behavior;
+	}
+
+	
+	public static String generateMux(String adr, String outp, String inputName, int inputs) {
+		String behavior = "";
+		if (inputs == 2) {
+			behavior += "  -- input multiplexer" + System.lineSeparator();
+			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
+			behavior += "    " + inputName + "0 WHEN \'0\'," + System.lineSeparator();
+			behavior += "    " + inputName + "1 WHEN \'1\';" + System.lineSeparator();
+		} else if (inputs > 2) {
+			behavior += "  -- input multiplexer" + System.lineSeparator();		
+			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
+			int adrSize = (int)Math.ceil(Math.log(inputs) / Math.log(2));
+			for (int i = 0; i < inputs; i++) {
+				behavior += "    " + inputName + i + " WHEN \"" + String.format("%" + adrSize + "s", Integer.toBinaryString(i)).replace(' ', '0') + "\"";
+				if (i < inputs - 1) {
+					behavior += "," + System.lineSeparator();
+				} else {
+					behavior += ";" + System.lineSeparator();					
+				}
+			}			
+		} else {
+			behavior += "  " + outp + " <= " + inputName + "0;" + System.lineSeparator();
+		}
+		return behavior;
 	}
 }

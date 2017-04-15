@@ -1,8 +1,15 @@
 package wrapper;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import tool.ComponentBuilder;
 
 public class Alu {
 
@@ -71,18 +78,73 @@ public class Alu {
 		cv.add(Wrapper.IntToRange(id + "_op2", (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2))));
 		cv.add(Wrapper.IntToRange(id + "_csel", (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2))));
 		cv.removeAll(Arrays.asList("", null));
-//		for (int i = 0; i < (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2)); i++) {
-//			cv.add(id + "_op1_isel_" + i);
-//		}
-//		for (int i = 0; i < (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2)); i++) {
-//			cv.add(id + "_op2_isel_" + i);
-//		}
-//		for (int i = 0; i < (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2)); i++) {
-//			cv.add(id + "_csel_" + i);			
-//		}
 		return cv;
 	}
 
+	public void generateComponent(String targetFile) {
+		ComponentBuilder component = new ComponentBuilder(id);
+		component.AddGeneric("g_wordSize : integer := " + (wordSize - 1));
+		for (int i = 0; i < inputsA.size(); i++) {
+			component.AddPort("p_inputA" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
+		}
+		for (int i = 0; i < inputsB.size(); i++) {
+			component.AddPort("p_inputB" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
+		}
+		int adrSizeA = (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2));
+		if (inputsA.size() > 1) {
+			if (adrSizeA > 1) {
+				component.AddPort("p_inputASelect : in std_logic_vector(" + (adrSizeA - 1) + " DOWNTO 0)");				
+			} else {
+				component.AddPort("p_inputASelect : in std_logic");			
+			}			
+		}
+		int adrSizeB = (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2));
+		if (inputsB.size() > 1) {
+			if (adrSizeB > 1) {
+				component.AddPort("p_inputBSelect : in std_logic_vector(" + (adrSizeB - 1) + " DOWNTO 0)");				
+			} else {
+				component.AddPort("p_inputBSelect : in std_logic");			
+			}			
+		}
+		int cmdBits = (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2));
+		if (cmdBits == 1) {		
+			component.AddPort("p_operation : in std_logic");
+		} else if (cmdBits > 1) {
+			component.AddPort("p_operation : in std_logic_vector(" + (cmdBits - 1) + " DOWNTO 0)");
+		}
+		if (status != null) {
+			int statusSize = conditions.size() + 2; // + 2 für carry und over/underflow
+			component.AddPort("p_status : out std_logic_vector(" + (statusSize - 1) + " DOWNTO 0)");
+		}
+		component.AddPort("p_output : out std_logic_vector(g_wordSize DOWNTO 0)");
+		component.AddSignal("s_inputAInput : std_logic_vector(g_wordSize DOWNTO 0");
+		component.AddSignal("s_inputBInput : std_logic_vector(g_wordSize DOWNTO 0");
+		String behavior = "";
+		behavior += ComponentBuilder.generateMux("p_inputASelect", "s_inputAInput", "p_inputA", inputsA.size());
+		behavior += ComponentBuilder.generateMux("p_inputBSelect", "s_inputBInput", "p_inputB", inputsB.size());
+		behavior += "  -- Behavior" + System.lineSeparator();
+		component.setBehavior(behavior);
+		// TODO: Behavior
+		File outputFile = new File(targetFile);
+		try {
+			Files.write(outputFile.toPath(), component.getComponent().getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+		}
+	}
+	
+	public void copyFile(String file, String dest) {
+		try {
+			dest += file.substring(file.lastIndexOf("/") + 1);
+			System.out.println(file);
+			System.out.println(dest);
+			Files.copy(new File(file).toPath(), new File(dest).toPath(), REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+	}	
+	
 	public List<Connector> getInputsA() {
 		return inputsA;
 	}
