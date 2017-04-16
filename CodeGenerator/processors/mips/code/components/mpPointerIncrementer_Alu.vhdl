@@ -17,6 +17,20 @@ ENTITY mpPointerIncrementer_Alu IS
 END mpPointerIncrementer_Alu;
 
 ARCHITECTURE behavior OF mpPointerIncrementer_Alu IS
+  COMPONENT carry_select_adder
+    GENERIC (
+      g_block_size : integer := 7;
+      g_blocks     : integer := 3;
+    );
+    PORT (
+      p_sgnd   : in  std_logic;
+      p_sub    : in  std_logic;
+      p_op_1   : in  std_logic_vector((g_block_size + 1) * (g_blocks + 1) - 1 DOWNTO 0);
+      p_op_2   : in  std_logic_vector((g_block_size + 1) * (g_blocks + 1) - 1 DOWNTO 0);
+      p_result : out std_logic_vector((g_block_size + 1) * (g_blocks + 1) - 1 DOWNTO 0);
+      p_ovflw  : out std_logic
+    );
+  END COMPONENT;
   SIGNAL s_inputAInput : std_logic_vector(g_wordSize DOWNTO 0;
   SIGNAL s_inputBInput : std_logic_vector(g_wordSize DOWNTO 0;
 BEGIN
