@@ -121,26 +121,40 @@ public class Alu {
 			component.AddPort("p_status : out std_logic_vector(" + (statusSize - 1) + " DOWNTO 0)");
 		}
 		component.AddPort("p_output : out std_logic_vector(g_wordSize DOWNTO 0)");
+		component.AddPort("p_sec_output : out std_logic_vector(g_wordSize DOWNTO 0)");
 		component.AddSignal("s_inputAInput : std_logic_vector(g_wordSize DOWNTO 0");
 		component.AddSignal("s_inputBInput : std_logic_vector(g_wordSize DOWNTO 0");
 		component.AddSignal("s_sgnd : std_logic");
 		Boolean[] neededComponents = getNeededComponents();
+		String cmd = "  s_sgnd <= s_alu_cmd(0)" + System.lineSeparator();
+		int aluCmd = 1;
+		int cvSize = 1; // 1 Bit, s_sgnd
+		int cmpnts = 0;
 		if (neededComponents[ADDER]) {
 			component.AddSignal("s_adder_sub : std_logic");
 			component.AddSignal("s_adder_ovflw : std_logic");
-			component.AddSignal("s_adder_result : std_logic_vector(g_wordSize DOWNTO 0");
+			component.AddSignal("s_adder_result : std_logic_vector(g_wordSize DOWNTO 0)");
+			cvSize += 1; // 1 Bit, s_adder_sub
+			cmpnts++;
+			cmd += "  s_adder_sub <= s_alu_cmd(" + (aluCmd++) + ");" + System.lineSeparator();
 		}
 		if (neededComponents[BITLOGIC]) {
 			component.AddSignal("s_logic_cmd : std_logic_vector(1 DOWNTO 0");
-			component.AddSignal("s_logic_result : std_logic_vector(g_wordSize DOWNTO 0");
+			component.AddSignal("s_logic_result : std_logic_vector(g_wordSize DOWNTO 0)");
+			cvSize += 2; // 2 Bit, s_logic_cmd
+			cmpnts++;
+			cmd += "  s_logic_cmd(0) <= s_alu_cmd(" + (aluCmd++) + ");" + System.lineSeparator();
+			cmd += "  s_logic_cmd(1) <= s_alu_cmd(" + (aluCmd++) + ");" + System.lineSeparator();
 		}
 		if (neededComponents[DIVIDER]) {
 			component.AddSignal("s_div_remain : std_logic_vector(g_wordSize DOWNTO 0)");
 			component.AddSignal("s_div_result : std_logic_vector(g_wordSize DOWNTO 0)");
+			cmpnts++;
 		}
 		if (neededComponents[MULTIPLIER]) {
 			component.AddSignal("s_mul_result_hi : std_logic_vector(g_wordSize DOWNTO 0)");
 			component.AddSignal("s_mul_result_lo : std_logic_vector(g_wordSize DOWNTO 0)");
+			cmpnts++;
 		}
 		if (neededComponents[COMPARATOR]) {
 			component.AddSignal("s_comp_g : std_logic");
@@ -150,17 +164,26 @@ public class Alu {
 			component.AddSignal("s_shft_cmd : std_logic");
 			component.AddSignal("s_shft_ari : std_logic");
 			component.AddSignal("s_shft_rot : std_logic");
-			component.AddSignal("s_shft_result : std_logic_vector(g_wordSize DOWNTO 0");
+			component.AddSignal("s_shft_result : std_logic_vector(g_wordSize DOWNTO 0)");
+			cvSize += 3; // 3 Bit, s_shft_cmd, s_shft_ari, s_shft_rot
+			cmpnts++;
+			cmd += "  s_shft_cmd <= s_alu_cmd(" + (aluCmd++) + ");" + System.lineSeparator();
+			cmd += "  s_shft_ari <= s_alu_cmd(" + (aluCmd++) + ");" + System.lineSeparator();
+			cmd += "  s_shft_rot <= s_alu_cmd(" + (aluCmd++) + ");" + System.lineSeparator();
 		}
+		cmpnts = (int)Math.ceil(Math.log(cmpnts) / Math.log(2));
+		cvSize += cmpnts; // cmpnts Bits for output-Mux
+		component.AddSignal("s_alu_cmd : std_logic_vector(" + (cvSize - 1) + " DOWNTO 0)");
 		String muxes = "";
 		muxes += ComponentBuilder.generateMux("p_inputASelect", "s_inputAInput", "p_inputA", inputsA.size());
 		muxes += ComponentBuilder.generateMux("p_inputBSelect", "s_inputBInput", "p_inputB", inputsB.size());
-		muxes += "  -- Behavior" + System.lineSeparator();
+		muxes += "  -- Command-Vector" + System.lineSeparator();
+		muxes += cmd;
 		List<String> imports = prepareFilesAndImports();
 		for (int i = 0; i < imports.size(); i++) {
 			component.AddImport(imports.get(i));
 		}
-		component.setBehavior(muxes + generateBehavior());
+		component.setBehavior(muxes + generateInstances() + generateOutputLogic(cvSize, cmpnts) + generateCommandTable(cvSize - cmpnts - 1));
 		File outputFile = new File(targetFile);
 		try {
 			Files.write(outputFile.toPath(), component.getComponent().getBytes());
@@ -197,7 +220,136 @@ public class Alu {
 		return neededComponents;
 	}
 	
-	public String generateBehavior() {
+	public String generateOutputLogic(int cmdBits, int muxBits) {
+		String cmdTable = "  -- Command-Table";
+		String outLogic = "  -- Output-Logic";
+		Boolean[] neededComponents = getNeededComponents();
+		if (muxBits > 0) {
+			outLogic = "  WITH s_alu_cmd(" + (cmdBits - 1) + " DOWNTO " + (cmdBits - muxBits) + ") SELECT p_output <= " + System.lineSeparator();
+			int outCnt = 0;
+			if (neededComponents[ADDER]) {
+				outLogic += "    s_adder_result WHEN \"" + String.format("%" + muxBits + "s", Integer.toBinaryString((outCnt++))).replace(' ', '0') + "\"," + System.lineSeparator();
+			}
+			if (neededComponents[BITLOGIC]) {
+				outLogic += "    s_logic_result WHEN \"" + String.format("%" + muxBits + "s", Integer.toBinaryString((outCnt++))).replace(' ', '0') + "\"," + System.lineSeparator();
+			}
+			if (neededComponents[DIVIDER]) {
+				outLogic += "    s_div_result WHEN \"" + String.format("%" + muxBits + "s", Integer.toBinaryString((outCnt++))).replace(' ', '0') + "\"," + System.lineSeparator();
+			}
+			if (neededComponents[MULTIPLIER]) {
+				outLogic += "    s_mul_result_lo WHEN \"" + String.format("%" + muxBits + "s", Integer.toBinaryString((outCnt++))).replace(' ', '0') + "\"," + System.lineSeparator();
+			}
+			if (neededComponents[SHIFTER]) {
+				outLogic += "    s_shft_result WHEN \"" + String.format("%" + muxBits + "s", Integer.toBinaryString((outCnt++))).replace(' ', '0') + "\"," + System.lineSeparator();
+			}
+			char[] arr = outLogic.toCharArray();
+			arr[outLogic.length() - 3] = ';';
+			outLogic = String.valueOf(arr);
+		} else {
+			outLogic += System.lineSeparator();
+			if (neededComponents[ADDER]) {
+				outLogic += "  p_output <= s_adder_result;";
+			}
+			if (neededComponents[BITLOGIC]) {
+				outLogic += "  p_output <= s_logic_result;";
+			}
+			if (neededComponents[DIVIDER]) {
+				outLogic += "  p_output <= s_div_result;";
+			}
+			if (neededComponents[MULTIPLIER]) {
+				outLogic += "  p_output <= s_mul_result_lo;";
+			}
+			if (neededComponents[SHIFTER]) {
+				outLogic += "  p_output <= s_shft_result;";
+			}
+		}
+		return outLogic + System.lineSeparator();
+	}
+
+	public String generateCommandTable(int msb) {
+		String cmdTable = "  -- Command-Table";
+		int cmdCnt = 0;
+		if (operations.size() > 1) {
+			for (String str : operations) {
+				if (str.equals("ADD")) {
+					
+				} else if (str.equals("ADD_U")) {
+					
+				} else if (str.equals("SUB")) {
+					
+				} else if (str.equals("SUB_U")) {
+					
+				} else if (str.equals("MUL")) {
+					
+				} else if (str.equals("MUL_U")) {
+					
+				} else if (str.equals("DIV")) {
+					
+				} else if (str.equals("DIV_U")) {
+					
+				} else if (str.equals("RR")) {
+					
+				} else if (str.equals("RL")) {
+					
+				} else if (str.equals("SRL")) {
+					
+				} else if (str.equals("SLL")) {
+					
+				} else if (str.equals("SRA")) {
+					
+				} else if (str.equals("AND")) {
+					
+				} else if (str.equals("OR")) {
+					
+				} else if (str.equals("XOR")) {
+					
+				} else if (str.equals("NOT")) {
+					
+				}				
+			}			
+		} else {
+			for (String str : operations) {
+				if (str.equals("ADD")) {
+					
+				} else if (str.equals("ADD_U")) {
+					
+				} else if (str.equals("SUB")) {
+					
+				} else if (str.equals("SUB_U")) {
+					
+				} else if (str.equals("MUL")) {
+					
+				} else if (str.equals("MUL_U")) {
+					
+				} else if (str.equals("DIV")) {
+					
+				} else if (str.equals("DIV_U")) {
+					
+				} else if (str.equals("RR")) {
+					
+				} else if (str.equals("RL")) {
+					
+				} else if (str.equals("SRL")) {
+					
+				} else if (str.equals("SLL")) {
+					
+				} else if (str.equals("SRA")) {
+					
+				} else if (str.equals("AND")) {
+					
+				} else if (str.equals("OR")) {
+					
+				} else if (str.equals("XOR")) {
+					
+				} else if (str.equals("NOT")) {
+					
+				}
+			}
+		}
+		return cmdTable;
+	}
+	
+	public String generateInstances() {
 		String instances = "";
 		String behavior = "";
 		Boolean[] neededComponents = getNeededComponents();
@@ -249,7 +401,7 @@ public class Alu {
 		if (neededComponents[SHIFTER]) {
 			instances += "  shft : barrel_shifter GENERIC MAP (g_size => g_wordSize) PORT MAP (s_shft_cmd, s_shft_ari, s_shft_rot, s_inputAInput, s_inputBInput, s_shft_result);" + System.lineSeparator();
 		}
-		return instances + behavior;
+		return instances + "  -- Behavior" + System.lineSeparator() + behavior;
 	}
 	
 	public List<String> prepareFilesAndImports() {

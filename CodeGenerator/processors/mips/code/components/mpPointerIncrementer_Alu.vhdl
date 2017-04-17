@@ -12,7 +12,8 @@ ENTITY mpPointerIncrementer_Alu IS
   (
     p_inputA0 : in std_logic_vector(g_wordSize DOWNTO 0);
     p_inputB0 : in std_logic_vector(g_wordSize DOWNTO 0);
-    p_output : out std_logic_vector(g_wordSize DOWNTO 0)
+    p_output : out std_logic_vector(g_wordSize DOWNTO 0);
+    p_sec_output : out std_logic_vector(g_wordSize DOWNTO 0)
   );
 END mpPointerIncrementer_Alu;
 
@@ -36,14 +37,20 @@ ARCHITECTURE behavior OF mpPointerIncrementer_Alu IS
   SIGNAL s_sgnd : std_logic;
   SIGNAL s_adder_sub : std_logic;
   SIGNAL s_adder_ovflw : std_logic;
-  SIGNAL s_adder_result : std_logic_vector(g_wordSize DOWNTO 0;
+  SIGNAL s_adder_result : std_logic_vector(g_wordSize DOWNTO 0);
+  SIGNAL s_alu_cmd : std_logic_vector(1 DOWNTO 0);
 BEGIN
   s_inputAInput <= p_inputA0;
   s_inputBInput <= p_inputB0;
-  -- Behavior
+  -- Command-Vector
+  s_sgnd <= s_alu_cmd(0)
+  s_adder_sub <= s_alu_cmd(1);
   -- Instances of ALU-Components
   adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => 3) PORT MAP (s_sgnd, s_adder_sub, s_inputAInput, s_inputBinput, s_adder_ovflw, s_adder_result);
+  -- Behavior
   -- Adder
   p_status(0) <= s_adder_ovflw;
-
+  -- Output-Logic
+  p_output <= s_adder_result;
+  -- Command-Table
 END behavior;
