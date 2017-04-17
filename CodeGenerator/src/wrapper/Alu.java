@@ -117,12 +117,41 @@ public class Alu {
 			component.AddPort("p_operation : in std_logic_vector(" + (cmdBits - 1) + " DOWNTO 0)");
 		}
 		if (status != null) {
-			int statusSize = conditions.size() + 2; // + 2 für carry und over/underflow
+			int statusSize = conditions.size() + 1; // + 1 over/underflow
 			component.AddPort("p_status : out std_logic_vector(" + (statusSize - 1) + " DOWNTO 0)");
 		}
 		component.AddPort("p_output : out std_logic_vector(g_wordSize DOWNTO 0)");
 		component.AddSignal("s_inputAInput : std_logic_vector(g_wordSize DOWNTO 0");
 		component.AddSignal("s_inputBInput : std_logic_vector(g_wordSize DOWNTO 0");
+		component.AddSignal("s_sgnd : std_logic");
+		Boolean[] neededComponents = getNeededComponents();
+		if (neededComponents[ADDER]) {
+			component.AddSignal("s_adder_sub : std_logic");
+			component.AddSignal("s_adder_ovflw : std_logic");
+			component.AddSignal("s_adder_result : std_logic_vector(g_wordSize DOWNTO 0");
+		}
+		if (neededComponents[BITLOGIC]) {
+			component.AddSignal("s_logic_cmd : std_logic_vector(1 DOWNTO 0");
+			component.AddSignal("s_logic_result : std_logic_vector(g_wordSize DOWNTO 0");
+		}
+		if (neededComponents[DIVIDER]) {
+			component.AddSignal("s_div_remain : std_logic_vector(g_wordSize DOWNTO 0)");
+			component.AddSignal("s_div_result : std_logic_vector(g_wordSize DOWNTO 0)");
+		}
+		if (neededComponents[MULTIPLIER]) {
+			component.AddSignal("s_mul_result_hi : std_logic_vector(g_wordSize DOWNTO 0)");
+			component.AddSignal("s_mul_result_lo : std_logic_vector(g_wordSize DOWNTO 0)");
+		}
+		if (neededComponents[COMPARATOR]) {
+			component.AddSignal("s_comp_g : std_logic");
+			component.AddSignal("s_comp_l : std_logic");
+		}
+		if (neededComponents[SHIFTER]) {
+			component.AddSignal("s_shft_cmd : std_logic");
+			component.AddSignal("s_shft_ari : std_logic");
+			component.AddSignal("s_shft_rot : std_logic");
+			component.AddSignal("s_shft_result : std_logic_vector(g_wordSize DOWNTO 0");
+		}
 		String muxes = "";
 		muxes += ComponentBuilder.generateMux("p_inputASelect", "s_inputAInput", "p_inputA", inputsA.size());
 		muxes += ComponentBuilder.generateMux("p_inputBSelect", "s_inputBInput", "p_inputB", inputsB.size());
@@ -141,41 +170,93 @@ public class Alu {
 		}
 	}
 	
+	public Boolean[] getNeededComponents() {
+		Boolean neededComponents[] = new Boolean[] { false, false, false, false, false, false };
+		for (String op : operations) {
+			if (op.matches("ADD|ADD_U|SUB|SUB_U")) {
+				neededComponents[0] = true;
+			}
+			if (op.matches("AND|OR|XOR|NOT")) {
+				neededComponents[1] = true;
+			}
+			if (op.matches("DIV|DIV_U")) {
+				neededComponents[3] = true;
+			}
+			if (op.matches("MUL|MUL_U")) {
+				neededComponents[4] = true;
+			}
+			if (op.matches("RR|RL|SRL|SLL|SRA")) {
+				neededComponents[5] = true;
+			}
+		}
+		for (String cond : conditions) {
+			if (cond.matches("GT|GT_U|LT|LT_U|GEQ|GEQ_U|LEQ|LEQ_U|EQ")) {
+				neededComponents[2] = true;
+			}
+		}
+		return neededComponents;
+	}
+	
 	public String generateBehavior() {
+		String instances = "";
 		String behavior = "";
-		return behavior;
+		Boolean[] neededComponents = getNeededComponents();
+		int flagCount = 0;
+		instances += "  -- Instances of ALU-Components" + System.lineSeparator();
+		if (neededComponents[ADDER]) {
+			int blocks = (wordSize / 8) - 1;
+			instances += "  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => " + blocks + ") PORT MAP (s_sgnd, s_adder_sub, s_inputAInput, s_inputBinput, s_adder_ovflw, s_adder_result);" + System.lineSeparator();
+			behavior += "  -- Adder" + System.lineSeparator();
+			behavior += "  p_status(" + (flagCount++) + ") <= s_adder_ovflw;" + System.lineSeparator();
+		}
+		if (neededComponents[BITLOGIC]) {
+			instances += "  logic : bit_manipulator GENERIC MAP (g_size => g_wordSize) PORT MAP (s_inputAInput, s_inputBInput, s_logic_cmd, s_logic_result);" + System.lineSeparator();
+		}
+		if (neededComponents[DIVIDER]) {
+			instances += "  div : divider GENERIC MAP (g_size => g_wordSize) PORT MAP (s_sgnd, s_inputAInput, s_inputBInput, s_div_remain, s_div_result);" + System.lineSeparator();
+		}
+		if (neededComponents[MULTIPLIER]) {
+			instances += "  mul : four_quadrant_multiplier GENEIRC MAP (g_size => g_wordSize) PORT MAP (s_sgnd, s_inputAInput, s_inputBInput, 0, s_mul_result_lo, s_mul_result_hi);" + System.lineSeparator();
+		}
+		if (neededComponents[COMPARATOR]) {
+			instances += "  comp : tree_comparator GENERIC MAP (g_size => g_wordSize) PORT MAP (s_inputAInput, s_inputBInput, s_sgnd, s_comp_g, s_comp_l);" + System.lineSeparator();
+			behavior += "  -- Comparator" + System.lineSeparator();
+			//	G	L	OP
+			//	1	0	>
+			//	0	1	<
+			//	X	0	>=
+			//	0	X	<=
+			//	0	0	=
+			for (String str : conditions) {
+				if (str.equals("ZERO")) {
+					behavior += "  p_status(" + (flagCount++) + ") <= AND \"";
+					int cnt = wordSize;
+					while (cnt-- > 0) behavior += "0";
+					behavior += "\"; -- A == 0" + System.lineSeparator();
+				} else if (str.equals("GT")) {
+					behavior += "  p_status(" + (flagCount++) + ") <= s_comp_g AND NOT s_comp_l; -- A > B" + System.lineSeparator();
+				} else if (str.equals("LT")) {
+					behavior += "  p_status(" + (flagCount++) + ") <= NOT s_comp_g AND s_comp_l; -- A < B" + System.lineSeparator();
+				} else if (str.equals("GEQ")) {
+					behavior += "  p_status(" + (flagCount++) + ") <= NOT s_comp_l; -- A >= B" + System.lineSeparator();
+				} else if (str.equals("LEQ")) {
+					behavior += "  p_status(" + (flagCount++) + ") <= NOT s_comp_g; -- A <= B" + System.lineSeparator();
+				} else if (str.equals("EQ")) {
+					behavior += "  p_status(" + (flagCount++) + ") <= NOT s_comp_g AND NOT s_comp_l; -- A == B" + System.lineSeparator();
+				}
+			}
+		}
+		if (neededComponents[SHIFTER]) {
+			instances += "  shft : barrel_shifter GENERIC MAP (g_size => g_wordSize) PORT MAP (s_shft_cmd, s_shft_ari, s_shft_rot, s_inputAInput, s_inputBInput, s_shft_result);" + System.lineSeparator();
+		}
+		return instances + behavior;
 	}
 	
 	public List<String> prepareFilesAndImports() {
 		List<String> imports = new ArrayList<String>();
 		try {
-			Boolean copyComponents[] = new Boolean[] { false, false, false, false, false, false };
-			for (String op : operations) {
-				if (op.matches("ADD|ADD_U|SUB|SUB_U")) {
-					copyComponents[0] = true;
-				}
-				if (op.matches("AND|OR|XOR|NOT")) {
-					copyComponents[1] = true;
-				}
-				if (op.matches("GT|GT_U|LT|LT_U|GEQ|GEQ_U|LEQ|LEQ_U|EQ")) {
-					copyComponents[2] = true;
-				}
-				if (op.matches("DIV|DIV_U")) {
-					copyComponents[3] = true;
-				}
-				if (op.matches("MUL|MUL_U")) {
-					copyComponents[4] = true;
-				}
-				if (op.matches("RR|RL|SRL|SLL|SRA")) {
-					copyComponents[5] = true;
-				}
-			}
-			for (String cond : conditions) {
-				if (cond.matches("GT|GT_U|LT|LT_U|GEQ|GEQ_U|LEQ|LEQ_U|EQ")) {
-					copyComponents[2] = true;
-				}
-			}
-			if (copyComponents[0]) {
+			Boolean[] neededComponents = getNeededComponents();
+			if (neededComponents[ADDER]) {
 				copy(new File("processors/components/alu/adder"), new File("processors/mips/code/components/alu"));
 				String imprt = "";
 				imprt += "  COMPONENT carry_select_adder" + System.lineSeparator();
@@ -194,7 +275,7 @@ public class Alu {
 				imprt += "  END COMPONENT;";
 				imports.add(imprt);
 			}
-			if (copyComponents[1]) {
+			if (neededComponents[BITLOGIC]) {
 				copy(new File("processors/components/alu/bitwise_logic"), new File("processors/mips/code/components/alu"));
 				String imprt = "";
 				imprt += "  COMPONENT bit_manipulator" + System.lineSeparator();
@@ -210,7 +291,7 @@ public class Alu {
 				imprt += "  END COMPONENT;";
 				imports.add(imprt);
 			}
-			if (copyComponents[2]) {
+			if (neededComponents[COMPARATOR]) {
 				copy(new File("processors/components/alu/comparator"), new File("processors/mips/code/components/alu"));
 				String imprt = "";
 				imprt += "  COMPONENT tree_comparator" + System.lineSeparator();
@@ -227,7 +308,7 @@ public class Alu {
 				imprt += "  END COMPONENT;";
 				imports.add(imprt);
 			}
-			if (copyComponents[3]) {
+			if (neededComponents[DIVIDER]) {
 				copy(new File("processors/components/alu/divider"), new File("processors/mips/code/components/alu"));
 				String imprt = "";
 				imprt += "  COMPONENT divider " + System.lineSeparator();
@@ -244,7 +325,7 @@ public class Alu {
 				imprt += "  END COMPONENT;";
 				imports.add(imprt);
 			}
-			if (copyComponents[4]) {
+			if (neededComponents[MULTIPLIER]) {
 				copy(new File("processors/components/alu/multiplier"), new File("processors/mips/code/components/alu"));
 				String imprt = "";
 				imprt += "  COMPONENT four_quadrant_multiplier " + System.lineSeparator();
@@ -262,7 +343,7 @@ public class Alu {
 				imprt += "  END COMPONENT;";
 				imports.add(imprt);
 			}
-			if (copyComponents[5]) {
+			if (neededComponents[SHIFTER]) {
 				copy(new File("processors/components/alu/shifter"), new File("processors/mips/code/components/alu"));
 				String imprt = "";
 				imprt += "  COMPONENT barrel_shifter " + System.lineSeparator();
@@ -275,7 +356,6 @@ public class Alu {
 				imprt += "      p_rotate : in  std_logic;" + System.lineSeparator();	
 				imprt += "      p_op_1   : in  std_logic_vector(g_size DOWNTO 0);" + System.lineSeparator();
 				imprt += "      p_op_2   : in  std_logic_vector(g_size DOWNTO 0);" + System.lineSeparator();
-				imprt += "      p_add    : in  std_logic_vector(g_size DOWNTO 0);" + System.lineSeparator();	
 				imprt += "      p_result : out std_logic_vector(g_size DOWNTO 0)" + System.lineSeparator();
 				imprt += "    );" + System.lineSeparator();
 				imprt += "  END COMPONENT;";
@@ -349,4 +429,11 @@ public class Alu {
 	public int getWordSize() {
 		return wordSize;
 	}
+	
+	final int ADDER = 0;
+	final int BITLOGIC = 1;
+	final int COMPARATOR = 2;
+	final int DIVIDER = 3;
+	final int MULTIPLIER = 4;
+	final int SHIFTER = 5;
 }

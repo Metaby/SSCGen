@@ -152,6 +152,8 @@
 			<operation>and</operation>
 			<operation>or</operation>
 			<operation>not</operation>
+			<operation>div</operation>
+			<operation>mul</operation>
 		</operations>
 		<conditions>
 			<condition>zero</condition>
