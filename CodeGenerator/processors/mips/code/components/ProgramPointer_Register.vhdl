@@ -22,7 +22,6 @@ END ProgramPointer_Register;
 ARCHITECTURE behavior OF ProgramPointer_Register IS
   SIGNAL s_input : std_logic_vector(g_wordSie DOWNTO 0;
 BEGIN
-  -- input multiplexer
   WITH p_inputSelect SELECT s_input <=
     p_input0 WHEN '0',
     p_input1 WHEN '1';

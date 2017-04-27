@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.ComponentBuilder;
+import tool.ComponentString;
 
 public class JumpLogic {
 
@@ -67,7 +67,7 @@ public class JumpLogic {
 	}
 	
 	public void generateComponent(String targetFile) {
-		ComponentBuilder component = new ComponentBuilder(id);
+		ComponentString component = new ComponentString(id);
 		component.AddGeneric("g_wordSize : integer := " + (wordSize - 1));
 		for (int i = 0; i < programTargetA.size(); i++) {
 			component.AddPort("p_pathA" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
@@ -98,8 +98,8 @@ public class JumpLogic {
 		component.AddSignal("s_pathBInput : std_logic_vector(g_wordSize DOWNTO 0");
 		component.AddSignal("s_pathSelect : std_logic");
 		String behavior = "";
-		behavior += ComponentBuilder.generateMux("p_pathASelect", "s_pathAInput", "p_pathA", programTargetA.size());
-		behavior += ComponentBuilder.generateMux("p_pathBSelect", "s_pathBInput", "p_pathB", programTargetB.size());
+		behavior += ComponentString.generateMux("p_pathASelect", "s_pathAInput", "p_pathA", programTargetA.size());
+		behavior += ComponentString.generateMux("p_pathBSelect", "s_pathBInput", "p_pathB", programTargetB.size());
 		behavior += "  -- Behavior" + System.lineSeparator();		
 		behavior += "  WITH p_ctrlSelect SELECT s_pathSelect <=" + System.lineSeparator();
 		for (int i = 0; i < inputFlagsCnt; i++) {

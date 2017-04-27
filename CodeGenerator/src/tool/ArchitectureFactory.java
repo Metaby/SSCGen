@@ -101,6 +101,7 @@ public class ArchitectureFactory {
 		}
 		for (Alu alu : arch.getAlus()) {
 			alu.generateComponent(directory + "/components/" + alu.getId() + ".vhdl");
+			System.out.println(ComponentBuilder.generateComponent(alu).getComponent());
 		}
 		for (RegisterFile rf : arch.getRegisterFiles()) {
 			rf.generateComponent(directory + "/components/" + rf.getId() + ".vhdl");
@@ -108,7 +109,7 @@ public class ArchitectureFactory {
 		for (Memory mem : arch.getMemories()) {
 			mem.generateComponent(directory + "/components/" + mem.getId() + ".vhdl");
 		}
-		ComponentBuilder topLevelEntity = new ComponentBuilder("processor");
+		ComponentString topLevelEntity = new ComponentString("processor");
 		for (Connector con : arch.getOutputConnectors()) {
 			if (con != null && con.size > 0 && !con.pin.startsWith(":")) {
 				String signal = "s_" + con.origin + "_" + con.pin + " : ";

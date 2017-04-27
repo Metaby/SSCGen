@@ -122,13 +122,11 @@ ARCHITECTURE behavior OF Calculator_Alu IS
   SIGNAL s_shft_result : std_logic_vector(g_wordSize DOWNTO 0);
   SIGNAL s_alu_cmd : std_logic_vector(9 DOWNTO 0);
 BEGIN
-  -- input multiplexer
   WITH p_inputASelect SELECT s_inputAInput <=
     p_inputA0 WHEN "00",
     p_inputA1 WHEN "01",
     p_inputA2 WHEN "10",
     p_inputA3 WHEN "11";
-  -- input multiplexer
   WITH p_inputBSelect SELECT s_inputBInput <=
     p_inputB0 WHEN "00",
     p_inputB1 WHEN "01",

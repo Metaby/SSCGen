@@ -1,7 +1,5 @@
 package wrapper;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.ComponentBuilder;
+import tool.ComponentString;
 
 public class Alu {
 
@@ -86,7 +84,7 @@ public class Alu {
 	}
 
 	public void generateComponent(String targetFile) {
-		ComponentBuilder component = new ComponentBuilder(id);
+		ComponentString component = new ComponentString(id);
 		component.AddGeneric("g_wordSize : integer := " + (wordSize - 1));
 		for (int i = 0; i < inputsA.size(); i++) {
 			component.AddPort("p_inputA" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
@@ -175,8 +173,8 @@ public class Alu {
 		cvSize += cmpnts; // cmpnts Bits for output-Mux
 		component.AddSignal("s_alu_cmd : std_logic_vector(" + (cvSize - 1) + " DOWNTO 0)");
 		String muxes = "";
-		muxes += ComponentBuilder.generateMux("p_inputASelect", "s_inputAInput", "p_inputA", inputsA.size());
-		muxes += ComponentBuilder.generateMux("p_inputBSelect", "s_inputBInput", "p_inputB", inputsB.size());
+		muxes += ComponentString.generateMux("p_inputASelect", "s_inputAInput", "p_inputA", inputsA.size());
+		muxes += ComponentString.generateMux("p_inputBSelect", "s_inputBInput", "p_inputB", inputsB.size());
 		muxes += "  -- Command-Vector" + System.lineSeparator();
 		muxes += cmd;
 		List<String> imports = prepareFilesAndImports();
@@ -308,7 +306,7 @@ public class Alu {
 				}				
 			}			
 		} else {
-			for (String str : operations) {
+			for (String str : conditions) {
 				if (str.equals("ADD")) {
 					
 				} else if (str.equals("ADD_U")) {

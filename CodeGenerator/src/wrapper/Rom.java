@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.ComponentBuilder;
+import tool.ComponentString;
 
 public class Rom {
 
@@ -77,7 +77,7 @@ public class Rom {
 			System.out.println("Error: Reading content file. (" + contentFile + ")");
 			return;
 		}
-		ComponentBuilder component = new ComponentBuilder(id);
+		ComponentString component = new ComponentString(id);
 		component.AddGeneric("g_addressSize : integer := " + (addressSize - 1));
 		component.AddGeneric("g_wordSize : integer := " + (wordSize - 1));
 		for (int i = 0; i < addresses.size(); i++) {
@@ -94,7 +94,7 @@ public class Rom {
 		component.AddPort("p_word : out std_logic_vector(g_wordSize DOWNTO 0)");
 		component.AddSignal("s_address : std_logic_vector(g_addressSize DOWNTO 0");		
 		String behavior = "";
-		behavior += ComponentBuilder.generateMux("p_addrSelect", "s_address", "p_address", addresses.size());
+		behavior += ComponentString.generateMux("p_addrSelect", "s_address", "p_address", addresses.size());
 		behavior += "  -- Behavior" + System.lineSeparator();
 		behavior += "  WITH s_address SELECT p_word <=" + System.lineSeparator();
 		for (int i = 0; i < content.length; i++) {

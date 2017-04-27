@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.ComponentBuilder;
+import tool.ComponentString;
 
 public class RegisterFile {
 
@@ -40,7 +40,7 @@ public class RegisterFile {
 	}
 	
 	public void generateComponent(String targetFile) {
-		ComponentBuilder component = new ComponentBuilder(id);
+		ComponentString component = new ComponentString(id);
 		component.AddGeneric("g_wordSize : integer := " + (wordSize - 1));
 		component.AddGeneric("g_addressSize : integer := " + (addressSize - 1));
 		String muxes = "";
@@ -66,9 +66,9 @@ public class RegisterFile {
 					component.AddPort("p_port" + j + "_addressSelect : in std_logic_vector(" + (adrBits - 1) + " DOWNTO 0)");					
 				}
 				component.AddSignal("s_port" + j + "_inputSelect : std_logic_vector(g_wordSize DOWNTO 0)");
-				muxes += ComponentBuilder.generateMux("p_port" + j + "_inputSelect", "s_port" + j + "_inputSelect", "p_port" + j +  "_input", p.getInputs().size());
+				muxes += ComponentString.generateMux("p_port" + j + "_inputSelect", "s_port" + j + "_inputSelect", "p_port" + j +  "_input", p.getInputs().size());
 				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_addressSize DOWNTO 0)");
-				muxes += ComponentBuilder.generateMux("p_port" + j + "_addressSelect", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
+				muxes += ComponentString.generateMux("p_port" + j + "_addressSelect", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
 				component.AddPort("p_port" + j + "_write : in std_logic");
 			} else {
 				for (int i = 0; i < p.getAddresses().size(); i++) {
@@ -81,7 +81,7 @@ public class RegisterFile {
 					component.AddPort("p_port" + j + "_addressSelect : in std_logic_vector(" + (adrBits - 1) + " DOWNTO 0)");					
 				}
 				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_addressSize DOWNTO 0)");
-				muxes += ComponentBuilder.generateMux("p_port" + j + "_addressSelect", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
+				muxes += ComponentString.generateMux("p_port" + j + "_addressSelect", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
 				component.AddPort("p_port" + j + "_output : out std_logic_vector(g_wordSize DOWNTO 0)");
 			}
 		}

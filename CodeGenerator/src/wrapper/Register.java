@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.ComponentBuilder;
+import tool.ComponentString;
 
 public class Register {
 	
@@ -46,7 +46,7 @@ public class Register {
 	}
 	
 	public void generateComponent(String targetFile) {
-		ComponentBuilder component = new ComponentBuilder(id);
+		ComponentString component = new ComponentString(id);
 		component.AddGeneric("g_wordSize : integer := " + (size - 1));
 		component.AddPort("p_clk : in std_logic");
 		component.AddPort("p_write : in std_logic");
@@ -64,7 +64,7 @@ public class Register {
 		component.AddPort("p_word : out std_logic_vector(g_wordSize DOWNTO 0)");
 		component.AddSignal("s_input : std_logic_vector(g_wordSie DOWNTO 0");		
 		String behavior = "";
-		behavior += ComponentBuilder.generateMux("p_inputSelect", "s_input", "p_input", inputs.size());
+		behavior += ComponentString.generateMux("p_inputSelect", "s_input", "p_input", inputs.size());
 		behavior += "  -- Behavior" + System.lineSeparator();
 		behavior += "  PROCESS (p_clk) BEGIN" + System.lineSeparator();
 		behavior += "    IF rising_edge(p_clk) AND p_write = '1' THEN" + System.lineSeparator();

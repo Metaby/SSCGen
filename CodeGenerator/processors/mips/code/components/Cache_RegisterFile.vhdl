@@ -41,17 +41,14 @@ ARCHITECTURE behavior OF Cache_RegisterFile IS
   SIGNAL s_registers : registerArray;
   TYPE TYPE registerArray IS ARRAY(2147483647 DOWNTO 0) OF std_logic_vector(g_wordSize DOWNTO 0);
 BEGIN
-  -- input multiplexer
   WITH p_port0_addressSelect SELECT s_port0_addressSelect <=
     p_port0_address0 WHEN "00",
     p_port0_address1 WHEN "01",
     p_port0_address2 WHEN "10";
-  -- input multiplexer
   WITH p_port1_addressSelect SELECT s_port1_addressSelect <=
     p_port1_address0 WHEN "00",
     p_port1_address1 WHEN "01",
     p_port1_address2 WHEN "10";
-  -- input multiplexer
   WITH p_port2_inputSelect SELECT s_port2_inputSelect <=
     p_port2_input0 WHEN "000",
     p_port2_input1 WHEN "001",

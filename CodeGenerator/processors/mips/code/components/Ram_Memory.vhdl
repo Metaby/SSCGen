@@ -33,17 +33,14 @@ ARCHITECTURE behavior OF Ram_Memory IS
   SIGNAL s_port0_addressSelect : std_logic_vector(g_addressSize DOWNTO 0);
   SIGNAL s_port1_addressSelect : std_logic_vector(g_addressSize DOWNTO 0);
 BEGIN
-  -- input multiplexer
   WITH p_port0_inputSelect SELECT s_port0_inputSelect <=
     p_port0_input0 WHEN "00",
     p_port0_input1 WHEN "01",
     p_port0_input2 WHEN "10",
     p_port0_input3 WHEN "11";
-  -- input multiplexer
   WITH p_port0_addressSelect SELECT s_port0_addressSelect <=
     p_port0_address0 WHEN '0',
     p_port0_address1 WHEN '1';
-  -- input multiplexer
   WITH p_port1_addressSelect SELECT s_port1_addressSelect <=
     p_port1_address0 WHEN '0',
     p_port1_address1 WHEN '1';
