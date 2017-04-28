@@ -114,10 +114,35 @@ public class ComponentBuilder {
 				cmdBits[i + operationsCnt] = getBinaryString(i + operationsCnt, cselBits);
 				cmdTable += "  -- " + cmd[i + operationsCnt] + " \t" + cmdBits[i + operationsCnt] + System.lineSeparator();
 			}
+			cmdTable += "  --" + System.lineSeparator() + "  -- Output 1 Multiplexing" + System.lineSeparator();
 			cmdTable += "  WITH p_csel SELECT p_output_1 <=" + System.lineSeparator();
-			for (int i = 0; i < cmd.length; i++) {
-				cmdTable += "    " + getAluOutputSignal(cmd[i]) + " WHEN " + cmdBits[i] + "," + System.lineSeparator();				
+			for (int i = 0; i < operationsCnt; i++) {
+				cmdTable += "    " + getAluOutputSignal(cmd[i]) + " WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();				
 			}
+			cmdTable += "    \"" + getBinaryString(0, alu.getWordSize()) + "\" WHEN OTHERS;" + System.lineSeparator();
+			cmdTable += "  -- Output 2 Multiplexing" + System.lineSeparator();
+			cmdTable += "  WITH p_csel SELECT p_output_2 <=" + System.lineSeparator();
+			for (int i = 0; i < operationsCnt; i++) {
+				if (cmd[i].matches("MUL|MUL_U")) {
+					cmdTable += "    s_mul_result_hi WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();						
+				}
+				if (cmd[i].matches("DIV|DIV_U")) {
+					cmdTable += "    s_div_remain WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();							
+				}			
+			}
+			cmdTable += "    \"" + getBinaryString(0, alu.getWordSize()) + "\" WHEN OTHERS;" + System.lineSeparator();
+			cmdTable += "  WITH p_csel SELECT p_flag <=" + System.lineSeparator();
+			for (int i = 0; i < operationsCnt; i++) {
+				if (cmd[i].matches("ADD|ADD_U|SUB|SUB_U")) {
+					cmdTable += "    s_adder_ovflw WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();						
+				}
+			}
+			for (int i = 0; i < operationsCnt; i++) {
+				if (cmd[i + conditionsCnt].matches("ZERO|GT|GT_U|LT|LT_U|GEQ|GEQ_U|LEQ|LEQ_U|EQ")) {
+					cmdTable += "    s_comp_result WHEN \"" + cmdBits[i + conditionsCnt] + "\"," + System.lineSeparator();						
+				}
+			}
+			cmdTable += "    \'0\' WHEN OTHERS;" + System.lineSeparator();
 			return cmdTable + System.lineSeparator();
 		} else {
 			return "" + System.lineSeparator();
@@ -135,7 +160,7 @@ public class ComponentBuilder {
 			return "s_div_result";
 		}
 		if (cmd.matches("MUL|MUL_U")) {
-			return "s_mul_result";
+			return "s_mul_result_lo";
 		}
 		if (cmd.matches("RR|RL|SRL|SLL|SRA")) {
 			return "s_shft_result";
@@ -148,7 +173,7 @@ public class ComponentBuilder {
 		List<String> subComponents = getAluSubComponents(alu);
 		if (subComponents.contains("ADDER")) {
 			int blocks = (alu.getWordSize() / 8) - 1;
-			instances += "  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => " + blocks + ") PORT MAP (s_sgnd, s_adder_sub, s_inputAInput, s_inputBinput, s_adder_ovflw, s_adder_result);" + System.lineSeparator();
+			instances += "  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => " + blocks + ") PORT MAP (s_sgnd, s_adder_sub, s_input_A, s_input_B, s_adder_ovflw, s_adder_result);" + System.lineSeparator();
 		}
 		if (subComponents.contains("BITLOGIC")) {
 			instances += "  logic : bit_manipulator GENERIC MAP (g_size => g_word_size) PORT MAP (s_input_A, s_input_B, s_logic_cmd, s_logic_result);" + System.lineSeparator();
@@ -188,7 +213,7 @@ public class ComponentBuilder {
 			}
 			if (op.matches("MUL|MUL_U")) {
 				if (!components.contains("MULTIPLIER")) {
-					components.add("");
+					components.add("MULTIPLIER");
 				}
 			}
 			if (op.matches("RR|RL|SRL|SLL|SRA")) {
