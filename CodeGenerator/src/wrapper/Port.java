@@ -19,35 +19,18 @@ public class Port {
 			direction = PortDirection.IN_OUT;
 		}
 		if (p.getOutput() != null) {
-			Connector outCon = new Connector();
-			outCon.origin = parentId;
-			outCon.pin = p.getOutput();
-			outCon.size = wordSize;
-			outCon.id = Connector.getNewId();
-			output = outCon;			
+			output = new Connector(p.getOutput(), wordSize);			
 		}
 		inputs = new ArrayList<Connector>();
 		if (p.getInputs() != null) {
 			for (int i = 0; i < p.getInputs().getInput().size(); i++) {
-				Connector inCon = new Connector();
-				String input = p.getInputs().getInput().get(i);
-				inCon.origin = input.substring(0, input.indexOf("."));
-				inCon.pin = input.substring(input.indexOf(".") + 1);
-				inCon.size = wordSize;
-				inCon.id = Connector.getNewId();
-				inputs.add(inCon);			
+				inputs.add(new Connector(p.getInputs().getInput().get(i), wordSize));			
 			}
 		}
 		addresses = new ArrayList<Connector>();
 		if (p.getAddresses() != null) {
 			for (int i = 0; i < p.getAddresses().getAddress().size(); i++) {
-				Connector inCon = new Connector();
-				String input = p.getAddresses().getAddress().get(i);
-				inCon.origin = input.substring(0, input.indexOf("."));
-				inCon.pin = input.substring(input.indexOf(".") + 1);
-				inCon.size = addressSize;
-				inCon.id = Connector.getNewId();
-				addresses.add(inCon);
+				addresses.add(new Connector(p.getAddresses().getAddress().get(i), addressSize));
 			}			
 		}
 	}

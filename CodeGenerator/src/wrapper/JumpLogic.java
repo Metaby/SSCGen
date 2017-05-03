@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.ComponentString;
+import tool.VhdlComponent;
 
 public class JumpLogic {
 
@@ -23,37 +23,15 @@ public class JumpLogic {
 		id = jl.getId();
 		wordSize = jl.getWordSize();
 		inputFlagsCnt = jl.getInputFlagsCnt();
-		Connector outCon = new Connector();
-		outCon.origin = jl.getId();
-		outCon.pin = jl.getOutput();
-		outCon.size = wordSize;
-		outCon.id = Connector.getNewId();
-		output = outCon;
-		Connector flagsCon = new Connector();
-		flagsCon.origin = jl.getId();
-		flagsCon.pin = jl.getInputFlags();
-		flagsCon.size = inputFlagsCnt;
-		flagsCon.id = Connector.getNewId();
-		inputFlags = flagsCon;		
+		output = new Connector(jl.getOutput(), wordSize);
+		inputFlags = new Connector(jl.getInputFlags(), inputFlagsCnt);
 		programTargetA = new ArrayList<Connector>();
 		for (int i = 0; i < jl.getProgramTargetA().getInput().size(); i++) {
-			Connector inCon = new Connector();
-			String input = jl.getProgramTargetA().getInput().get(i);
-			inCon.origin = input.substring(0, input.indexOf("."));
-			inCon.pin = input.substring(input.indexOf(".") + 1);
-			inCon.size = wordSize;
-			inCon.id = Connector.getNewId();
-			programTargetA.add(inCon);
+			programTargetA.add(new Connector(jl.getProgramTargetA().getInput().get(i), wordSize));
 		}	
 		programTargetB = new ArrayList<Connector>();
 		for (int i = 0; i < jl.getProgramTargetB().getInput().size(); i++) {
-			Connector inCon = new Connector();
-			String input = jl.getProgramTargetB().getInput().get(i);
-			inCon.origin = input.substring(0, input.indexOf("."));
-			inCon.pin = input.substring(input.indexOf(".") + 1);
-			inCon.size = wordSize;
-			inCon.id = Connector.getNewId();
-			programTargetB.add(inCon);
+			programTargetB.add(new Connector(jl.getProgramTargetB().getInput().get(i), wordSize));
 		}
 	}
 	
@@ -67,7 +45,7 @@ public class JumpLogic {
 	}
 	
 	public void generateComponent(String targetFile) {
-		ComponentString component = new ComponentString(id);
+		VhdlComponent component = new VhdlComponent(id);
 		component.AddGeneric("g_wordSize : integer := " + (wordSize - 1));
 		for (int i = 0; i < programTargetA.size(); i++) {
 			component.AddPort("p_pathA" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
@@ -98,8 +76,8 @@ public class JumpLogic {
 		component.AddSignal("s_pathBInput : std_logic_vector(g_wordSize DOWNTO 0");
 		component.AddSignal("s_pathSelect : std_logic");
 		String behavior = "";
-		behavior += ComponentString.generateMux("p_pathASelect", "s_pathAInput", "p_pathA", programTargetA.size());
-		behavior += ComponentString.generateMux("p_pathBSelect", "s_pathBInput", "p_pathB", programTargetB.size());
+		behavior += VhdlComponent.generateMux("p_pathASelect", "s_pathAInput", "p_pathA", programTargetA.size());
+		behavior += VhdlComponent.generateMux("p_pathBSelect", "s_pathBInput", "p_pathB", programTargetB.size());
 		behavior += "  -- Behavior" + System.lineSeparator();		
 		behavior += "  WITH p_ctrlSelect SELECT s_pathSelect <=" + System.lineSeparator();
 		for (int i = 0; i < inputFlagsCnt; i++) {

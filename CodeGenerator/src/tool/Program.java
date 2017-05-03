@@ -49,26 +49,16 @@ public class Program {
 	}
 	
 	public static void createMDF(String architectureFile, String outputFile) {
-		ArchitectureFactory sb = new ArchitectureFactory();
-		System.out.println("Validating specification");
-		boolean passed = sb.ValidateSpecification(architectureFile, "processors/specification.xsd");
-		if (!passed) {
-			System.out.println("Error: validation of specification failed");
-			return;
-		}
-		System.out.println("Reading specification");
-		Architecture arch = sb.ReadSpecification(architectureFile);
-		System.out.println("Validating connections");
-		passed = sb.ValidateConnections(arch);
-		if (!passed) {
-			System.out.println("Error: validation of connections failed");
-			return;
-		}
-		List<String> cv = sb.GenerateControlVector(arch);
-		System.out.println("Writing Microcode-Design-File");
-		File of = new File(outputFile);
+		System.out.println("Creating MDF");
+		ArchitectureFactory factory = new ArchitectureFactory();
+		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
+		Architecture arch = factory.ReadSpecification(architectureFile);
+		assertion(factory.ValidateIds(arch));
+		assertion(factory.ValidateConnections(arch));
+		List<String> cv = factory.GenerateControlVector(arch);
+		File file = new File(outputFile);
 		try {
-			Files.write(of.toPath(), ("-- control-vector:" + System.lineSeparator() + "-- " + cv.toString().replace("[", "").replace("]", "")).getBytes());
+			Files.write(file.toPath(), ("-- control-vector:" + System.lineSeparator() + "-- " + cv.toString().replace("[", "").replace("]", "")).getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
@@ -80,23 +70,21 @@ public class Program {
 	}
 	
 	public static void generateProcessor(String architectureFile, String mdf, String outputDirectory) {
+		System.out.println("Generating Architecture");
 		deleteFolder(new File(outputDirectory));
-		ArchitectureFactory sb = new ArchitectureFactory();
-		System.out.println("Validating specification");
-		boolean passed = sb.ValidateSpecification(architectureFile, "processors/specification.xsd");
-		if (!passed) {
-			System.out.println("Error: validation of specification failed");
-			return;
+		ArchitectureFactory factory = new ArchitectureFactory();
+		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
+		Architecture arch = factory.ReadSpecification(architectureFile);
+		assertion(factory.ValidateIds(arch));
+		assertion(factory.ValidateConnections(arch));
+		factory.GenerateArchitecture(outputDirectory, arch);		
+	}
+	
+	public static void assertion(Boolean pass) {
+		if (!pass) {
+			System.out.println("Process aborted");
+			System.exit(-1);			
 		}
-		System.out.println("Reading specification");
-		Architecture arch = sb.ReadSpecification(architectureFile);
-		System.out.println("Validating connections");
-		passed = sb.ValidateConnections(arch);
-		if (!passed) {
-			System.out.println("Error: validation of connections failed");
-			return;
-		}
-		sb.GenerateArchitecture(outputDirectory, arch);		
 	}
 	
 	public static void deleteFolder(File folder) {

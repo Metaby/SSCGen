@@ -3,7 +3,7 @@ package tool;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComponentString {
+public class VhdlComponent {
 
 	private List<String> libraries;
 	private List<String> generics;
@@ -15,7 +15,7 @@ public class ComponentString {
 	private String name;
 	private String nl;
 	
-	public ComponentString(String name) {
+	public VhdlComponent(String name) {
 		libraries = new ArrayList<String>();
 		generics = new ArrayList<String>();
 		signals = new ArrayList<String>();
@@ -61,7 +61,7 @@ public class ComponentString {
 		}
 		component.append(nl + "ENTITY " + name + " IS" + nl);
 		if (generics.size() > 0) {
-			component.append("  GENERIC" + nl + "  (" + nl);
+			component.append("  GENERIC (" + nl);
 			for (int i = 0; i < generics.size(); i++) {
 				if (i < generics.size() - 1) {
 					component.append("    " + generics.get(i) + ";" + nl);
@@ -72,7 +72,7 @@ public class ComponentString {
 			component.append("  );" + nl);
 		}	
 		if (ports.size() > 0) {
-			component.append("  PORT" + nl + "  (" + nl);
+			component.append("  PORT (" + nl);
 			for (int i = 0; i < ports.size(); i++) {
 				if (i < ports.size() - 1) {
 					component.append("    " + ports.get(i) + ";" + nl);
@@ -157,5 +157,17 @@ public class ComponentString {
 		}
 		ifStr += indentStr + "END IF;";
 		return ifStr;
+	}
+
+	public List<String> getGenerics() {
+		return generics;
+	}
+
+	public List<String> getPorts() {
+		return ports;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

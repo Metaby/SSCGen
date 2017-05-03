@@ -4,16 +4,15 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
 ENTITY mpPointerIncrementer_Alu IS
-  GENERIC
-  (
-    g_wordSize : integer := 31
+  GENERIC (
+    g_word_size : integer := 31
   );
-  PORT
-  (
-    p_inputA0 : in std_logic_vector(g_wordSize DOWNTO 0);
-    p_inputB0 : in std_logic_vector(g_wordSize DOWNTO 0);
-    p_output : out std_logic_vector(g_wordSize DOWNTO 0);
-    p_sec_output : out std_logic_vector(g_wordSize DOWNTO 0)
+  PORT (
+    p_input_A0 : in std_logic_vector(g_word_size DOWNTO 0);
+    p_input_B0 : in std_logic_vector(g_word_size DOWNTO 0);
+    p_flag : out std_logic;
+    p_output_1 : out std_logic_vector(g_word_size DOWNTO 0);
+    p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
   );
 END mpPointerIncrementer_Alu;
 
@@ -21,7 +20,7 @@ ARCHITECTURE behavior OF mpPointerIncrementer_Alu IS
   COMPONENT carry_select_adder
     GENERIC (
       g_block_size : integer := 7;
-      g_blocks     : integer := 3;
+      g_blocks     : integer := 3
     );
     PORT (
       p_sgnd   : in  std_logic;
@@ -32,25 +31,24 @@ ARCHITECTURE behavior OF mpPointerIncrementer_Alu IS
       p_ovflw  : out std_logic
     );
   END COMPONENT;
-  SIGNAL s_inputAInput : std_logic_vector(g_wordSize DOWNTO 0;
-  SIGNAL s_inputBInput : std_logic_vector(g_wordSize DOWNTO 0;
+  SIGNAL s_input_A : std_logic_vector(g_word_size DOWNTO 0;
+  SIGNAL s_input_B : std_logic_vector(g_word_size DOWNTO 0;
   SIGNAL s_sgnd : std_logic;
   SIGNAL s_adder_sub : std_logic;
   SIGNAL s_adder_ovflw : std_logic;
-  SIGNAL s_adder_result : std_logic_vector(g_wordSize DOWNTO 0);
-  SIGNAL s_alu_cmd : std_logic_vector(1 DOWNTO 0);
+  SIGNAL s_adder_result : std_logic_vector(g_word_size DOWNTO 0);
 BEGIN
-  s_inputAInput <= p_inputA0;
-  s_inputBInput <= p_inputB0;
-  -- Command-Vector
-  s_sgnd <= s_alu_cmd(0)
-  s_adder_sub <= s_alu_cmd(1);
-  -- Instances of ALU-Components
-  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => 3) PORT MAP (s_sgnd, s_adder_sub, s_inputAInput, s_inputBinput, s_adder_ovflw, s_adder_result);
-  -- Behavior
-  -- Adder
-  p_status(0) <= s_adder_ovflw;
-  -- Output-Logic
-  p_output <= s_adder_result;
-  -- Command-Table
+  -- Input A Multiplexing
+  s_input_A <= p_input_A0;
+  -- Input B Multiplexing
+  s_input_B <= p_input_B0;
+  -- Instances of Sub-Components
+  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => 3) PORT MAP (s_sgnd, s_adder_sub, s_input_A, s_input_B, s_adder_ovflw, s_adder_result);
+  -- Output Multiplexers
+  p_output_1 <= s_adder_result;
+  p_flag <= s_adder_ovflw;
+  -- Command Tables
+  s_sgnd <= '1';
+  s_adder_sub <= '0';
+
 END behavior;

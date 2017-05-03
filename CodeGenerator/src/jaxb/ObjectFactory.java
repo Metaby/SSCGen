@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.15 um 05:20:48 PM CEST 
+// Generiert: 2017.05.03 um 05:27:55 PM CEST 
 //
 
 
@@ -53,14 +53,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Stack }
-     * 
-     */
-    public Stack createStack() {
-        return new Stack();
-    }
-
-    /**
      * Create an instance of {@link Rom }
      * 
      */
@@ -82,14 +74,6 @@ public class ObjectFactory {
      */
     public Alu createAlu() {
         return new Alu();
-    }
-
-    /**
-     * Create an instance of {@link Memory }
-     * 
-     */
-    public Memory createMemory() {
-        return new Memory();
     }
 
     /**

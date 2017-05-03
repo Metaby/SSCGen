@@ -4,13 +4,11 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
 ENTITY ProgramRom IS
-  GENERIC
-  (
+  GENERIC (
     g_addressSize : integer := 31;
     g_wordSize : integer := 31
   );
-  PORT
-  (
+  PORT (
     p_address0 : in std_logic_vector(g_addressSize DOWNTO 0);
     p_word : out std_logic_vector(g_wordSize DOWNTO 0)
   );

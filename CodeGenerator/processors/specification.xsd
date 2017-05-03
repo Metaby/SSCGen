@@ -4,11 +4,9 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="register" type="register" minOccurs="0" maxOccurs="unbounded" />
-				<xsd:element name="stack" type="stack" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element name="rom" type="rom" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element name="registerFile" minOccurs="0" type="registerFile" maxOccurs="unbounded" />
-				<xsd:element name="alu" type="alu" minOccurs="0" maxOccurs="unbounded" />
-				<xsd:element name="memory" type="memory" minOccurs="0" maxOccurs="unbounded" />				
+				<xsd:element name="alu" type="alu" minOccurs="0" maxOccurs="unbounded" />		
 				<xsd:element name="jumpLogic" type="jumpLogic" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 			<xsd:attribute name="wordSize" type="xsd:int" />
@@ -21,16 +19,10 @@
 			<xsd:element name="size" type="xsd:int" />
 			<xsd:element name="inputs" type="inputList" />		
 			<xsd:element name="output" type="xsd:string" />
+			<xsd:element name="control" type="xsd:string" />
 		</xsd:all>
-	</xsd:complexType>
-	
-	<xsd:complexType name="stack">
-		<xsd:all>
-			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="size" type="xsd:int" />
-			<xsd:element name="inputs" type="inputList" />
-			<xsd:element name="output" type="xsd:string" />
-		</xsd:all>
+		<xsd:attribute name="x" type="xsd:int" />
+		<xsd:attribute name="y" type="xsd:int" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="rom">
@@ -41,7 +33,10 @@
 			<xsd:element name="contentFile" type="xsd:string" />
 			<xsd:element name="addresses" type="addressList" minOccurs="1" />
 			<xsd:element name="output" type="xsd:string" />
+			<xsd:element name="control" type="xsd:string" />
 		</xsd:all>
+		<xsd:attribute name="x" type="xsd:int" />
+		<xsd:attribute name="y" type="xsd:int" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="registerFile">
@@ -50,7 +45,10 @@
 			<xsd:element name="wordSize" type="xsd:int" />
 			<xsd:element name="addressSize" type="xsd:int" />
 			<xsd:element name="ports" type="portList" />
+			<xsd:element name="control" type="xsd:string" />
 		</xsd:all>
+		<xsd:attribute name="x" type="xsd:int" />
+		<xsd:attribute name="y" type="xsd:int" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="alu">
@@ -59,20 +57,15 @@
 			<xsd:element name="wordSize" type="xsd:int" />
 			<xsd:element name="inputsOperandA" type="inputList" />
 			<xsd:element name="inputsOperandB" type="inputList" />
-			<xsd:element name="output" type="xsd:string" />
+			<xsd:element name="output1" type="xsd:string" />
+			<xsd:element name="output2" type="xsd:string" />
 			<xsd:element name="operations" type="operationList" />
 			<xsd:element name="conditions" type="conditionList" minOccurs="0" />
-			<xsd:element name="statusFlags" type="xsd:string" minOccurs="0" />
+			<xsd:element name="status" type="xsd:string" minOccurs="0" />
+			<xsd:element name="control" type="xsd:string" />
 		</xsd:all>
-	</xsd:complexType>
-	
-	<xsd:complexType name="memory">
-		<xsd:all>
-			<xsd:element name="id" type="xsd:string" />
-			<xsd:element name="addressSize" type="xsd:int" />
-			<xsd:element name="wordSize" type="xsd:int" />
-			<xsd:element name="ports" type="portList" />
-		</xsd:all>
+		<xsd:attribute name="x" type="xsd:int" />
+		<xsd:attribute name="y" type="xsd:int" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="jumpLogic">
@@ -84,7 +77,10 @@
 			<xsd:element name="output" type="xsd:string" />
 			<xsd:element name="inputFlagsCnt" type="xsd:int" />
 			<xsd:element name="inputFlags" type="xsd:string" />
+			<xsd:element name="control" type="xsd:string" />
 		</xsd:all>
+		<xsd:attribute name="x" type="xsd:int" />
+		<xsd:attribute name="y" type="xsd:int" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="inputList">
@@ -157,7 +153,6 @@
 	
 	<xsd:simpleType name="conditionEnum">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="zero" /> 	<!-- A == 0 		 -->
 			<xsd:enumeration value="gt" />		<!-- A > B 			 -->
 			<xsd:enumeration value="gt_u" />	<!-- A > B 	unsigned -->
 			<xsd:enumeration value="lt" />		<!-- A < B 			 -->

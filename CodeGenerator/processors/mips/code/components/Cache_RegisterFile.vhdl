@@ -4,22 +4,14 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
 ENTITY Cache_RegisterFile IS
-  GENERIC
-  (
-    g_wordSize : integer := -1;
-    g_addressSize : integer := 31
+  GENERIC (
+    g_wordSize : integer := 31;
+    g_addressSize : integer := 4
   );
-  PORT
-  (
+  PORT (
     p_port0_address0 : in std_logic_vector(g_addressSize DOWNTO 0);
-    p_port0_address1 : in std_logic_vector(g_addressSize DOWNTO 0);
-    p_port0_address2 : in std_logic_vector(g_addressSize DOWNTO 0);
-    p_port0_addressSelect : in std_logic_vector(1 DOWNTO 0);
     p_port0_output : out std_logic_vector(g_wordSize DOWNTO 0);
     p_port1_address0 : in std_logic_vector(g_addressSize DOWNTO 0);
-    p_port1_address1 : in std_logic_vector(g_addressSize DOWNTO 0);
-    p_port1_address2 : in std_logic_vector(g_addressSize DOWNTO 0);
-    p_port1_addressSelect : in std_logic_vector(1 DOWNTO 0);
     p_port1_output : out std_logic_vector(g_wordSize DOWNTO 0);
     p_port2_input0 : in std_logic_vector(g_wordSize DOWNTO 0);
     p_port2_input1 : in std_logic_vector(g_wordSize DOWNTO 0);
@@ -39,16 +31,10 @@ ARCHITECTURE behavior OF Cache_RegisterFile IS
   SIGNAL s_port2_inputSelect : std_logic_vector(g_wordSize DOWNTO 0);
   SIGNAL s_port2_addressSelect : std_logic_vector(g_addressSize DOWNTO 0);
   SIGNAL s_registers : registerArray;
-  TYPE TYPE registerArray IS ARRAY(2147483647 DOWNTO 0) OF std_logic_vector(g_wordSize DOWNTO 0);
+  TYPE TYPE registerArray IS ARRAY(32 DOWNTO 0) OF std_logic_vector(g_wordSize DOWNTO 0);
 BEGIN
-  WITH p_port0_addressSelect SELECT s_port0_addressSelect <=
-    p_port0_address0 WHEN "00",
-    p_port0_address1 WHEN "01",
-    p_port0_address2 WHEN "10";
-  WITH p_port1_addressSelect SELECT s_port1_addressSelect <=
-    p_port1_address0 WHEN "00",
-    p_port1_address1 WHEN "01",
-    p_port1_address2 WHEN "10";
+  s_port0_addressSelect <= p_port0_address0;
+  s_port1_addressSelect <= p_port1_address0;
   WITH p_port2_inputSelect SELECT s_port2_inputSelect <=
     p_port2_input0 WHEN "000",
     p_port2_input1 WHEN "001",

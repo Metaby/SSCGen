@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.15 um 05:20:48 PM CEST 
+// Generiert: 2017.05.03 um 05:27:55 PM CEST 
 //
 
 
@@ -10,6 +10,7 @@ package jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -28,11 +29,15 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="inputsOperandA" type="{}inputList"/>
  *         &lt;element name="inputsOperandB" type="{}inputList"/>
- *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="output1" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="output2" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="operations" type="{}operationList"/>
  *         &lt;element name="conditions" type="{}conditionList" minOccurs="0"/>
- *         &lt;element name="statusFlags" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="status" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="control" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/all>
+ *       &lt;attribute name="x" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="y" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -54,11 +59,19 @@ public class Alu {
     @XmlElement(required = true)
     protected InputList inputsOperandB;
     @XmlElement(required = true)
-    protected String output;
+    protected String output1;
+    @XmlElement(required = true)
+    protected String output2;
     @XmlElement(required = true)
     protected OperationList operations;
     protected ConditionList conditions;
-    protected String statusFlags;
+    protected String status;
+    @XmlElement(required = true)
+    protected String control;
+    @XmlAttribute(name = "x")
+    protected Integer x;
+    @XmlAttribute(name = "y")
+    protected Integer y;
 
     /**
      * Ruft den Wert der id-Eigenschaft ab.
@@ -149,27 +162,51 @@ public class Alu {
     }
 
     /**
-     * Ruft den Wert der output-Eigenschaft ab.
+     * Ruft den Wert der output1-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getOutput() {
-        return output;
+    public String getOutput1() {
+        return output1;
     }
 
     /**
-     * Legt den Wert der output-Eigenschaft fest.
+     * Legt den Wert der output1-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setOutput(String value) {
-        this.output = value;
+    public void setOutput1(String value) {
+        this.output1 = value;
+    }
+
+    /**
+     * Ruft den Wert der output2-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOutput2() {
+        return output2;
+    }
+
+    /**
+     * Legt den Wert der output2-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOutput2(String value) {
+        this.output2 = value;
     }
 
     /**
@@ -221,27 +258,99 @@ public class Alu {
     }
 
     /**
-     * Ruft den Wert der statusFlags-Eigenschaft ab.
+     * Ruft den Wert der status-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getStatusFlags() {
-        return statusFlags;
+    public String getStatus() {
+        return status;
     }
 
     /**
-     * Legt den Wert der statusFlags-Eigenschaft fest.
+     * Legt den Wert der status-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setStatusFlags(String value) {
-        this.statusFlags = value;
+    public void setStatus(String value) {
+        this.status = value;
+    }
+
+    /**
+     * Ruft den Wert der control-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getControl() {
+        return control;
+    }
+
+    /**
+     * Legt den Wert der control-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setControl(String value) {
+        this.control = value;
+    }
+
+    /**
+     * Ruft den Wert der x-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getX() {
+        return x;
+    }
+
+    /**
+     * Legt den Wert der x-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setX(Integer value) {
+        this.x = value;
+    }
+
+    /**
+     * Ruft den Wert der y-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getY() {
+        return y;
+    }
+
+    /**
+     * Legt den Wert der y-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setY(Integer value) {
+        this.y = value;
     }
 
 }

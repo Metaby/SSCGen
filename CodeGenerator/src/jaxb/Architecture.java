@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.15 um 05:20:48 PM CEST 
+// Generiert: 2017.05.03 um 05:27:55 PM CEST 
 //
 
 
@@ -28,11 +28,9 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="register" type="{}register" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="stack" type="{}stack" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="rom" type="{}rom" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="registerFile" type="{}registerFile" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="alu" type="{}alu" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="memory" type="{}memory" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="jumpLogic" type="{}jumpLogic" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -46,22 +44,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "register",
-    "stack",
     "rom",
     "registerFile",
     "alu",
-    "memory",
     "jumpLogic"
 })
 @XmlRootElement(name = "architecture")
 public class Architecture {
 
     protected List<Register> register;
-    protected List<Stack> stack;
     protected List<Rom> rom;
     protected List<RegisterFile> registerFile;
     protected List<Alu> alu;
-    protected List<Memory> memory;
     protected List<JumpLogic> jumpLogic;
     @XmlAttribute(name = "wordSize")
     protected Integer wordSize;
@@ -93,35 +87,6 @@ public class Architecture {
             register = new ArrayList<Register>();
         }
         return this.register;
-    }
-
-    /**
-     * Gets the value of the stack property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the stack property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getStack().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Stack }
-     * 
-     * 
-     */
-    public List<Stack> getStack() {
-        if (stack == null) {
-            stack = new ArrayList<Stack>();
-        }
-        return this.stack;
     }
 
     /**
@@ -209,35 +174,6 @@ public class Architecture {
             alu = new ArrayList<Alu>();
         }
         return this.alu;
-    }
-
-    /**
-     * Gets the value of the memory property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the memory property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getMemory().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Memory }
-     * 
-     * 
-     */
-    public List<Memory> getMemory() {
-        if (memory == null) {
-            memory = new ArrayList<Memory>();
-        }
-        return this.memory;
     }
 
     /**

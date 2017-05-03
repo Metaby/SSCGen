@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.15 um 05:20:48 PM CEST 
+// Generiert: 2017.05.03 um 05:27:55 PM CEST 
 //
 
 
@@ -21,7 +21,6 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="conditionEnum">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="zero"/>
  *     &lt;enumeration value="gt"/>
  *     &lt;enumeration value="gt_u"/>
  *     &lt;enumeration value="lt"/>
@@ -40,8 +39,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum ConditionEnum {
 
-    @XmlEnumValue("zero")
-    ZERO("zero"),
     @XmlEnumValue("gt")
     GT("gt"),
     @XmlEnumValue("gt_u")

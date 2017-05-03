@@ -4,12 +4,10 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
 ENTITY ProgramPath_JumpLogic IS
-  GENERIC
-  (
+  GENERIC (
     g_wordSize : integer := 31
   );
-  PORT
-  (
+  PORT (
     p_pathA0 : in std_logic_vector(g_wordSize DOWNTO 0);
     p_pathB0 : in std_logic_vector(g_wordSize DOWNTO 0);
     p_ctrl : in std_logic_vector(3 DOWNTO 0);

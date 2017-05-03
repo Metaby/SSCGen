@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.04.15 um 05:20:48 PM CEST 
+// Generiert: 2017.05.03 um 05:27:55 PM CEST 
 //
 
 
@@ -10,6 +10,7 @@ package jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -30,7 +31,10 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="contentFile" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="addresses" type="{}addressList"/>
  *         &lt;element name="output" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="control" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/all>
+ *       &lt;attribute name="x" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="y" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -54,6 +58,12 @@ public class Rom {
     protected AddressList addresses;
     @XmlElement(required = true)
     protected String output;
+    @XmlElement(required = true)
+    protected String control;
+    @XmlAttribute(name = "x")
+    protected Integer x;
+    @XmlAttribute(name = "y")
+    protected Integer y;
 
     /**
      * Ruft den Wert der id-Eigenschaft ab.
@@ -181,6 +191,78 @@ public class Rom {
      */
     public void setOutput(String value) {
         this.output = value;
+    }
+
+    /**
+     * Ruft den Wert der control-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getControl() {
+        return control;
+    }
+
+    /**
+     * Legt den Wert der control-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setControl(String value) {
+        this.control = value;
+    }
+
+    /**
+     * Ruft den Wert der x-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getX() {
+        return x;
+    }
+
+    /**
+     * Legt den Wert der x-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setX(Integer value) {
+        this.x = value;
+    }
+
+    /**
+     * Ruft den Wert der y-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getY() {
+        return y;
+    }
+
+    /**
+     * Legt den Wert der y-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setY(Integer value) {
+        this.y = value;
     }
 
 }

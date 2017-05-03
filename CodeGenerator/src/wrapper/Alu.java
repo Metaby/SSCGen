@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.ComponentString;
+import tool.VhdlComponent;
 
 public class Alu {
 
@@ -19,58 +19,39 @@ public class Alu {
 	private List<Connector> inputsB;
 	private List<String> operations;
 	private List<String> conditions;
-	private Connector output;
+	private Connector output1;
+	private Connector output2;
 	private Connector status;
+	private Connector control;
 	private String id;
 	private int wordSize;
 	
 	public Alu(jaxb.Alu alu) {
 		id = alu.getId();
 		wordSize = alu.getWordSize();
+		control = new Connector(alu.getControl(), -1);
 		operations = new ArrayList<String>();
 		for (int i = 0; i < alu.getOperations().getOperation().size(); i++) {
 			operations.add(alu.getOperations().getOperation().get(i).name());
 		}
-		int conditionsCnt = 0;
 		conditions = new ArrayList<String>();
 		if (alu.getConditions() != null) {
 			for (int i = 0; i < alu.getConditions().getCondition().size(); i++) {
 				conditions.add(alu.getConditions().getCondition().get(i).name());
 			}			
 		}
-		Connector outCon = new Connector();
-		outCon.origin = alu.getId();
-		outCon.pin = alu.getOutput();
-		outCon.size = wordSize;
-		outCon.id = Connector.getNewId();
-		output = outCon;
-		if (alu.getStatusFlags() != null) {
-			Connector flagsCon = new Connector();
-			flagsCon.origin = alu.getId();
-			flagsCon.pin = alu.getStatusFlags();
-			flagsCon.size = conditionsCnt;
-			flagsCon.id = Connector.getNewId();
-			status = flagsCon;			
+		output1 = new Connector(alu.getOutput1(), wordSize);
+		output2 = new Connector(alu.getOutput2(), wordSize);
+		if (alu.getStatus() != null) {
+			status = new Connector(alu.getStatus(), 1);			
 		}
 		inputsA = new ArrayList<Connector>();
 		for (int i = 0; i < alu.getInputsOperandA().getInput().size(); i++) {
-			Connector inCon = new Connector();
-			String input = alu.getInputsOperandA().getInput().get(i);
-			inCon.origin = input.substring(0, input.indexOf("."));
-			inCon.pin = input.substring(input.indexOf(".") + 1);
-			inCon.size = wordSize;
-			inCon.id = Connector.getNewId();
-			inputsA.add(inCon);
+			inputsA.add(new Connector(alu.getInputsOperandA().getInput().get(i), wordSize));
 		}
 		inputsB = new ArrayList<Connector>();
 		for (int i = 0; i < alu.getInputsOperandB().getInput().size(); i++) {
-			Connector inCon = new Connector();
-			String input = alu.getInputsOperandB().getInput().get(i);
-			inCon.origin = input.substring(0, input.indexOf("."));
-			inCon.pin = input.substring(input.indexOf(".") + 1);
-			inCon.size = wordSize;
-			inCon.id = Connector.getNewId();
-			inputsB.add(inCon);
+			inputsB.add(new Connector(alu.getInputsOperandB().getInput().get(i), wordSize));
 		}
 	}
 	
@@ -84,7 +65,7 @@ public class Alu {
 	}
 
 	public void generateComponent(String targetFile) {
-		ComponentString component = new ComponentString(id);
+		VhdlComponent component = new VhdlComponent(id);
 		component.AddGeneric("g_wordSize : integer := " + (wordSize - 1));
 		for (int i = 0; i < inputsA.size(); i++) {
 			component.AddPort("p_inputA" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
@@ -173,8 +154,8 @@ public class Alu {
 		cvSize += cmpnts; // cmpnts Bits for output-Mux
 		component.AddSignal("s_alu_cmd : std_logic_vector(" + (cvSize - 1) + " DOWNTO 0)");
 		String muxes = "";
-		muxes += ComponentString.generateMux("p_inputASelect", "s_inputAInput", "p_inputA", inputsA.size());
-		muxes += ComponentString.generateMux("p_inputBSelect", "s_inputBInput", "p_inputB", inputsB.size());
+		muxes += VhdlComponent.generateMux("p_inputASelect", "s_inputAInput", "p_inputA", inputsA.size());
+		muxes += VhdlComponent.generateMux("p_inputBSelect", "s_inputBInput", "p_inputB", inputsB.size());
 		muxes += "  -- Command-Vector" + System.lineSeparator();
 		muxes += cmd;
 		List<String> imports = prepareFilesAndImports();
@@ -219,7 +200,6 @@ public class Alu {
 	}
 	
 	public String generateOutputLogic(int cmdBits, int muxBits) {
-		String cmdTable = "  -- Command-Table";
 		String outLogic = "  -- Output-Logic";
 		Boolean[] neededComponents = getNeededComponents();
 		if (muxBits > 0) {
@@ -564,8 +544,8 @@ public class Alu {
 		return conditions;
 	}
 
-	public Connector getOutput() {
-		return output;
+	public Connector getOutput1() {
+		return output1;
 	}
 
 	public Connector getStatus() {
@@ -586,4 +566,12 @@ public class Alu {
 	final int DIVIDER = 3;
 	final int MULTIPLIER = 4;
 	final int SHIFTER = 5;
+
+	public Connector getControl() {
+		return control;
+	}
+
+	public Connector getOutput2() {
+		return output2;
+	}
 }

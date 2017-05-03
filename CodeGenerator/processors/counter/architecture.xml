@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <architecture wordSize="32">
-	<register>
+	<register x="0" y="0">
 		<id>counter</id>
-		<size>32</size>
+		<size>8</size>
 		<inputs>
 			<input>incrementer.out</input>
 		</inputs>
-		<output>out</output>
+		<output>counter.out</output>
+		<control>system.const.1</control>
 	</register>
-	<alu>
-		<id>incrementer</id>
-		<wordSize>32</wordSize>
-		<inputsOperandA>
+	<register x="0" y="0">
+		<id>port</id>
+		<size>8</size>
+		<inputs>
 			<input>counter.out</input>
+		</inputs>
+		<output>system.out.portA</output>
+		<control>system.const.1</control>
+	</register>
+	<alu x="0" y="0">
+		<id>incrementer</id>
+		<wordSize>8</wordSize>
+		<inputsOperandA>
+			<input>counter.out</input>	
 		</inputsOperandA>
 		<inputsOperandB>
-			<input>:const.1</input>			
+			<input>system.in.step</input>		
 		</inputsOperandB>
-		<output>out</output>
+		<output1>incrementer.out</output1>
+		<output2>system.open</output2>
 		<operations>
 			<operation>add_u</operation>
 		</operations>
+		<control>counter.out</control>
+		<status>system.open</status>
 	</alu>
 </architecture>
