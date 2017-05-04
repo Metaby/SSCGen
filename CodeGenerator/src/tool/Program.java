@@ -20,8 +20,9 @@ public class Program {
 	
 	public static void main(String[] args) {
 		startTimeMeasuring();
-		String processor = "mips";
-		createMDF("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
+		String processor = "counter";
+//		createMDF("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
+		generateProcessor("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/generated_code/");
 		generateProcessor("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
 		stopTimeMeasureing();
 //		System.out.println("-- Mikrocode-Design-Filge");

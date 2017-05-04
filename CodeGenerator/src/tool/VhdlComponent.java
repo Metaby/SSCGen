@@ -28,27 +28,39 @@ public class VhdlComponent {
 	}
 
 	public void AddLibrary(String library) {
-		libraries.add(library);
+		if (!libraries.contains(library)) {
+			libraries.add(library);			
+		}
 	}
 	
 	public void AddGeneric(String generic) {
-		generics.add(generic);
+		if (!generics.contains(generic)) {
+			generics.add(generic);			
+		}
 	}
 
 	public void AddPort(String port) {
-		ports.add(port);
+		if (!ports.contains(port)) {
+			ports.add(port);			
+		}
 	}
 	
 	public void AddSignal(String signal) {
-		signals.add(signal);
+		if (!signals.contains(signal)) {
+			signals.add(signal);			
+		}
 	}
 	
 	public void AddImport(String imprt) {
-		imports.add(imprt);
+		if (!imports.contains(imprt)) {
+			imports.add(imprt);			
+		}
 	}
 	
 	public void AddType(String type) {
-		types.add(type);
+		if (!types.contains(type)) {
+			types.add(type);			
+		}
 	}
 	
 	public String getComponent() {
@@ -169,5 +181,9 @@ public class VhdlComponent {
 
 	public String getName() {
 		return name;
+	}
+
+	public List<String> getSignals() {
+		return signals;
 	}
 }

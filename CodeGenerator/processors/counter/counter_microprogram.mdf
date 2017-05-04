@@ -1,2 +1,2 @@
 -- control-vector:
--- counter_write, port_write
+-- counter1_write, counter2_write, output_register1_write, output_register2_write

@@ -95,6 +95,7 @@ public class Alu {
 		} else if (cmdBits > 1) {
 			component.AddPort("p_operation : in std_logic_vector(" + (cmdBits - 1) + " DOWNTO 0)");
 		}
+		Boolean[] neededComponents = getNeededComponents();
 		if (status != null) {
 			int statusSize = conditions.size() + 1; // + 1 over/underflow
 			component.AddPort("p_status : out std_logic_vector(" + (statusSize - 1) + " DOWNTO 0)");
@@ -104,7 +105,6 @@ public class Alu {
 		component.AddSignal("s_inputAInput : std_logic_vector(g_wordSize DOWNTO 0");
 		component.AddSignal("s_inputBInput : std_logic_vector(g_wordSize DOWNTO 0");
 		component.AddSignal("s_sgnd : std_logic");
-		Boolean[] neededComponents = getNeededComponents();
 		String cmd = "  s_sgnd <= s_alu_cmd(0)" + System.lineSeparator();
 		int aluCmd = 1;
 		int cvSize = 1; // 1 Bit, s_sgnd

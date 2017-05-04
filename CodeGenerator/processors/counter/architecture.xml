@@ -1,28 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <architecture wordSize="32">
 	<register x="0" y="0">
-		<id>counter</id>
-		<size>8</size>
+		<id>counter1</id>
+		<size>7</size>
 		<inputs>
-			<input>incrementer.out</input>
+			<input>incrementer.out[0,6]</input>
 		</inputs>
-		<output>counter.out</output>
+		<output>counter1.out</output>
 		<control>system.const.1</control>
 	</register>
 	<register x="0" y="0">
-		<id>port</id>
+		<id>counter2</id>
 		<size>8</size>
 		<inputs>
-			<input>counter.out</input>
+			<input>decrementer.out</input>
 		</inputs>
-		<output>system.out.portA</output>
+		<output>counter2.out</output>
+		<control>system.const.1</control>
+	</register>
+	<register x="0" y="0">
+		<id>output_register1</id>
+		<size>8</size>
+		<inputs>
+			<input>counter1.out</input>
+		</inputs>
+		<output>system.out.count_up</output>
+		<control>system.const.1</control>
+	</register>
+	<register x="0" y="0">
+		<id>output_register2</id>
+		<size>8</size>
+		<inputs>
+			<input>counter2.out</input>
+		</inputs>
+		<output>system.out.count_down</output>
 		<control>system.const.1</control>
 	</register>
 	<alu x="0" y="0">
 		<id>incrementer</id>
 		<wordSize>8</wordSize>
 		<inputsOperandA>
-			<input>counter.out</input>	
+			<input>counter1.out</input>	
 		</inputsOperandA>
 		<inputsOperandB>
 			<input>system.in.step</input>		
@@ -32,7 +50,24 @@
 		<operations>
 			<operation>add_u</operation>
 		</operations>
-		<control>counter.out</control>
+		<control>system.auto</control>
+		<status>system.open</status>
+	</alu>
+	<alu x="0" y="0">
+		<id>decrementer</id>
+		<wordSize>8</wordSize>
+		<inputsOperandA>
+			<input>counter2.out</input>	
+		</inputsOperandA>
+		<inputsOperandB>
+			<input>system.in.step</input>		
+		</inputsOperandB>
+		<output1>decrementer.out</output1>
+		<output2>system.open</output2>
+		<operations>
+			<operation>sub_u</operation>
+		</operations>
+		<control>system.auto</control>
 		<status>system.open</status>
 	</alu>
 </architecture>

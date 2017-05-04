@@ -242,7 +242,7 @@ public class ComponentFactory {
 	// Register
 	public VhdlComponent generateComponent(Register register) {
 		VhdlComponent component = new VhdlComponent(register.getId());
-		component.AddGeneric("g_word_size : integer := " + (register.getSize() - 1));
+		component.AddGeneric("g_word_size : integer := " + (register.getWordSize() - 1));
 		component.AddPort("p_clk : in std_logic");
 		component.AddPort("p_rst : in std_logic");
 		component.AddPort("p_write : in std_logic");
@@ -258,7 +258,7 @@ public class ComponentFactory {
 			}			
 		}
 		component.AddPort("p_word : out std_logic_vector(g_word_size DOWNTO 0)");
-		component.AddSignal("s_input : std_logic_vector(g_word_size DOWNTO 0");		
+		component.AddSignal("s_input : std_logic_vector(g_word_size DOWNTO 0)");		
 		String behavior = "";
 		behavior += VhdlComponent.generateMux("p_isel", "s_input", "p_input", register.getInputs().size());
 		behavior += "  -- Behavior" + System.lineSeparator();
@@ -268,9 +268,9 @@ public class ComponentFactory {
 		behavior += "        p_word <= (OTHERS => '0');" + System.lineSeparator();
 		behavior += "      ELSIF p_write = '1' THEN" + System.lineSeparator();
 		behavior += "        p_word <= s_input;" + System.lineSeparator();
-		behavior += "      ELSE" + System.lineSeparator();
-		behavior += "        p_word <= p_word;" + System.lineSeparator();
-		behavior += "      END IF;;" + System.lineSeparator();
+		//behavior += "      ELSE" + System.lineSeparator();
+		//behavior += "        p_word <= p_word;" + System.lineSeparator();
+		behavior += "      END IF;" + System.lineSeparator();
 		behavior += "    END IF;" + System.lineSeparator();
 		behavior += "  END PROCESS;";
 		component.setBehavior(behavior);
@@ -329,8 +329,8 @@ public class ComponentFactory {
 		component.AddPort("p_output_1 : out std_logic_vector(g_word_size DOWNTO 0)");
 		component.AddPort("p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)");
 		// Signals
-		component.AddSignal("s_input_A : std_logic_vector(g_word_size DOWNTO 0");
-		component.AddSignal("s_input_B : std_logic_vector(g_word_size DOWNTO 0");
+		component.AddSignal("s_input_A : std_logic_vector(g_word_size DOWNTO 0)");
+		component.AddSignal("s_input_B : std_logic_vector(g_word_size DOWNTO 0)");
 		component.AddSignal("s_sgnd : std_logic");
 		if (subComponents.contains("ADDER")) {
 			component.AddSignal("s_adder_sub : std_logic");
@@ -832,7 +832,7 @@ public class ComponentFactory {
 		List<String> subComponents = getAluSubComponents(alu);
 		if (subComponents.contains("ADDER")) {
 			int blocks = (alu.getWordSize() / 8) - 1;
-			instances += "  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => " + blocks + ") PORT MAP (s_sgnd, s_adder_sub, s_input_A, s_input_B, s_adder_ovflw, s_adder_result);" + System.lineSeparator();
+			instances += "  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => " + blocks + ") PORT MAP (s_sgnd, s_adder_sub, s_input_A, s_input_B, s_adder_result, s_adder_ovflw);" + System.lineSeparator();
 		}
 		if (subComponents.contains("BITLOGIC")) {
 			instances += "  logic : bit_manipulator GENERIC MAP (g_size => g_word_size) PORT MAP (s_input_A, s_input_B, s_logic_cmd, s_logic_result);" + System.lineSeparator();
@@ -841,7 +841,7 @@ public class ComponentFactory {
 			instances += "  div : divider GENERIC MAP (g_size => g_word_size) PORT MAP (s_sgnd, s_input_A, s_input_B, s_div_remain, s_div_result);" + System.lineSeparator();
 		}
 		if (subComponents.contains("MULTIPLIER")) {
-			instances += "  mul : four_quadrant_multiplier GENEIRC MAP (g_size => g_word_size) PORT MAP (s_sgnd, s_input_A, s_input_B, 0, s_mul_result_lo, s_mul_result_hi);" + System.lineSeparator();
+			instances += "  mul : four_quadrant_multiplier GENERIC MAP (g_size => g_word_size) PORT MAP (s_sgnd, s_input_A, s_input_B, (OTHERS => '0'), s_mul_result_lo, s_mul_result_hi);" + System.lineSeparator();
 		}
 		if (subComponents.contains("COMPARATOR")) {
 			instances += "  comp : word_comparator GENERIC MAP (g_size => g_word_size) PORT MAP (s_input_A, s_input_B, s_comp_cmd, s_sgnd, s_comp_result);" + System.lineSeparator();

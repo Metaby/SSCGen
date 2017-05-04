@@ -56,7 +56,7 @@ public class Register {
 		return id;
 	}
 
-	public int getSize() {
+	public int getWordSize() {
 		return size;
 	}
 
