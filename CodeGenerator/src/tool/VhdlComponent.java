@@ -101,16 +101,16 @@ public class VhdlComponent {
 				component.append(imports.get(i) + nl);
 			}
 		}
-		if (signals.size() > 0) {
-			for (int i = 0; i < signals.size(); i++) {
-				component.append("  SIGNAL " + signals.get(i) + ";" + nl);
-			}
-		}
 		if (types.size() > 0) {
 			for (int i = 0; i < types.size(); i++) {
 				component.append("  TYPE " + types.get(i) + ";" + nl);
 			}
 		}	
+		if (signals.size() > 0) {
+			for (int i = 0; i < signals.size(); i++) {
+				component.append("  SIGNAL " + signals.get(i) + ";" + nl);
+			}
+		}
 		component.append("BEGIN" + nl);
 		component.append(behavior + nl);		
 		component.append("END behavior;");
@@ -126,51 +126,21 @@ public class VhdlComponent {
 		if (inputs == 2) {
 			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
 			behavior += "    " + inputName + "0 WHEN \'0\'," + System.lineSeparator();
-			behavior += "    " + inputName + "1 WHEN \'1\';" + System.lineSeparator();
+			behavior += "    " + inputName + "1 WHEN \'1\'," + System.lineSeparator();
+			behavior += "    (OTHERS => '0') WHEN OTHERS;" + System.lineSeparator();
 		} else if (inputs > 2) {
 			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
 			int adrSize = (int)Math.ceil(Math.log(inputs) / Math.log(2));
 			for (int i = 0; i < inputs; i++) {
-				behavior += "    " + inputName + i + " WHEN \"" + String.format("%" + adrSize + "s", Integer.toBinaryString(i)).replace(' ', '0') + "\"";
-				if (i < inputs - 1) {
-					behavior += "," + System.lineSeparator();
-				} else {
-					behavior += ";" + System.lineSeparator();					
-				}
-			}			
+				behavior += "    " + inputName + i + " WHEN \"" + String.format("%" + adrSize + "s", Integer.toBinaryString(i)).replace(' ', '0') + "\"," + System.lineSeparator();
+			}	
+			behavior += "    (OTHERS => '0') WHEN OTHERS;" + System.lineSeparator();
 		} else {
 			behavior += "  " + outp + " <= " + inputName + "0;" + System.lineSeparator();
 		}
 		return behavior;
-	}
-
-	public static String generateIf(String condition, String ifCmd, String elseCmd, String elseIfCondition[], String elseIfCmd[]) {
-		return generateIf(condition, ifCmd, elseCmd, elseIfCondition, elseIfCmd, 0);
-	}
+	}	
 	
-	public static String generateIf(String ifCondition, String ifCmd, String elseCmd, String elseIfCondition[], String elseIfCmd[], int indent) {
-		String ifStr = "";
-		String indentStr = "";
-		Boolean complexCmd = (ifCmd.split("\n").length > 1);
-		while (indent-- > 0) indentStr += " ";
-		ifStr += indentStr + "IF " + ifCondition + " THEN" + System.lineSeparator();
-		ifStr += indentStr + (complexCmd ? "" : "  ") + ifCmd + (complexCmd ? "" : ";") + System.lineSeparator();
-		if (elseIfCondition != null && elseIfCmd != null && elseIfCondition.length == elseIfCmd.length) {
-			for (int i = 0; i < elseIfCondition.length; i++) {
-				complexCmd =(elseIfCmd[i].split("\n").length > 1);
-				ifStr += indentStr + "ELSIF " + elseIfCondition[i] + " THEN" + System.lineSeparator();
-				ifStr += indentStr + (complexCmd ? "" : "  ") + elseIfCmd[i] + (complexCmd ? "" : ";") + System.lineSeparator();
-			}
-		}
-		complexCmd = (elseCmd.split("\n").length > 1);
-		if (elseCmd != null && !elseCmd.equals("")) {
-			ifStr += indentStr + "ELSE" + System.lineSeparator();
-			ifStr += indentStr + (complexCmd ? "" : "  ") + elseCmd + (complexCmd ? "" : ";") + System.lineSeparator();
-		}
-		ifStr += indentStr + "END IF;";
-		return ifStr;
-	}
-
 	public List<String> getGenerics() {
 		return generics;
 	}

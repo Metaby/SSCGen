@@ -10,13 +10,11 @@ public class Port {
 	private List<Connector> addresses;
 	private Connector output;
 	
-	public Port(jaxb.Port p, int wordSize, int addressSize, String parentId) {
+	Port(jaxb.Port p, int wordSize, int addressSize, String parentId) {
 		if (p.getType() == jaxb.PortDirection.IN) {
 			direction = PortDirection.IN;
 		} else if (p.getType() == jaxb.PortDirection.OUT) {
 			direction = PortDirection.OUT;
-		} else {
-			direction = PortDirection.IN_OUT;
 		}
 		if (p.getOutput() != null) {
 			output = new Connector(p.getOutput(), wordSize);			

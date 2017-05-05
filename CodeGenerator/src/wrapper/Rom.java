@@ -1,29 +1,26 @@
 package wrapper;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import tool.VhdlComponent;
 
 public class Rom {
 
 	private List<Connector> addresses;
 	private Connector output;
+	private Connector control;
 	private String contentFile;
 	private String id;
 	private int addressSize;
 	private int wordSize;
 	
-	public Rom(jaxb.Rom rom) {
+	Rom(jaxb.Rom rom) {
 		id = rom.getId();
 		contentFile = rom.getContentFile();
 		addressSize = rom.getAddressSize();
 		wordSize = rom.getWordSize();
 		output = new Connector(rom.getOutput(), wordSize);
+		control = new Connector(rom.getControl(), -1);
 		addresses = new ArrayList<Connector>();
 		for (int i = 0; i < rom.getAddresses().getAddress().size(); i++) {
 			addresses.add(new Connector(rom.getAddresses().getAddress().get(i), addressSize));
@@ -60,6 +57,10 @@ public class Rom {
 
 	public String getContentFile() {
 		return contentFile;
+	}
+
+	public Connector getControl() {
+		return control;
 	}
 	
 }

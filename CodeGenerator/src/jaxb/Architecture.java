@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.05.03 um 05:27:55 PM CEST 
+// Generiert: 2017.05.05 um 10:46:20 AM CEST 
 //
 
 
@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="rom" type="{}rom" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="registerFile" type="{}registerFile" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="alu" type="{}alu" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="jumpLogic" type="{}jumpLogic" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="multiplexer" type="{}multiplexer" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="wordSize" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
     "rom",
     "registerFile",
     "alu",
-    "jumpLogic"
+    "multiplexer"
 })
 @XmlRootElement(name = "architecture")
 public class Architecture {
@@ -56,7 +56,7 @@ public class Architecture {
     protected List<Rom> rom;
     protected List<RegisterFile> registerFile;
     protected List<Alu> alu;
-    protected List<JumpLogic> jumpLogic;
+    protected List<Multiplexer> multiplexer;
     @XmlAttribute(name = "wordSize")
     protected Integer wordSize;
 
@@ -177,32 +177,32 @@ public class Architecture {
     }
 
     /**
-     * Gets the value of the jumpLogic property.
+     * Gets the value of the multiplexer property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the jumpLogic property.
+     * This is why there is not a <CODE>set</CODE> method for the multiplexer property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getJumpLogic().add(newItem);
+     *    getMultiplexer().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JumpLogic }
+     * {@link Multiplexer }
      * 
      * 
      */
-    public List<JumpLogic> getJumpLogic() {
-        if (jumpLogic == null) {
-            jumpLogic = new ArrayList<JumpLogic>();
+    public List<Multiplexer> getMultiplexer() {
+        if (multiplexer == null) {
+            multiplexer = new ArrayList<Multiplexer>();
         }
-        return this.jumpLogic;
+        return this.multiplexer;
     }
 
     /**

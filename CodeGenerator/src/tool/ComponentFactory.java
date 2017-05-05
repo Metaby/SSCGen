@@ -12,28 +12,30 @@ import java.util.List;
 
 import wrapper.*;
 
-public class ComponentFactory {
+class ComponentFactory {
 	
 	private String targetDirectory;
 	
-	public ComponentFactory(String targetDirectory) {
+	ComponentFactory(String targetDirectory) {
 		this.targetDirectory = targetDirectory;
 	}
 	
 	// RegisterFile
-	public VhdlComponent generateComponent(RegisterFile rf) {
+	VhdlComponent generateComponent(RegisterFile rf) {
 		VhdlComponent component = new VhdlComponent(rf.getId());
-		component.AddGeneric("g_wordSize : integer := " + (rf.getWordSize() - 1));
-		component.AddGeneric("g_addressSize : integer := " + (rf.getAddressSize() - 1));
+		component.AddLibrary("USE ieee.numeric_std.all;");
+		component.AddGeneric("g_address_size : integer := " + (rf.getAddressSize() - 1));
+		component.AddGeneric("g_word_size : integer := " + (rf.getWordSize() - 1));
+		component.AddPort("p_clk : in std_logic");
 		String muxes = "";
 		for (int j = 0; j < rf.getPorts().size(); j++) {
 			Port p = rf.getPorts().get(j);
 			if (p.getDirection() == PortDirection.IN) {
 				for (int i = 0; i < p.getInputs().size(); i++) {
-					component.AddPort("p_port" + j +  "_input" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
+					component.AddPort("p_port" + j +  "_input" + i + " : in std_logic_vector(g_word_size DOWNTO 0)");
 				}
 				for (int i = 0; i < p.getAddresses().size(); i++) {
-					component.AddPort("p_port" + j +  "_address" + i + " : in std_logic_vector(g_addressSize DOWNTO 0)");					
+					component.AddPort("p_port" + j +  "_address" + i + " : in std_logic_vector(g_address_size DOWNTO 0)");					
 				}
 				int adrBits = (int)Math.ceil(Math.log(p.getInputs().size()) / Math.log(2));
 				if (p.getInputs().size() == 2) {
@@ -47,14 +49,14 @@ public class ComponentFactory {
 				} else if (p.getAddresses().size() > 2) {
 					component.AddPort("p_port" + j + "_addressSelect : in std_logic_vector(" + (adrBits - 1) + " DOWNTO 0)");					
 				}
-				component.AddSignal("s_port" + j + "_inputSelect : std_logic_vector(g_wordSize DOWNTO 0)");
+				component.AddSignal("s_port" + j + "_inputSelect : std_logic_vector(g_word_size DOWNTO 0)");
 				muxes += VhdlComponent.generateMux("p_port" + j + "_inputSelect", "s_port" + j + "_inputSelect", "p_port" + j +  "_input", p.getInputs().size());
-				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_addressSize DOWNTO 0)");
+				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_address_size DOWNTO 0)");
 				muxes += VhdlComponent.generateMux("p_port" + j + "_addressSelect", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
 				component.AddPort("p_port" + j + "_write : in std_logic");
 			} else {
 				for (int i = 0; i < p.getAddresses().size(); i++) {
-					component.AddPort("p_port" + j +  "_address" + i + " : in std_logic_vector(g_addressSize DOWNTO 0)");					
+					component.AddPort("p_port" + j +  "_address" + i + " : in std_logic_vector(g_address_size DOWNTO 0)");					
 				}
 				int adrBits = (int)Math.ceil(Math.log(p.getAddresses().size()) / Math.log(2));
 				if (p.getAddresses().size() == 2) {
@@ -62,27 +64,24 @@ public class ComponentFactory {
 				} else if (p.getAddresses().size() > 2) {
 					component.AddPort("p_port" + j + "_addressSelect : in std_logic_vector(" + (adrBits - 1) + " DOWNTO 0)");					
 				}
-				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_addressSize DOWNTO 0)");
+				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_address_size DOWNTO 0)");
 				muxes += VhdlComponent.generateMux("p_port" + j + "_addressSelect", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
-				component.AddPort("p_port" + j + "_output : out std_logic_vector(g_wordSize DOWNTO 0)");
+				component.AddPort("p_port" + j + "_output : out std_logic_vector(g_word_size DOWNTO 0)");
 			}
 		}
-		component.AddPort("p_clk : in std_logic");
-		component.AddType("TYPE registerArray IS ARRAY(" + (int)Math.pow(2, rf.getAddressSize()) + " DOWNTO 0) OF std_logic_vector(g_wordSize DOWNTO 0)");
+		component.AddType("registerArray IS ARRAY(" + (int)Math.pow(2, rf.getAddressSize()) + " DOWNTO 0) OF std_logic_vector(g_word_size DOWNTO 0)");
 		component.AddSignal("s_registers : registerArray");
 		String behavior = "";
 		behavior += "  PROCESS (p_clk) BEGIN" + System.lineSeparator();
-		behavior += "    IF rising_edge(p_clk)" + System.lineSeparator();
+		behavior += "    IF rising_edge(p_clk) THEN" + System.lineSeparator();
 		for (int i = 0; i < rf.getPorts().size(); i++) {
 			Port p = rf.getPorts().get(i);
 			if (p.getDirection() == PortDirection.IN) {
-				behavior += "      IF p_port" + i + "_write = \'1\'" + System.lineSeparator();
-				behavior += "        s_registers(s_port" + i + "_addressSelect) <= s_port" + i + "_inputSelect;" + System.lineSeparator();
-				behavior += "      ELSE" + System.lineSeparator();
-				behavior += "        s_registers(s_port" + i + "_addressSelect) <= s_registers(s_port" + i + "_addressSelect);" + System.lineSeparator();
+				behavior += "      IF p_port" + i + "_write = \'1\' THEN" + System.lineSeparator();
+				behavior += "        s_registers(to_integer(unsigned(s_port" + i + "_addressSelect))) <= s_port" + i + "_inputSelect;" + System.lineSeparator();
 				behavior += "      END IF;" + System.lineSeparator();
 			} else {
-				behavior += "      p_port" + i + "_output <= s_registers(s_port" + i + "_addressSelect)" + System.lineSeparator();
+				behavior += "      p_port" + i + "_output <= s_registers(to_integer(unsigned(s_port" + i + "_addressSelect)));" + System.lineSeparator();
 			}
 		}
 		behavior += "    END IF;" + System.lineSeparator();
@@ -100,56 +99,24 @@ public class ComponentFactory {
 	}
 	
 	// JumpLogic
-	public VhdlComponent generateComponent(JumpLogic jl) {
+	VhdlComponent generateComponent(Multiplexer jl) {
 		VhdlComponent component = new VhdlComponent(jl.getId());
-		int inputFlagsCnt = jl.getInputFlagsCnt();
-		int ptASize = jl.getProgramTargetsA().size();
-		int ptBSize = jl.getProgramTargetsB().size();
-		component.AddGeneric("g_wordSize : integer := " + (jl.getWordSize() - 1));
-		for (int i = 0; i < ptASize; i++) {
-			component.AddPort("p_pathA" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
+		int inputsCnt = jl.getInputs().size();
+		component.AddGeneric("g_word_size : integer := " + (jl.getWordSize() - 1));
+		for (int i = 0; i < inputsCnt; i++) {
+			component.AddPort("p_input" + i + " : in std_logic_vector(g_word_size DOWNTO 0)");
 		}
-		for (int i = 0; i < ptBSize; i++) {
-			component.AddPort("p_pathB" + i + " : in std_logic_vector(g_wordSize DOWNTO 0)");
-		}
-		int adrSizeA = log2(ptASize);
-		if (ptASize > 1) {
-			if (adrSizeA > 1) {
-				component.AddPort("p_pathASelect : in std_logic_vector(" + (adrSizeA - 1) + " DOWNTO 0)");				
+		int iselSize = log2(inputsCnt);
+		if (inputsCnt > 1) {
+			if (iselSize > 1) {
+				component.AddPort("p_isel : in std_logic_vector(" + (iselSize - 1) + " DOWNTO 0)");				
 			} else {
-				component.AddPort("p_pathASelect : in std_logic");			
+				component.AddPort("p_isel : in std_logic");			
 			}			
 		}
-		int adrSizeB = log2(ptBSize);
-		if (ptBSize > 1) {
-			if (adrSizeB > 1) {
-				component.AddPort("p_pathBSelect : in std_logic_vector(" + (adrSizeB - 1) + " DOWNTO 0)");				
-			} else {
-				component.AddPort("p_pathBSelect : in std_logic");			
-			}			
-		}
-		component.AddPort("p_ctrl : in std_logic_vector(" + (inputFlagsCnt - 1) + " DOWNTO 0)");
-		component.AddPort("p_ctrlSelect : in std_logic_vector(" + ((int)Math.ceil(Math.log(inputFlagsCnt) / Math.log(2)) - 1) + " DOWNTO 0");
-		component.AddPort("p_pathOut : out std_logic_vector(g_wordSize DOWNTO 0)");
-		component.AddSignal("s_pathAInput : std_logic_vector(g_wordSize DOWNTO 0");
-		component.AddSignal("s_pathBInput : std_logic_vector(g_wordSize DOWNTO 0");
-		component.AddSignal("s_pathSelect : std_logic");
+		component.AddPort("p_word : out std_logic_vector(g_word_size DOWNTO 0)");
 		String behavior = "";
-		behavior += VhdlComponent.generateMux("p_pathASelect", "s_pathAInput", "p_pathA", ptASize);
-		behavior += VhdlComponent.generateMux("p_pathBSelect", "s_pathBInput", "p_pathB", ptBSize);
-		behavior += "  -- Behavior" + System.lineSeparator();		
-		behavior += "  WITH p_ctrlSelect SELECT s_pathSelect <=" + System.lineSeparator();
-		for (int i = 0; i < inputFlagsCnt; i++) {
-			behavior += "    p_ctrl(" + i + ") " + " WHEN \"" + String.format("%" + ((int)Math.ceil(Math.log(inputFlagsCnt) / Math.log(2))) + "s", Integer.toBinaryString(i)).replace(' ', '0');
-			if (i < inputFlagsCnt - 1) {
-				behavior += "\"," + System.lineSeparator();				
-			} else {
-				behavior += "\";" + System.lineSeparator();				
-			}
-		}		
-		behavior += "  WITH s_pathSelect SELECT p_pathOut <=" + System.lineSeparator();
-		behavior += "    s_pathAInput WHEN \'0\'," + System.lineSeparator();
-		behavior += "    s_pathBInput WHEN \'1\';";
+		behavior += VhdlComponent.generateMux("p_isel", "p_word", "p_input", inputsCnt);
 		component.setBehavior(behavior);
 		String targetFile = targetDirectory + "/components/" + jl.getId() + ".vhdl";
 		File outputFile = new File(targetFile);
@@ -163,7 +130,7 @@ public class ComponentFactory {
 	}
 	
 	// ROM
-	public VhdlComponent generateComponent(Rom rom) {	
+	VhdlComponent generateComponent(Rom rom) {	
 		int content[] = new int[] { 1 };
 		String contentFile = rom.getContentFile();
 		int addressSize = rom.getAddressSize();
@@ -209,7 +176,7 @@ public class ComponentFactory {
 			}			
 		}
 		component.AddPort("p_word : out std_logic_vector(g_wordSize DOWNTO 0)");
-		component.AddSignal("s_address : std_logic_vector(g_addressSize DOWNTO 0");		
+		component.AddSignal("s_address : std_logic_vector(g_addressSize DOWNTO 0)");		
 		String behavior = "";
 		behavior += VhdlComponent.generateMux("p_addrSelect", "s_address", "p_address", rom.getAddresses().size());
 		behavior += "  -- Behavior" + System.lineSeparator();
@@ -240,7 +207,7 @@ public class ComponentFactory {
 	}
 	
 	// Register
-	public VhdlComponent generateComponent(Register register) {
+	VhdlComponent generateComponent(Register register) {
 		VhdlComponent component = new VhdlComponent(register.getId());
 		component.AddGeneric("g_word_size : integer := " + (register.getWordSize() - 1));
 		component.AddPort("p_clk : in std_logic");
@@ -286,7 +253,7 @@ public class ComponentFactory {
 	}
 	
 	// ALU
-	public VhdlComponent generateComponent(Alu alu) {
+	VhdlComponent generateComponent(Alu alu) {
 		VhdlComponent component = new VhdlComponent(alu.getId());
 		// Variables
 		int operationsCnt = alu.getOperations().size();
@@ -693,7 +660,7 @@ public class ComponentFactory {
 		}
 	}
 
-	public List<String> getAluImports(Alu alu) {
+	private List<String> getAluImports(Alu alu) {
 		List<String> imports = new ArrayList<String>();
 		List<String> subComponents = getAluSubComponents(alu);
 		try {
@@ -922,7 +889,7 @@ public class ComponentFactory {
 		return String.format("%" + digits + "s", Integer.toBinaryString(value)).replace(' ', '0');
 	}
 	
-	public void copy(File sourceLocation, File targetLocation) throws IOException {
+	private void copy(File sourceLocation, File targetLocation) throws IOException {
 	    if (sourceLocation.isDirectory()) {
 	        copyDirectory(sourceLocation, targetLocation);
 	    } else {

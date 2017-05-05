@@ -1,11 +1,7 @@
 package wrapper;
 
-import java.util.ArrayList;
-
 public class Connector {
 
-	private static int c = 0;
-	
 	public ConnectorType type;
 	public String origin;
 	public String pin;
@@ -13,11 +9,10 @@ public class Connector {
 	public int lowerBound;
 	public int upperBound;
 	public int size;
-	public int id;
 	
-	public Connector(String value, int size) {
+	
+	Connector(String value, int size) {
 		this.size = size;
-		this.id = c++;
 		if (value.startsWith("system.auto")) {
 			type = ConnectorType.SYSTEM_AUTO;
 			origin = "";

@@ -1,42 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <architecture wordSize="32">
-	<register x="0" y="0">
+	<!--<register x="0" y="0">
 		<id>counter1</id>
-		<size>7</size>
-		<inputs>
-			<input>incrementer.out[0,6]</input>
-		</inputs>
-		<output>counter1.out</output>
-		<control>system.const.1</control>
-	</register>
-	<register x="0" y="0">
-		<id>counter2</id>
 		<size>8</size>
 		<inputs>
-			<input>decrementer.out</input>
+			<input>incrementer.out</input>
 		</inputs>
-		<output>counter2.out</output>
+		<output>counter1.out</output>
 		<control>system.const.1</control>
 	</register>
 	<register x="0" y="0">
 		<id>output_register1</id>
 		<size>8</size>
 		<inputs>
-			<input>counter1.out</input>
+			<input>mux1.out</input>
 		</inputs>
 		<output>system.out.count_up</output>
 		<control>system.const.1</control>
 	</register>
-	<register x="0" y="0">
-		<id>output_register2</id>
-		<size>8</size>
-		<inputs>
-			<input>counter2.out</input>
-		</inputs>
-		<output>system.out.count_down</output>
-		<control>system.const.1</control>
-	</register>
-	<alu x="0" y="0">
+	<rom>
+		<id>program_rom</id>
+		<wordSize>8</wordSize>
+		<addressSize>8</addressSize>
+		<contentFile>C:/program.hex</contentFile>
+		<addresses>
+			<address>counter1.out</address>
+		</addresses>
+		<output>program_rom.out</output>
+		<control>system.auto</control>
+	</rom>-->
+	<registerFile>
+		<id>memory</id>
+		<wordSize>8</wordSize>
+		<addressSize>8</addressSize>
+		<ports>
+			<port>
+				<type>in</type>
+				<addresses>
+					<address>system.in.mem_in_adr</address>
+				</addresses>
+				<inputs>
+					<input>system.in.mem_in</input>
+				</inputs>
+			</port>
+			<port>
+				<type>out</type>
+				<addresses>
+					<address>system.in.mem_out_adr</address>
+				</addresses>
+				<output>system.out.mem_out</output>
+			</port>
+		</ports>
+		<control>system.in.mem_control</control>
+	</registerFile>
+	<!--<alu x="0" y="0">
 		<id>incrementer</id>
 		<wordSize>8</wordSize>
 		<inputsOperandA>
@@ -53,21 +70,14 @@
 		<control>system.auto</control>
 		<status>system.open</status>
 	</alu>
-	<alu x="0" y="0">
-		<id>decrementer</id>
+	<multiplexer x="0" y="0">
+		<id>mux1</id>
 		<wordSize>8</wordSize>
-		<inputsOperandA>
-			<input>counter2.out</input>	
-		</inputsOperandA>
-		<inputsOperandB>
-			<input>system.in.step</input>		
-		</inputsOperandB>
-		<output1>decrementer.out</output1>
-		<output2>system.open</output2>
-		<operations>
-			<operation>sub_u</operation>
-		</operations>
-		<control>system.auto</control>
-		<status>system.open</status>
-	</alu>
+		<inputs>
+			<input>counter1.out</input>
+			<input>program_rom.out</input>
+		</inputs>
+		<output>mux1.out</output>
+		<control>system.const.1</control>
+	</multiplexer>-->
 </architecture>

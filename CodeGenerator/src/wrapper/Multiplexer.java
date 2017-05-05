@@ -4,45 +4,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Register {
-	
+public class Multiplexer {
+
 	private List<Connector> inputs;
-	private Connector control;
 	private Connector output;
+	private Connector control;
 	private String id;
-	private int size;
+	private int wordSize;
 	
-	Register(jaxb.Register reg) {
-		id = reg.getId();
-		size = reg.getSize();
-		output = new Connector(reg.getOutput(), size);
-		control = new Connector(reg.getControl(), -1);
+	Multiplexer(jaxb.Multiplexer mux) {
+		id = mux.getId();
+		wordSize = mux.getWordSize();
+		control = new Connector(mux.getControl(), -1);
+		output = new Connector(mux.getOutput(), wordSize);
 		inputs = new ArrayList<Connector>();
-		for (int i = 0; i < reg.getInputs().getInput().size(); i++) {
-			inputs.add(new Connector(reg.getInputs().getInput().get(i), size));
+		for (int i = 0; i < mux.getInputs().getInput().size(); i++) {
+			inputs.add(new Connector(mux.getInputs().getInput().get(i), wordSize));
 		}
 	}
-
+	
 	public List<String> getControlVector() {
 		List<String> cv = new ArrayList<String>();
-		cv.add(Wrapper.IntToRange(id + "_isel", (int)Math.ceil(Math.log(inputs.size()) / Math.log(2))));
-		cv.add(id + "_write");
+		cv.add(Wrapper.IntToRange(id + "_input", (int)Math.ceil(Math.log(inputs.size()) / Math.log(2))));
 		cv.removeAll(Arrays.asList("", null));
 		return cv;
-	}
-	
-	public String getImport() {
-		return "";
-	}
-	
-	public String getInstance() {
-		return "";
 	}
 	
 	public List<Connector> getInputs() {
 		return inputs;
 	}
-
 	public Connector getOutput() {
 		return output;
 	}
@@ -52,7 +42,7 @@ public class Register {
 	}
 
 	public int getWordSize() {
-		return size;
+		return wordSize;
 	}
 
 	public Connector getControl() {

@@ -1,10 +1,7 @@
 package wrapper;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Architecture {
 	
@@ -12,7 +9,7 @@ public class Architecture {
 	private List<Rom> roms;
 	private List<RegisterFile> registerFiles;
 	private List<Alu> alus;
-	private List<JumpLogic> jumpLogics;
+	private List<Multiplexer> multiplexers;
 	private int wordSize;
 	
 	public Architecture(jaxb.Architecture arch) {
@@ -20,7 +17,7 @@ public class Architecture {
 		roms = new ArrayList<Rom>();
 		registerFiles = new ArrayList<RegisterFile>();
 		alus = new ArrayList<Alu>();
-		jumpLogics = new ArrayList<JumpLogic>();
+		multiplexers = new ArrayList<Multiplexer>();
 		wordSize = arch.getWordSize();
 		for (jaxb.Register reg : arch.getRegister()) {
 			registers.add(new Register(reg));
@@ -34,8 +31,8 @@ public class Architecture {
 		for (jaxb.Alu alu : arch.getAlu()) {
 			alus.add(new Alu(alu));
 		}
-		for (jaxb.JumpLogic jl : arch.getJumpLogic()) {
-			jumpLogics.add(new JumpLogic(jl));
+		for (jaxb.Multiplexer mux : arch.getMultiplexer()) {
+			multiplexers.add(new Multiplexer(mux));
 		}
 	}
 	
@@ -43,23 +40,27 @@ public class Architecture {
 		List<Connector> connectors = new ArrayList<Connector>();
 		for (Register reg : registers) {
 			connectors.addAll(reg.getInputs());
+			connectors.add(reg.getControl());
 		}
 		for (Rom rom : roms) {
 			connectors.addAll(rom.getAddresses());
+			connectors.add(rom.getControl());
 		}
 		for (RegisterFile rf : registerFiles) {
 			for (Port p : rf.getPorts()) {
 				connectors.addAll(p.getInputs());
 				connectors.addAll(p.getAddresses());
 			}
+			connectors.add(rf.getControl());
 		}
 		for (Alu alu : alus) {
 			connectors.addAll(alu.getInputsA());
 			connectors.addAll(alu.getInputsB());
+			connectors.add(alu.getControl());
 		}
-		for (JumpLogic jl : jumpLogics) {
-			connectors.addAll(jl.getProgramTargetsA());
-			connectors.addAll(jl.getProgramTargetsB());
+		for (Multiplexer mux : multiplexers) {
+			connectors.addAll(mux.getInputs());
+			connectors.add(mux.getControl());
 		}
 		if (!complete) {
 			for (int i = 0; i < connectors.size(); i++) {
@@ -92,8 +93,8 @@ public class Architecture {
 			connectors.add(alu.getOutput2());
 			connectors.add(alu.getStatus());
 		}
-		for (JumpLogic jl : jumpLogics) {
-			connectors.add(jl.getOutput());
+		for (Multiplexer mux : multiplexers) {
+			connectors.add(mux.getOutput());
 		}
 		if (!complete) {
 			for (int i = 0; i < connectors.size(); i++) {
@@ -124,8 +125,8 @@ public class Architecture {
 		return alus;
 	}
 
-	public List<JumpLogic> getJumpLogics() {
-		return jumpLogics;
+	public List<Multiplexer> getMultiplexers() {
+		return multiplexers;
 	}
 
 	public int getWordSize() {

@@ -18,9 +18,9 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import wrapper.*;
 
-public class ArchitectureFactory {
+class ArchitectureFactory {
 	
-	public Architecture ReadSpecification(String SpecPath) {
+	Architecture ReadSpecification(String SpecPath) {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(jaxb.Architecture.class);
 			Unmarshaller u = jc.createUnmarshaller();
@@ -32,7 +32,7 @@ public class ArchitectureFactory {
 		return null;
 	}
 	
-	public Boolean ValidateSpecification(String SpecPath, String Schema) {
+	Boolean ValidateSpecification(String SpecPath, String Schema) {
 		SchemaFactory f = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		try {
 			Schema s = f.newSchema(new File(Schema));
@@ -44,7 +44,7 @@ public class ArchitectureFactory {
 		return true;
 	}
 	
-	public Boolean ValidateIds(Architecture arch) {
+	Boolean ValidateIds(Architecture arch) {
 		List<String> ids = new ArrayList<String>();
 		for (Register reg : arch.getRegisters()) {
 			if (ids.contains(reg.getId())) {
@@ -75,7 +75,7 @@ public class ArchitectureFactory {
 				ids.add(alu.getId());
 			}
 		}
-		for (JumpLogic jl : arch.getJumpLogics()) {
+		for (Multiplexer jl : arch.getMultiplexers()) {
 			if (ids.contains(jl.getId())) {
 				return false;
 			} else {
@@ -85,7 +85,7 @@ public class ArchitectureFactory {
 		return true;
 	}
 
-	public Boolean ValidateConnections(Architecture arch) {
+	Boolean ValidateConnections(Architecture arch) {
 		List<Connector> inputConnectors = arch.getInputConnectors(false);
 		inputConnectors.remove(null);
 		List<Connector> outputConnectors = arch.getOutputConnectors(false);
@@ -123,7 +123,7 @@ public class ArchitectureFactory {
 		return true;
 	}
 	
-	public String getImport(VhdlComponent component) {
+	private String getImport(VhdlComponent component) {
 		String imprt = "";
 		imprt += "  COMPONENT " + component.getName() + System.lineSeparator();
 		if (component.getGenerics().size() > 0) {
@@ -152,19 +152,7 @@ public class ArchitectureFactory {
 		return imprt;
 	}
 	
-	public int getLowerBound(String pin) {
-		int lp = pin.indexOf('[');
-		int sep = pin.indexOf(',');
-		return Integer.parseInt(pin.substring(lp + 1, sep));
-	}
-	
-	public int getUpperBound(String pin) {
-		int rp = pin.indexOf(']');
-		int sep = pin.indexOf(',');
-		return Integer.parseInt(pin.substring(sep + 1, rp));
-	}
-	
-	public List<String> GenerateControlVector(Architecture arch) {
+	List<String> GenerateControlVector(Architecture arch) {
 		List<String> cv = new LinkedList<String>();
 		for (Register reg : arch.getRegisters()) {
 			cv.addAll(reg.getControlVector());
@@ -178,7 +166,7 @@ public class ArchitectureFactory {
 		for (Alu alu : arch.getAlus()) {
 			cv.addAll(alu.getControlVector());
 		}
-		for (JumpLogic jl : arch.getJumpLogics()) {
+		for (Multiplexer jl : arch.getMultiplexers()) {
 			cv.addAll(jl.getControlVector());
 		}
 		return cv;
@@ -186,7 +174,7 @@ public class ArchitectureFactory {
 	
 	private Map<String, Integer> outputSize;
 	
-	public void GenerateArchitecture(String directory, Architecture arch) {
+	void GenerateArchitecture(String directory, Architecture arch) {
 		outputSize = new HashMap<String, Integer>();
 		ComponentFactory factory = new ComponentFactory(directory);
 		List<VhdlComponent> archComponents = new ArrayList<VhdlComponent>();
@@ -197,18 +185,15 @@ public class ArchitectureFactory {
 			behavior += getInstance(reg) + System.lineSeparator();
 			outputSize.put(reg.getId(), reg.getWordSize());
 		}
-		for (Rom rom : arch.getRoms()) {
-			VhdlComponent rc = factory.generateComponent(rom);
-			if (rc == null) {
-				System.out.println("Error");
-				System.exit(-1);
-			}
-			archComponents.add(rc);
+		for (Rom rom : arch.getRoms()) {			
+			archComponents.add(factory.generateComponent(rom));
+			behavior += getInstance(rom) + System.lineSeparator();
 			outputSize.put(rom.getId(), rom.getWordSize());
 		}
-		for (JumpLogic jl : arch.getJumpLogics()) {
-			archComponents.add(factory.generateComponent(jl));
-			outputSize.put(jl.getId(), jl.getWordSize());
+		for (Multiplexer mux : arch.getMultiplexers()) {
+			archComponents.add(factory.generateComponent(mux));
+			behavior += getInstance(mux) + System.lineSeparator();
+			outputSize.put(mux.getId(), mux.getWordSize());
 		}
 		for (Alu alu : arch.getAlus()) {
 			archComponents.add(factory.generateComponent(alu));
@@ -217,6 +202,7 @@ public class ArchitectureFactory {
 		}
 		for (RegisterFile rf : arch.getRegisterFiles()) {
 			archComponents.add(factory.generateComponent(rf));
+			behavior += getInstance(rf) + System.lineSeparator();
 			outputSize.put(rf.getId(), rf.getWordSize());
 		}
 		VhdlComponent topLevelEntity = new VhdlComponent("processor");
@@ -231,7 +217,7 @@ public class ArchitectureFactory {
 					} else {
 						topLevelEntity.AddPort("p_" + con.pin.substring(con.pin.lastIndexOf('.') + 1) + " : in std_logic");							
 					}						
-				}			
+				}
 			}
 		}
 		for (Connector con : arch.getOutputConnectors(true)) {
@@ -315,7 +301,29 @@ public class ArchitectureFactory {
 	
 	private int ctrlVectorIndex = 0;
 	
-	public String getInstance(Register reg) {
+	private String generateSignal(Connector con, int cSize, int wSize) {
+		String signal = "";
+		if (cSize < wSize) {
+			int diff = wSize - cSize;
+			if (diff > 1) {
+				signal += "\"";
+				for (int i = 0; i < diff; i++) {
+					signal += "0";
+				}
+				signal += "\" & ";
+			} else {
+				signal += "\'0\' & ";
+			}
+		}
+		if (con.lowerBound == -1 && con.upperBound == -1) {
+			signal += con.toSignal() + ", ";				
+		} else {
+			signal += con.toSignal() + "(" + con.upperBound + " DOWNTO " + con.lowerBound + "), ";
+		}
+		return signal;
+	}
+	
+	private String getInstance(Register reg) {
 		String instance = "";
 		int iselSize = log2(reg.getInputs().size());
 		instance += "  " + reg.getId() + "_instance : " + reg.getId();
@@ -337,24 +345,7 @@ public class ArchitectureFactory {
 		}
 		// Inputs
 		for (Connector ic : reg.getInputs()) {
-			int cSize = getSize(ic);
-			if (cSize < reg.getWordSize()) {
-				int diff = reg.getWordSize() - cSize;
-				if (diff > 1) {
-					instance += "\"";
-					for (int i = 0; i < diff; i++) {
-						instance += "0";
-					}
-					instance += "\" & ";
-				} else {
-					instance += "\'0\' & ";					
-				}
-			}
-			if (ic.lowerBound == -1 && ic.upperBound == -1) {
-				instance += ic.toSignal() + ", ";				
-			} else {
-				instance += ic.toSignal() + "(" + ic.upperBound + " DOWNTO " + ic.lowerBound + "), ";
-			}
+			instance += generateSignal(ic, getSize(ic), reg.getWordSize());
 		}
 		// Isel
 		if (reg.getControl().type == ConnectorType.SYSTEM_AUTO) {
@@ -380,8 +371,46 @@ public class ArchitectureFactory {
 		instance += reg.getOutput().toSignal() + ");";
 		return instance;
 	}
+
+	private String getInstance(Rom rom) {
+		String instance = "";
+		int aselSize = log2(rom.getAddresses().size());
+		instance += "  " + rom.getId() + "_instance : " + rom.getId();
+		instance += " GENERIC MAP(";
+		instance += "g_addressSize => " + (rom.getAddressSize() - 1) + ", ";
+		instance += "g_wordSize => " + (rom.getWordSize() - 1);
+		instance += ") ";
+		instance += " PORT MAP(";
+		// Inputs
+		for (Connector ic : rom.getAddresses()) {
+			instance += generateSignal(ic, getSize(ic), rom.getAddressSize());
+		}
+		// Asel
+		if (rom.getControl().type == ConnectorType.SYSTEM_AUTO) {
+			if (aselSize == 1) {
+				instance += "s_ctrl_vector(" + (ctrlVectorIndex++) + "), ";
+			} else if (aselSize > 1) {
+				instance += "s_ctrl_vector(" + (ctrlVectorIndex + aselSize) + " DOWNTO " + ctrlVectorIndex + "), ";
+			}
+		} else if (rom.getControl().type == ConnectorType.SYSTEM_CONST) {
+			if (aselSize == 1) {
+				instance += "\'" + getBits(rom.getControl().constValue, 1, 1) + "\', ";
+			} else if (aselSize > 1) {
+				instance += "\"" + getBits(rom.getControl().constValue, 1, aselSize) + "\", ";
+			}
+		} else {
+			if (aselSize == 1) {
+				instance += rom.getControl().toSignal() + "(1), ";
+			} else if (aselSize > 1) {
+				instance += rom.getControl().toSignal() + "(" + aselSize + " DOWNTO 1), ";
+			}
+		}
+		// Output
+		instance += rom.getOutput().toSignal() + ");";
+		return instance;
+	}
 	
-	public String getInstance(Alu alu) {
+	private String getInstance(Alu alu) {
 		String instance = "";
 		int iselASize = log2(alu.getInputsA().size());
 		int iselBSize = log2(alu.getInputsB().size());
@@ -393,44 +422,10 @@ public class ArchitectureFactory {
 		instance += " PORT MAP(";
 		// Inputs
 		for (Connector ic : alu.getInputsA()) {
-			int cSize = getSize(ic);
-			if (cSize < alu.getWordSize()) {
-				int diff = alu.getWordSize() - cSize;
-				if (diff > 1) {
-					instance += "\"";
-					for (int i = 0; i < diff; i++) {
-						instance += "0";
-					}
-					instance += "\" & ";
-				} else {
-					instance += "\'0\' & ";
-				}
-			}
-			if (ic.lowerBound == -1 && ic.upperBound == -1) {
-				instance += ic.toSignal() + ", ";				
-			} else {
-				instance += ic.toSignal() + "(" + ic.upperBound + " DOWNTO " + ic.lowerBound + "), ";
-			}
+			instance += generateSignal(ic, getSize(ic), alu.getWordSize());
 		}
 		for (Connector ic : alu.getInputsB()) {
-			int cSize = getSize(ic);
-			if (cSize < alu.getWordSize()) {
-				int diff = alu.getWordSize() - cSize;
-				if (diff > 1) {
-					instance += "\"";
-					for (int i = 0; i < diff; i++) {
-						instance += "0";
-					}
-					instance += "\" & ";
-				} else {
-					instance += "\'0\' & ";					
-				}
-			}
-			if (ic.lowerBound == -1 && ic.upperBound == -1) {
-				instance += ic.toSignal() + ", ";				
-			} else {
-				instance += ic.toSignal() + "(" + ic.upperBound + " DOWNTO " + ic.lowerBound + "), ";
-			}
+			instance += generateSignal(ic, getSize(ic), alu.getWordSize());
 		}
 		int offset = 0;
 		// Isel A
@@ -509,6 +504,150 @@ public class ArchitectureFactory {
 		// Output 2
 		instance += alu.getOutput2().toSignal() + ");";
 		return instance;
+	}
+	
+	private String getInstance(Multiplexer mux) {
+		String instance = "";
+		int iselSize = log2(mux.getInputs().size());
+		instance += "  " + mux.getId() + "_instance : " + mux.getId();
+		instance += " GENERIC MAP(";
+		instance += "g_word_size => " + (mux.getWordSize() - 1);
+		instance += ") ";
+		instance += " PORT MAP(";
+		// Inputs
+		for (Connector ic : mux.getInputs()) {
+			instance += generateSignal(ic, getSize(ic), mux.getWordSize());
+		}
+		// Isel
+		if (mux.getControl().type == ConnectorType.SYSTEM_AUTO) {
+			if (iselSize == 1) {
+				instance += "s_ctrl_vector(" + (ctrlVectorIndex++) + "), ";
+			} else if (iselSize > 1) {
+				instance += "s_ctrl_vector(" + (ctrlVectorIndex + iselSize) + " DOWNTO " + ctrlVectorIndex + "), ";
+			}
+		} else if (mux.getControl().type == ConnectorType.SYSTEM_CONST) {
+			if (iselSize == 1) {
+				instance += "\'" + getBits(mux.getControl().constValue, 0, 0) + "\', ";
+			} else if (iselSize > 1) {
+				instance += "\"" + getBits(mux.getControl().constValue, 0, iselSize - 1) + "\", ";
+			}
+		} else {
+			if (iselSize == 1) {
+				instance += mux.getControl().toSignal() + ", ";
+			} else if (iselSize > 1) {
+				instance += mux.getControl().toSignal() + "(" + iselSize + " DOWNTO 0), ";
+			}			
+		}
+		// Output
+		instance += mux.getOutput().toSignal() + ");";
+		return instance;
+	}
+	
+	private String getInstance(RegisterFile rf) {
+		String instance = "";
+		instance += "  " + rf.getId() + "_instance : " + rf.getId();
+		instance += " GENERIC MAP(";
+		instance += "g_address_size => " + (rf.getAddressSize() - 1) + ", ";
+		instance += "g_word_size => " + (rf.getWordSize() - 1);
+		instance += ") ";
+		instance += " PORT MAP(";
+		instance += "p_clk, ";
+		int offset = 0;
+		for (int i = 0; i < rf.getPorts().size(); i++) {
+			Port p = rf.getPorts().get(i);
+			int aselSize = log2(p.getAddresses().size());
+			if (p.getDirection() == PortDirection.IN) {
+				int iselSize = log2(p.getInputs().size());
+				for (Connector ic : p.getInputs()) {
+					instance += generateSignal(ic, getSize(ic), rf.getWordSize());
+				}
+				for (Connector ac : p.getAddresses()) {
+					instance += generateSignal(ac, getSize(ac), rf.getWordSize());
+				}
+				// Isel
+				if (rf.getControl().type == ConnectorType.SYSTEM_AUTO) {
+					if (iselSize == 1) {
+						instance += "s_ctrl_vector(" + (ctrlVectorIndex++) + "), ";
+					} else if (iselSize > 1) {
+						instance += "s_ctrl_vector(" + (ctrlVectorIndex + iselSize) + " DOWNTO " + ctrlVectorIndex + "), ";
+					}
+				} else if (rf.getControl().type == ConnectorType.SYSTEM_CONST) {
+					if (iselSize == 1) {
+						instance += "\'" + getBits(rf.getControl().constValue, offset, offset) + "\', ";
+					} else if (iselSize > 1) {
+						instance += "\"" + getBits(rf.getControl().constValue, iselSize + offset - 1, offset) + "\", ";
+						offset += iselSize;
+					}
+				} else {
+					if (iselSize == 1) {
+						instance += rf.getControl().toSignal() + "(" + offset + "), ";
+					} else if (iselSize > 1) {
+						instance += rf.getControl().toSignal() + "(" + (iselSize + offset - 1) + " DOWNTO " + offset + "), ";
+						offset += iselSize;
+					}			
+				}
+				// Asel
+				if (rf.getControl().type == ConnectorType.SYSTEM_AUTO) {
+					if (aselSize == 1) {
+						instance += "s_ctrl_vector(" + (ctrlVectorIndex++) + "), ";
+					} else if (aselSize > 1) {
+						instance += "s_ctrl_vector(" + (ctrlVectorIndex + aselSize) + " DOWNTO " + ctrlVectorIndex + "), ";
+					}
+					instance += "s_ctrl_vector(" + (ctrlVectorIndex++) + "), ";
+				} else if (rf.getControl().type == ConnectorType.SYSTEM_CONST) {
+					if (aselSize == 1) {
+						instance += "\'" + getBits(rf.getControl().constValue, offset, offset) + "\', ";
+					} else if (aselSize > 1) {
+						instance += "\"" + getBits(rf.getControl().constValue, aselSize + offset - 1, offset) + "\", ";
+						offset += aselSize;
+					}
+					instance += "\'" + getBits(rf.getControl().constValue, offset, offset) + "\'";
+					offset++;
+				} else {
+					if (aselSize == 1) {
+						instance += rf.getControl().toSignal() + "(" + offset + "), ";
+					} else if (aselSize > 1) {
+						instance += rf.getControl().toSignal() + "(" + (aselSize + offset - 1) + " DOWNTO " + offset + "), ";
+						offset += aselSize;
+					}
+					if (rf.getControl().size > 1) {
+						instance += rf.getControl().toSignal() + "(" + offset + "), ";						
+					} else {
+						instance += rf.getControl().toSignal() + ", ";						
+					}
+					offset++;
+				}
+			} else if (p.getDirection() == PortDirection.OUT) {
+				for (Connector ac : p.getAddresses()) {
+					instance += generateSignal(ac, getSize(ac), rf.getWordSize());
+				}
+				// Asel
+				if (rf.getControl().type == ConnectorType.SYSTEM_AUTO) {
+					if (aselSize == 1) {
+						instance += "s_ctrl_vector(" + (ctrlVectorIndex++) + "), ";
+					} else if (aselSize > 1) {
+						instance += "s_ctrl_vector(" + (ctrlVectorIndex + aselSize) + " DOWNTO " + ctrlVectorIndex + "), ";
+					}
+				} else if (rf.getControl().type == ConnectorType.SYSTEM_CONST) {
+					if (aselSize == 1) {
+						instance += "\'" + getBits(rf.getControl().constValue, offset, offset) + "\', ";
+					} else if (aselSize > 1) {
+						instance += "\"" + getBits(rf.getControl().constValue, aselSize + offset - 1, offset) + "\", ";
+						offset += aselSize;
+					}
+				} else {
+					if (aselSize == 1) {
+						instance += rf.getControl().toSignal() + "(" + offset + "), ";
+					} else if (aselSize > 1) {
+						instance += rf.getControl().toSignal() + "(" + (aselSize + offset - 1) + " DOWNTO " + offset + "), ";
+						offset += aselSize;
+					}			
+				}
+				instance += p.getOutput().toSignal() + ", ";
+			}
+		}
+		instance = instance.substring(0, instance.length() - 2);
+		return instance + ");";
 	}
 	
 	private int getSize(Connector con) {

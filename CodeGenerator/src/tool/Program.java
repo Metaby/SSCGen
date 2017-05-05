@@ -15,7 +15,7 @@ public class Program {
 	}
 	
 	public static void stopTimeMeasureing() {
-		System.out.println((System.nanoTime() - time) / 1000000.0 + " ms");		
+		System.out.println("Finished after " + (System.nanoTime() - time) / 1000000.0 + " ms");		
 	}
 	
 	public static void main(String[] args) {
@@ -50,7 +50,6 @@ public class Program {
 	}
 	
 	public static void createMDF(String architectureFile, String outputFile) {
-		System.out.println("Creating MDF");
 		ArchitectureFactory factory = new ArchitectureFactory();
 		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
 		Architecture arch = factory.ReadSpecification(architectureFile);
@@ -71,7 +70,6 @@ public class Program {
 	}
 	
 	public static void generateProcessor(String architectureFile, String mdf, String outputDirectory) {
-		System.out.println("Generating Architecture");
 		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory factory = new ArchitectureFactory();
 		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));

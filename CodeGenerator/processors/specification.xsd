@@ -7,7 +7,7 @@
 				<xsd:element name="rom" type="rom" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element name="registerFile" minOccurs="0" type="registerFile" maxOccurs="unbounded" />
 				<xsd:element name="alu" type="alu" minOccurs="0" maxOccurs="unbounded" />		
-				<xsd:element name="jumpLogic" type="jumpLogic" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="multiplexer" type="multiplexer" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 			<xsd:attribute name="wordSize" type="xsd:int" />
 		</xsd:complexType>
@@ -68,15 +68,12 @@
 		<xsd:attribute name="y" type="xsd:int" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="jumpLogic">
+	<xsd:complexType name="multiplexer">
 		<xsd:all>
 			<xsd:element name="id" type="xsd:string" />
 			<xsd:element name="wordSize" type="xsd:int" />
-			<xsd:element name="programTargetA" type="inputList" />
-			<xsd:element name="programTargetB" type="inputList" />
+			<xsd:element name="inputs" type="inputList" />
 			<xsd:element name="output" type="xsd:string" />
-			<xsd:element name="inputFlagsCnt" type="xsd:int" />
-			<xsd:element name="inputFlags" type="xsd:string" />
 			<xsd:element name="control" type="xsd:string" />
 		</xsd:all>
 		<xsd:attribute name="x" type="xsd:int" />

@@ -21,3 +21,32 @@ ALU
 		p_flag,
 		p_output_1,
 		p_output_2
+		
+ROM
+	Generic
+		g_addressSize,
+		g_wordSize
+	Port
+		p_address0 ... p_addressn,
+		p_addressSelect,
+		p_word
+		
+Multiplexer
+	Generic
+		g_word_size
+	Port
+		p_input0 ... p_inputn,
+		p_isel,
+		p_word
+		
+RegisterFile
+	Generic
+		g_address_size,
+		g_word_size
+	Port
+		p_clk,
+		p_porti_input0 ... p_porti_inputn,
+		p_porti_address0 ... p_porti_addressn,
+		p_porti_inputSelect,
+		p_porti_addressSelect,
+		p_porti_write
