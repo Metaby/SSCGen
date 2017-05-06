@@ -102,9 +102,9 @@ public class Connector {
 			return "s_" + toString().replace('.', '_');
 		} else if (type == ConnectorType.SYSTEM_CONST) {
 			if (size > 1) {
-				return "\"" + getBinaryString(constValue, size) + "\"";
+				return "\"" + getBinaryString(constValue, size).substring(0, size) + "\"";
 			} else {
-				return "\'" + constValue + "\'";				
+				return "\'" + getBinaryString(constValue, size).substring(0, size) + "\'";
 			}
 		} else if (type == ConnectorType.SYSTEM_IN || type == ConnectorType.SYSTEM_OUT) {
 			return "p_" + pin.replace('.', '_');			

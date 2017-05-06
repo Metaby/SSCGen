@@ -38,6 +38,7 @@ ARCHITECTURE behavior OF incrementer IS
   SIGNAL s_adder_ovflw : std_logic;
   SIGNAL s_adder_result : std_logic_vector(g_word_size DOWNTO 0);
 BEGIN
+  -- Control Vector Binding
   -- Input A Multiplexing
   s_input_A <= p_input_A0;
   -- Input B Multiplexing

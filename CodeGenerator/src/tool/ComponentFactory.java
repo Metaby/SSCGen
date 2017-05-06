@@ -212,31 +212,40 @@ class ComponentFactory {
 		component.AddGeneric("g_word_size : integer := " + (register.getWordSize() - 1));
 		component.AddPort("p_clk : in std_logic");
 		component.AddPort("p_rst : in std_logic");
-		component.AddPort("p_write : in std_logic");
+		component.AddSignal("s_write : std_logic");
+		String behavior = "  -- Behavior" + System.lineSeparator();
+		int adrSize = log2(register.getInputs().size());
+		if (register.getInputs().size() == 1) {
+			component.AddPort("p_ctrl : in std_logic");
+			behavior += "  s_write <= p_ctrl;" + System.lineSeparator();
+		} else {
+			component.AddPort("p_ctrl : in std_logic_vector(" + adrSize + " DOWNTO 0)");
+			behavior += "  s_write <= p_ctrl(0);" + System.lineSeparator();
+			if (register.getInputs().size() == 2) {
+				behavior += "  s_isel <= p_ctrl(" + adrSize + ");" + System.lineSeparator();				
+			} else {
+				behavior += "  s_isel <= p_ctrl(" + adrSize + " DOWNTO 1);" + System.lineSeparator();				
+			}
+		}
 		for (int i = 0; i < register.getInputs().size(); i++) {
 			component.AddPort("p_input" + i + " : in std_logic_vector(g_word_size DOWNTO 0)");
 		}
-		int adrSize = log2(register.getInputs().size());
 		if (register.getInputs().size() > 1) {
 			if (adrSize > 1) {
-				component.AddPort("p_isel : in std_logic_vector(" + (adrSize - 1) + " DOWNTO 0)");				
+				component.AddSignal("s_isel : std_logic_vector(" + (adrSize - 1) + " DOWNTO 0)");				
 			} else {
-				component.AddPort("p_isel : in std_logic");			
+				component.AddSignal("s_isel : std_logic");			
 			}			
 		}
 		component.AddPort("p_word : out std_logic_vector(g_word_size DOWNTO 0)");
-		component.AddSignal("s_input : std_logic_vector(g_word_size DOWNTO 0)");		
-		String behavior = "";
-		behavior += VhdlComponent.generateMux("p_isel", "s_input", "p_input", register.getInputs().size());
-		behavior += "  -- Behavior" + System.lineSeparator();
+		component.AddSignal("s_input : std_logic_vector(g_word_size DOWNTO 0)");
+		behavior += VhdlComponent.generateMux("s_isel", "s_input", "p_input", register.getInputs().size());
 		behavior += "  PROCESS (p_clk) BEGIN" + System.lineSeparator();
 		behavior += "    IF rising_edge(p_clk) THEN" + System.lineSeparator();
 		behavior += "      IF p_rst = '1' THEN" + System.lineSeparator();
 		behavior += "        p_word <= (OTHERS => '0');" + System.lineSeparator();
-		behavior += "      ELSIF p_write = '1' THEN" + System.lineSeparator();
+		behavior += "      ELSIF s_write = '1' THEN" + System.lineSeparator();
 		behavior += "        p_word <= s_input;" + System.lineSeparator();
-		//behavior += "      ELSE" + System.lineSeparator();
-		//behavior += "        p_word <= p_word;" + System.lineSeparator();
 		behavior += "      END IF;" + System.lineSeparator();
 		behavior += "    END IF;" + System.lineSeparator();
 		behavior += "  END PROCESS;";
@@ -259,9 +268,10 @@ class ComponentFactory {
 		int operationsCnt = alu.getOperations().size();
 		int conditionsCnt = alu.getConditions().size();
 		int cmdCnt = operationsCnt + conditionsCnt;
-		int cselBits = log2(cmdCnt);
-		int iselABits = log2(alu.getInputsA().size());
-		int iselBBits = log2(alu.getInputsB().size());
+		int cselSize = log2(cmdCnt);
+		int iselASize = log2(alu.getInputsA().size());
+		int iselBSize = log2(alu.getInputsB().size());
+		int ctrlSize = cselSize + iselASize + iselBSize;
 		// Generics and Port
 		component.AddGeneric("g_word_size : integer := " + (alu.getWordSize() - 1));
 		for (int i = 0; i < alu.getInputsA().size(); i++) {
@@ -271,23 +281,56 @@ class ComponentFactory {
 			component.AddPort("p_input_B" + i + " : in std_logic_vector(g_word_size DOWNTO 0)");			
 		}
 		if (alu.getInputsA().size() > 1) {
-			if (iselABits > 1) {
-				component.AddPort("p_isel_A : in std_logic_vector(" + (iselABits - 1) + " DOWNTO 0)");				
+			if (iselASize > 1) {
+				component.AddSignal("s_isel_A : std_logic_vector(" + (iselASize - 1) + " DOWNTO 0)");				
 			} else {
-				component.AddPort("p_isel_A : in std_logic");			
+				component.AddSignal("s_isel_A : std_logic");			
 			}
 		}
 		if (alu.getInputsA().size() > 1) {
-			if (iselBBits > 1) {
-				component.AddPort("p_isel_B : in std_logic_vector(" + (iselBBits - 1) + " DOWNTO 0)");				
+			if (iselBSize > 1) {
+				component.AddSignal("s_isel_B : std_logic_vector(" + (iselBSize - 1) + " DOWNTO 0)");				
 			} else {
-				component.AddPort("p_isel_B: in std_logic");			
+				component.AddSignal("s_isel_B: std_logic");			
 			}
 		}
-		if (cselBits == 1) {		
-			component.AddPort("p_csel : in std_logic");
-		} else if (cselBits > 1) {
-			component.AddPort("p_csel : in std_logic_vector(" + (cselBits - 1) + " DOWNTO 0)");
+		if (cselSize == 1) {
+			component.AddSignal("s_csel : std_logic");
+		} else if (cselSize > 1) {
+			component.AddSignal("s_csel : std_logic_vector(" + (cselSize - 1) + " DOWNTO 0)");
+		}
+		if (ctrlSize == 1) {
+			component.AddPort("p_ctrl : in std_logic");
+		} else if (ctrlSize > 1) {
+			component.AddPort("p_ctrl : in std_logic_vector(" + (ctrlSize - 1) + " DOWNTO 0)");
+		}
+		String ctrlBinding = "  -- Control Vector Binding" + System.lineSeparator();
+		if (cselSize == 1) {
+			if (ctrlSize > 1) {
+				ctrlBinding += "  s_csel <= p_ctrl(0);" + System.lineSeparator();				
+			} else {
+				ctrlBinding += "  s_csel <= p_ctrl;" + System.lineSeparator();				
+			}
+		} else if (cselSize > 1) {
+			ctrlBinding += "  s_csel <= p_ctrl(" + (cselSize - 1) + " DOWNTO 0);" + System.lineSeparator();
+		}
+		if (iselASize == 1) {
+			if (ctrlSize > 1) {
+				ctrlBinding += "  s_iselA <= p_ctrl(" + cselSize + ");" + System.lineSeparator();			
+			} else {	
+				ctrlBinding += "  s_iselA <= p_ctrl;" + System.lineSeparator();
+			}
+		} else if (iselASize > 1) {
+			ctrlBinding += "  s_iselA <= p_ctrl(" + (cselSize + iselASize - 1) + " DOWNTO " + cselSize + ");" + System.lineSeparator();
+		}
+		if (iselBSize == 1) {
+			if (ctrlSize > 1) {
+				ctrlBinding += "  s_iselB <= p_ctrl(" + (cselSize + iselASize) + ");" + System.lineSeparator();			
+			} else {	
+				ctrlBinding += "  s_iselB <= p_ctrl;" + System.lineSeparator();	
+			}
+		} else if (iselBSize > 1) {
+			ctrlBinding += "  s_iselB <= p_ctrl(" + (cselSize + iselASize + iselBSize - 1) + " DOWNTO " + (cselSize + iselASize) + ");" + System.lineSeparator();
 		}
 		List<String> subComponents = getAluSubComponents(alu);
 		if (conditionsCnt > 0 || subComponents.contains("ADDER")) {
@@ -328,10 +371,11 @@ class ComponentFactory {
 			component.AddSignal("s_shft_result : std_logic_vector(g_word_size DOWNTO 0)");
 		}
 		String behavior = "";
+		behavior += ctrlBinding;
 		behavior += "  -- Input A Multiplexing" + System.lineSeparator();
-		behavior += generateMux("p_isel_A", "s_input_A", "p_input_A", alu.getInputsA().size());
+		behavior += generateMux("s_isel_A", "s_input_A", "p_input_A", alu.getInputsA().size());
 		behavior += "  -- Input B Multiplexing" + System.lineSeparator();
-		behavior += generateMux("p_isel_B", "s_input_B", "p_input_B", alu.getInputsB().size());
+		behavior += generateMux("s_isel_B", "s_input_B", "p_input_B", alu.getInputsB().size());
 		behavior += "  -- Instances of Sub-Components" + System.lineSeparator();
 		behavior += generateAluSubComponentsInstances(alu);
 		behavior += "  -- Output Multiplexers" + System.lineSeparator();
@@ -371,10 +415,10 @@ class ComponentFactory {
 				cmd[i + operationsCnt] = alu.getConditions().get(i);
 				cmdBits[i + operationsCnt] = getBinaryString(i + operationsCnt, cselBits);
 			}
-			String sgnTable = "  WITH p_csel SELECT s_sgnd <=" + System.lineSeparator();
+			String sgnTable = "  WITH s_csel SELECT s_sgnd <=" + System.lineSeparator();
 			if (subComponents.contains("ADDER")) {
 				table += "  -- Adder Control" + System.lineSeparator();
-				table += "  WITH p_csel SELECT s_adder_sub <=" + System.lineSeparator();
+				table += "  WITH s_csel SELECT s_adder_sub <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("ADD")) {
 						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
@@ -392,7 +436,7 @@ class ComponentFactory {
 			}
 			if (subComponents.contains("BITLOGIC")) {
 				table += "  -- Bitlogic Control" + System.lineSeparator();
-				table += "  WITH p_csel SELECT s_logic_cmd <=" + System.lineSeparator();
+				table += "  WITH s_csel SELECT s_logic_cmd <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("AND")) {
 						table += "    \"00\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
@@ -425,7 +469,7 @@ class ComponentFactory {
 				table += "  s_shft_cmd(1) <= s_shft_ctrl(1)" + System.lineSeparator();
 				table += "  s_shft_ari <= s_shft_ctrl(2)" + System.lineSeparator();
 				table += "  s_shft_rot <= s_shft_ctrl(3)" + System.lineSeparator();
-				table += "  WITH p_csel SELECT s_shft_ctrl <=" + System.lineSeparator();
+				table += "  WITH s_csel SELECT s_shft_ctrl <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("RR")) {
 						table += "    \"1010\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
@@ -445,7 +489,7 @@ class ComponentFactory {
 			}
 			if (subComponents.contains("COMPARATOR")) {
 				table += "  -- Comparator Control" + System.lineSeparator();
-				table += "  WITH p_csel SELECT s_comp_cmd <=" + System.lineSeparator();
+				table += "  WITH s_csel SELECT s_comp_cmd <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("GT")) {
 						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
@@ -587,13 +631,13 @@ class ComponentFactory {
 				cmdTable += "  -- " + cmd[i + operationsCnt] + " \t" + (i + operationsCnt) + "\t" + cmdBits[i + operationsCnt] + System.lineSeparator();
 			}
 			cmdTable += "  --" + System.lineSeparator() + "  -- Output 1 Multiplexing" + System.lineSeparator();
-			cmdTable += "  WITH p_csel SELECT p_output_1 <=" + System.lineSeparator();
+			cmdTable += "  WITH s_csel SELECT p_output_1 <=" + System.lineSeparator();
 			for (int i = 0; i < operationsCnt; i++) {
 				cmdTable += "    " + getAluOutputSignal(cmd[i]) + " WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();				
 			}
 			cmdTable += "    \"" + getBinaryString(0, alu.getWordSize()) + "\" WHEN OTHERS;" + System.lineSeparator();
 			cmdTable += "  -- Output 2 Multiplexing" + System.lineSeparator();
-			cmdTable += "  WITH p_csel SELECT p_output_2 <=" + System.lineSeparator();
+			cmdTable += "  WITH s_csel SELECT p_output_2 <=" + System.lineSeparator();
 			for (int i = 0; i < operationsCnt; i++) {
 				if (cmd[i].matches("MUL|MUL_U")) {
 					cmdTable += "    s_mul_result_hi WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();						
@@ -604,7 +648,7 @@ class ComponentFactory {
 			}
 			cmdTable += "    \"" + getBinaryString(0, alu.getWordSize()) + "\" WHEN OTHERS;" + System.lineSeparator();
 			cmdTable += "  -- Flag Multiplexing" + System.lineSeparator();
-			cmdTable += "  WITH p_csel SELECT p_flag <=" + System.lineSeparator();
+			cmdTable += "  WITH s_csel SELECT p_flag <=" + System.lineSeparator();
 			for (int i = 0; i < operationsCnt; i++) {
 				if (cmd[i].matches("ADD|ADD_U|SUB|SUB_U")) {
 					cmdTable += "    s_adder_ovflw WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();						

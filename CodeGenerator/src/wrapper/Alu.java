@@ -29,7 +29,6 @@ public class Alu {
 	Alu(jaxb.Alu alu) {
 		id = alu.getId();
 		wordSize = alu.getWordSize();
-		control = new Connector(alu.getControl(), -1);
 		operations = new ArrayList<String>();
 		for (int i = 0; i < alu.getOperations().getOperation().size(); i++) {
 			operations.add(alu.getOperations().getOperation().get(i).name());
@@ -53,6 +52,7 @@ public class Alu {
 		for (int i = 0; i < alu.getInputsOperandB().getInput().size(); i++) {
 			inputsB.add(new Connector(alu.getInputsOperandB().getInput().get(i), wordSize));
 		}
+		control = new Connector(alu.getControl(), (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2)) + (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2)) + (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2)));
 	}
 	
 	public List<String> getControlVector() {

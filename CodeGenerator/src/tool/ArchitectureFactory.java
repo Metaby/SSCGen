@@ -48,7 +48,7 @@ class ArchitectureFactory {
 		List<String> ids = new ArrayList<String>();
 		for (Register reg : arch.getRegisters()) {
 			if (ids.contains(reg.getId())) {
-				System.out.println("Error: Id already exist, Ids have to be unique");
+				System.out.println("Error: Id \"" + reg.getId() + "\" already exist, Ids have to be unique");
 				return false;
 			} else {
 				ids.add(reg.getId());
@@ -56,6 +56,7 @@ class ArchitectureFactory {
 		}
 		for (Rom rom : arch.getRoms()) {
 			if (ids.contains(rom.getId())) {
+				System.out.println("Error: Id \"" + rom.getId() + "\" already exist, Ids have to be unique");
 				return false;
 			} else {
 				ids.add(rom.getId());
@@ -63,6 +64,7 @@ class ArchitectureFactory {
 		}
 		for (RegisterFile rf : arch.getRegisterFiles()) {
 			if (ids.contains(rf.getId())) {
+				System.out.println("Error: Id \"" + rf.getId() + "\" already exist, Ids have to be unique");
 				return false;
 			} else {
 				ids.add(rf.getId());
@@ -70,16 +72,18 @@ class ArchitectureFactory {
 		}
 		for (Alu alu : arch.getAlus()) {
 			if (ids.contains(alu.getId())) {
+				System.out.println("Error: Id \"" + alu.getId() + "\" already exist, Ids have to be unique");
 				return false;
 			} else {
 				ids.add(alu.getId());
 			}
 		}
-		for (Multiplexer jl : arch.getMultiplexers()) {
-			if (ids.contains(jl.getId())) {
+		for (Multiplexer mux : arch.getMultiplexers()) {
+			if (ids.contains(mux.getId())) {
+				System.out.println("Error: Id \"" + mux.getId() + "\" already exist, Ids have to be unique");
 				return false;
 			} else {
-				ids.add(jl.getId());
+				ids.add(mux.getId());
 			}
 		}
 		return true;
@@ -179,30 +183,36 @@ class ArchitectureFactory {
 		ComponentFactory factory = new ComponentFactory(directory);
 		List<VhdlComponent> archComponents = new ArrayList<VhdlComponent>();
 		new File(directory + "/components/").mkdirs();
+		InstanceFactory instFact = new InstanceFactory(arch);
 		String behavior = "";
 		for (Register reg : arch.getRegisters()) {
 			archComponents.add(factory.generateComponent(reg));
-			behavior += getInstance(reg) + System.lineSeparator();
+			//behavior += getInstance(reg) + System.lineSeparator();
+			behavior += instFact.generateInstance(reg) + System.lineSeparator();
 			outputSize.put(reg.getId(), reg.getWordSize());
 		}
-		for (Rom rom : arch.getRoms()) {			
+		for (Rom rom : arch.getRoms()) {
 			archComponents.add(factory.generateComponent(rom));
-			behavior += getInstance(rom) + System.lineSeparator();
+			//behavior += getInstance(rom) + System.lineSeparator();
+			behavior += instFact.generateInstance(rom) + System.lineSeparator();
 			outputSize.put(rom.getId(), rom.getWordSize());
 		}
 		for (Multiplexer mux : arch.getMultiplexers()) {
 			archComponents.add(factory.generateComponent(mux));
-			behavior += getInstance(mux) + System.lineSeparator();
+			//behavior += getInstance(mux) + System.lineSeparator();
+			behavior += instFact.generateInstance(mux) + System.lineSeparator();
 			outputSize.put(mux.getId(), mux.getWordSize());
 		}
 		for (Alu alu : arch.getAlus()) {
 			archComponents.add(factory.generateComponent(alu));
-			behavior += getInstance(alu) + System.lineSeparator();
+			//behavior += getInstance(alu) + System.lineSeparator();
+			behavior += instFact.generateInstance(alu) + System.lineSeparator();
 			outputSize.put(alu.getId(), alu.getWordSize());
 		}
 		for (RegisterFile rf : arch.getRegisterFiles()) {
 			archComponents.add(factory.generateComponent(rf));
-			behavior += getInstance(rf) + System.lineSeparator();
+			//behavior += getInstance(rf) + System.lineSeparator();
+			System.out.println(instFact.generateInstance(rf));
 			outputSize.put(rf.getId(), rf.getWordSize());
 		}
 		VhdlComponent topLevelEntity = new VhdlComponent("processor");

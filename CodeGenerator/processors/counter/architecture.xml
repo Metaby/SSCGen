@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <architecture wordSize="32">
-	<!--<register x="0" y="0">
+	<register x="0" y="0">
 		<id>counter1</id>
 		<size>8</size>
 		<inputs>
@@ -15,7 +15,16 @@
 		<inputs>
 			<input>mux1.out</input>
 		</inputs>
-		<output>system.out.count_up</output>
+		<output>system.out.counter_out</output>
+		<control>system.const.1</control>
+	</register>
+	<register x="0" y="0">
+		<id>output_register2</id>
+		<size>8</size>
+		<inputs>
+			<input>mux1.out</input>
+		</inputs>
+		<output>system.out.rom_out</output>
 		<control>system.const.1</control>
 	</register>
 	<rom>
@@ -28,7 +37,7 @@
 		</addresses>
 		<output>program_rom.out</output>
 		<control>system.auto</control>
-	</rom>-->
+	</rom>
 	<registerFile>
 		<id>memory</id>
 		<wordSize>8</wordSize>
@@ -53,14 +62,14 @@
 		</ports>
 		<control>system.in.mem_control</control>
 	</registerFile>
-	<!--<alu x="0" y="0">
+	<alu x="0" y="0">
 		<id>incrementer</id>
 		<wordSize>8</wordSize>
 		<inputsOperandA>
-			<input>counter1.out</input>	
+			<input>counter1.out</input>
 		</inputsOperandA>
 		<inputsOperandB>
-			<input>system.in.step</input>		
+			<input>system.const.1</input>	
 		</inputsOperandB>
 		<output1>incrementer.out</output1>
 		<output2>system.open</output2>
@@ -79,5 +88,5 @@
 		</inputs>
 		<output>mux1.out</output>
 		<control>system.const.1</control>
-	</multiplexer>-->
+	</multiplexer>
 </architecture>

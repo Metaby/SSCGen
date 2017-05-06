@@ -15,7 +15,7 @@ ENTITY program_rom IS
 END program_rom;
 
 ARCHITECTURE behavior OF program_rom IS
-  SIGNAL s_address : std_logic_vector(g_addressSize DOWNTO 0;
+  SIGNAL s_address : std_logic_vector(g_addressSize DOWNTO 0);
 BEGIN
   s_address <= p_address0;
   -- Behavior

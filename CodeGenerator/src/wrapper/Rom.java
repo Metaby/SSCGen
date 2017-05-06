@@ -20,11 +20,11 @@ public class Rom {
 		addressSize = rom.getAddressSize();
 		wordSize = rom.getWordSize();
 		output = new Connector(rom.getOutput(), wordSize);
-		control = new Connector(rom.getControl(), -1);
 		addresses = new ArrayList<Connector>();
 		for (int i = 0; i < rom.getAddresses().getAddress().size(); i++) {
 			addresses.add(new Connector(rom.getAddresses().getAddress().get(i), addressSize));
-		}		
+		}	
+		control = new Connector(rom.getControl(), (int)Math.ceil(Math.log(addresses.size()) / Math.log(2)));	
 	}
 	
 	public List<String> getControlVector() {

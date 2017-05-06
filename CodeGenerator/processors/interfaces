@@ -4,9 +4,8 @@ Register
 	Port
 		p_clk,
 		p_rst,
-		p_write,
+		p_ctrl,
 		p_input0 ... p_inputn,
-		p_isel,
 		p_word
 		
 ALU
@@ -15,9 +14,7 @@ ALU
 	Port
 		p_input_A0 ... p_input_An,
 		p_input_B0 ... p_input_Bn,
-		p_isel_A,
-		p_isel_B,
-		p_csel,
+		p_ctrl,
 		p_flag,
 		p_output_1,
 		p_output_2

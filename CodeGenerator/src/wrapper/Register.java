@@ -16,11 +16,11 @@ public class Register {
 		id = reg.getId();
 		size = reg.getSize();
 		output = new Connector(reg.getOutput(), size);
-		control = new Connector(reg.getControl(), -1);
 		inputs = new ArrayList<Connector>();
 		for (int i = 0; i < reg.getInputs().getInput().size(); i++) {
 			inputs.add(new Connector(reg.getInputs().getInput().get(i), size));
 		}
+		control = new Connector(reg.getControl(), (int)Math.ceil(Math.log(inputs.size()) / Math.log(2)) + 1);
 	}
 
 	public List<String> getControlVector() {

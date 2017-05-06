@@ -15,12 +15,12 @@ public class Multiplexer {
 	Multiplexer(jaxb.Multiplexer mux) {
 		id = mux.getId();
 		wordSize = mux.getWordSize();
-		control = new Connector(mux.getControl(), -1);
 		output = new Connector(mux.getOutput(), wordSize);
 		inputs = new ArrayList<Connector>();
 		for (int i = 0; i < mux.getInputs().getInput().size(); i++) {
 			inputs.add(new Connector(mux.getInputs().getInput().get(i), wordSize));
 		}
+		control = new Connector(mux.getControl(), (int)Math.ceil(Math.log(inputs.size()) / Math.log(2)));
 	}
 	
 	public List<String> getControlVector() {
