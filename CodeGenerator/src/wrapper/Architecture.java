@@ -3,62 +3,64 @@ package wrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import wrapper.entities.*;
+
 public class Architecture {
 	
-	private List<Register> registers;
-	private List<Rom> roms;
-	private List<RegisterFile> registerFiles;
-	private List<Alu> alus;
-	private List<Multiplexer> multiplexers;
+	private List<RegisterEntity> registers;
+	private List<RomEntity> roms;
+	private List<RegisterFileEntity> registerFiles;
+	private List<AluEntity> alus;
+	private List<MultiplexerEntity> multiplexers;
 	private int wordSize;
 	
 	public Architecture(jaxb.Architecture arch) {
-		registers = new ArrayList<Register>();
-		roms = new ArrayList<Rom>();
-		registerFiles = new ArrayList<RegisterFile>();
-		alus = new ArrayList<Alu>();
-		multiplexers = new ArrayList<Multiplexer>();
+		registers = new ArrayList<RegisterEntity>();
+		roms = new ArrayList<RomEntity>();
+		registerFiles = new ArrayList<RegisterFileEntity>();
+		alus = new ArrayList<AluEntity>();
+		multiplexers = new ArrayList<MultiplexerEntity>();
 		wordSize = arch.getWordSize();
 		for (jaxb.Register reg : arch.getRegister()) {
-			registers.add(new Register(reg));
+			registers.add(new RegisterEntity(reg));
 		}
 		for (jaxb.Rom rom : arch.getRom()) {
-			roms.add(new Rom(rom));
+			roms.add(new RomEntity(rom));
 		}
 		for (jaxb.RegisterFile rf : arch.getRegisterFile()) {
-			registerFiles.add(new RegisterFile(rf));
+			registerFiles.add(new RegisterFileEntity(rf));
 		}
 		for (jaxb.Alu alu : arch.getAlu()) {
-			alus.add(new Alu(alu));
+			alus.add(new AluEntity(alu));
 		}
 		for (jaxb.Multiplexer mux : arch.getMultiplexer()) {
-			multiplexers.add(new Multiplexer(mux));
+			multiplexers.add(new MultiplexerEntity(mux));
 		}
 	}
 	
 	public List<Connector> getInputConnectors(Boolean complete) {
 		List<Connector> connectors = new ArrayList<Connector>();
-		for (Register reg : registers) {
+		for (RegisterEntity reg : registers) {
 			connectors.addAll(reg.getInputs());
 			connectors.add(reg.getControl());
 		}
-		for (Rom rom : roms) {
+		for (RomEntity rom : roms) {
 			connectors.addAll(rom.getAddresses());
 			connectors.add(rom.getControl());
 		}
-		for (RegisterFile rf : registerFiles) {
+		for (RegisterFileEntity rf : registerFiles) {
 			for (Port p : rf.getPorts()) {
 				connectors.addAll(p.getInputs());
 				connectors.addAll(p.getAddresses());
 			}
 			connectors.add(rf.getControl());
 		}
-		for (Alu alu : alus) {
+		for (AluEntity alu : alus) {
 			connectors.addAll(alu.getInputsA());
 			connectors.addAll(alu.getInputsB());
 			connectors.add(alu.getControl());
 		}
-		for (Multiplexer mux : multiplexers) {
+		for (MultiplexerEntity mux : multiplexers) {
 			connectors.addAll(mux.getInputs());
 			connectors.add(mux.getControl());
 		}
@@ -77,23 +79,23 @@ public class Architecture {
 	
 	public List<Connector> getOutputConnectors(Boolean complete) {
 		List<Connector> connectors = new ArrayList<Connector>();
-		for (Register reg : registers) {
+		for (RegisterEntity reg : registers) {
 			connectors.add(reg.getOutput());
 		}
-		for (Rom rom : roms) {
+		for (RomEntity rom : roms) {
 			connectors.add(rom.getOutput());
 		}
-		for (RegisterFile rf : registerFiles) {
+		for (RegisterFileEntity rf : registerFiles) {
 			for (Port p : rf.getPorts()) {
 				connectors.add(p.getOutput());
 			}
 		}
-		for (Alu alu : alus) {
+		for (AluEntity alu : alus) {
 			connectors.add(alu.getOutput1());
 			connectors.add(alu.getOutput2());
 			connectors.add(alu.getStatus());
 		}
-		for (Multiplexer mux : multiplexers) {
+		for (MultiplexerEntity mux : multiplexers) {
 			connectors.add(mux.getOutput());
 		}
 		if (!complete) {
@@ -108,24 +110,34 @@ public class Architecture {
 		}
 		return connectors;
 	}
+	
+	public List<BaseEntity> getAllEntites() {
+		List<BaseEntity> entities = new ArrayList<BaseEntity>();
+		entities.addAll(registers);
+		entities.addAll(roms);
+		entities.addAll(registerFiles);
+		entities.addAll(multiplexers);
+		entities.addAll(alus);
+		return entities;
+	}
 
-	public List<Register> getRegisters() {
+	public List<RegisterEntity> getRegisters() {
 		return registers;
 	}
 
-	public List<Rom> getRoms() {
+	public List<RomEntity> getRoms() {
 		return roms;
 	}
 
-	public List<RegisterFile> getRegisterFiles() {
+	public List<RegisterFileEntity> getRegisterFiles() {
 		return registerFiles;
 	}
 
-	public List<Alu> getAlus() {
+	public List<AluEntity> getAlus() {
 		return alus;
 	}
 
-	public List<Multiplexer> getMultiplexers() {
+	public List<MultiplexerEntity> getMultiplexers() {
 		return multiplexers;
 	}
 

@@ -2,16 +2,16 @@ package wrapper;
 
 public class Connector {
 
+	private int constValue;
 	public ConnectorType type;
 	public String origin;
 	public String pin;
-	public int constValue;
 	public int lowerBound;
 	public int upperBound;
 	public int size;
 	
 	
-	Connector(String value, int size) {
+	public Connector(String value, int size) {
 		this.size = size;
 		if (value.startsWith("system.auto")) {
 			type = ConnectorType.SYSTEM_AUTO;
@@ -116,19 +116,16 @@ public class Connector {
 	
 	@Override
 	public String toString() {
-		if (type == ConnectorType.STANDARD || type == ConnectorType.SYSTEM_IN || type == ConnectorType.SYSTEM_OUT) {
-			return origin + "." + pin;
-		}
-		if (type == ConnectorType.SYSTEM_CONST) {
-			return getBinaryString(constValue, size);
-		}
 		if (type == ConnectorType.SYSTEM_AUTO) {
 			return "SYSTEM_AUTO";
 		}
 		if (type == ConnectorType.SYSTEM_CONTROL) {
 			return "SYSTEM_CONTROL";
 		}
-		return "";
+		if (type == ConnectorType.SYSTEM_CONST) {
+			return "CONST(" + constValue + ")";
+		}
+		return origin + "." + pin;
 	}
 	
 	@Override

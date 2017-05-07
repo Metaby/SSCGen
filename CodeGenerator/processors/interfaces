@@ -42,8 +42,8 @@ RegisterFile
 		g_word_size
 	Port
 		p_clk,
+		p_rst,
 		p_porti_input0 ... p_porti_inputn,
 		p_porti_address0 ... p_porti_addressn,
-		p_porti_inputSelect,
-		p_porti_addressSelect,
-		p_porti_write
+		p_porti_output,
+		p_ctrl

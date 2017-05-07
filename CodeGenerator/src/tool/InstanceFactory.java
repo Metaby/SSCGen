@@ -3,18 +3,23 @@ package tool;
 import java.util.List;
 
 import wrapper.*;
+import wrapper.entities.AluEntity;
+import wrapper.entities.MultiplexerEntity;
+import wrapper.entities.RegisterEntity;
+import wrapper.entities.RegisterFileEntity;
+import wrapper.entities.RomEntity;
 
-public class InstanceFactory {
+class InstanceFactory {
 
 	private List<Connector> outputConnectors;
 	private int cvCounter;
 	
-	public InstanceFactory(Architecture arch) {
+	InstanceFactory(Architecture arch) {
 		outputConnectors = arch.getOutputConnectors(true);
 		cvCounter = 0;
 	}
 	
-	public String generateInstance(Register reg) {
+	String generateInstance(RegisterEntity reg) {
 		String instance = "  " + reg.getId() + "_instance : " + reg.getId() + System.lineSeparator();
 		instance += "    GENERIC MAP (g_word_size => " + (reg.getWordSize() - 1) + ")" + System.lineSeparator();
 		instance += "    PORT MAP (" + System.lineSeparator();
@@ -28,7 +33,7 @@ public class InstanceFactory {
 		return instance;
 	}
 	
-	public String generateInstance(Rom rom) {
+	String generateInstance(RomEntity rom) {
 		String instance = "  " + rom.getId() + "_instance : " + rom.getId() + System.lineSeparator();
 		instance += "    GENERIC MAP (g_address_size => " + (rom.getAddressSize() - 1) + ", " + "g_word_size => " + (rom.getWordSize() - 1) + ")" + System.lineSeparator();
 		instance += "    PORT MAP (" + System.lineSeparator();
@@ -43,7 +48,7 @@ public class InstanceFactory {
 		return instance;		
 	}
 	
-	public String generateInstance(Multiplexer mux) {
+	String generateInstance(MultiplexerEntity mux) {
 		String instance = "  " + mux.getId() + "_instance : " + mux.getId() + System.lineSeparator();
 		instance += "    GENERIC MAP (g_word_size => " + (mux.getWordSize() - 1) + ")" + System.lineSeparator();
 		instance += "    PORT MAP (" + System.lineSeparator();
@@ -58,7 +63,7 @@ public class InstanceFactory {
 		return instance;		
 	}
 	
-	public String generateInstance(Alu alu) {
+	String generateInstance(AluEntity alu) {
 		String instance = "  " + alu.getId() + "_instance : " + alu.getId() + System.lineSeparator();
 		instance += "    GENERIC MAP (g_word_size => " + (alu.getWordSize() - 1) + ")" + System.lineSeparator();
 		instance += "    PORT MAP (" + System.lineSeparator();
@@ -71,17 +76,36 @@ public class InstanceFactory {
 		if (alu.getConditions().size() > 1 || alu.getInputsA().size() > 1 || alu.getInputsB().size() > 1) {
 			instance += "      " + generateInputSignal(alu.getControl()) + "," + System.lineSeparator();		
 		}
+		if (alu.getConditions().size() > 0 || alu.getOperations().contains("ADD") || alu.getOperations().contains("ADD_U") || alu.getOperations().contains("SUB") || alu.getOperations().contains("SUB_U")) {
+			instance += "      " + generateInputSignal(alu.getStatus()) + "," + System.lineSeparator();
+		}
 		instance += "      " + generateInputSignal(alu.getOutput1()) + "," + System.lineSeparator();
 		instance += "      " + generateOutputSignal(alu.getOutput2()) + System.lineSeparator();
 		instance += "    );";
 		return instance;
 	}
 	
-	public String generateInstance(RegisterFile rf) {
+	String generateInstance(RegisterFileEntity rf) {
 		String instance = "  " + rf.getId() + "_instance : " + rf.getId() + System.lineSeparator();
 		instance += "    GENERIC MAP (g_address_size => " + (rf.getAddressSize() - 1) + ", " + "g_word_size => " + (rf.getWordSize() - 1) + ")" + System.lineSeparator();
 		instance += "    PORT MAP (" + System.lineSeparator();
 		instance += "      p_clk," + System.lineSeparator() + "      p_reset," + System.lineSeparator();
+		for (Port p : rf.getPorts()) {
+			if (p.getDirection() == PortDirection.IN) {
+				for (Connector con : p.getInputs()) {
+					instance += "      " + generateInputSignal(con) + "," + System.lineSeparator();
+				}
+				for (Connector con : p.getAddresses()) {
+					instance += "      " + generateInputSignal(con) + "," + System.lineSeparator();
+				}
+			} else {
+				for (Connector con : p.getAddresses()) {
+					instance += "      " + generateInputSignal(con) + "," + System.lineSeparator();
+				}
+				instance += "      " + generateOutputSignal(p.getOutput()) + "," + System.lineSeparator();
+			}
+		}
+		instance += "      " + generateInputSignal(rf.getControl()) + System.lineSeparator();
 		instance += "    );";
 		return instance;		
 	}

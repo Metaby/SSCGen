@@ -59,22 +59,11 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   COMPONENT program_rom
     GENERIC (
-      g_addressSize : integer := 7;
-      g_wordSize : integer := 7
-    );
-    PORT (
-      p_address0 : in std_logic_vector(g_addressSize DOWNTO 0);
-      p_word : out std_logic_vector(g_wordSize DOWNTO 0)
-    );
-  END COMPONENT;
-  COMPONENT mux1
-    GENERIC (
+      g_address_size : integer := 7;
       g_word_size : integer := 7
     );
     PORT (
-      p_input0 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_input1 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_isel : in std_logic;
+      p_address0 : in std_logic_vector(g_address_size DOWNTO 0);
       p_word : out std_logic_vector(g_word_size DOWNTO 0)
     );
   END COMPONENT;
@@ -97,17 +86,17 @@ ARCHITECTURE behavior OF processor IS
     );
     PORT (
       p_clk : in std_logic;
+      p_rst : in std_logic;
       p_port0_input0 : in std_logic_vector(g_word_size DOWNTO 0);
       p_port0_address0 : in std_logic_vector(g_address_size DOWNTO 0);
-      p_port0_write : in std_logic;
       p_port1_address0 : in std_logic_vector(g_address_size DOWNTO 0);
-      p_port1_output : out std_logic_vector(g_word_size DOWNTO 0)
+      p_port1_output : out std_logic_vector(g_word_size DOWNTO 0);
+      p_ctrl : in std_logic
     );
   END COMPONENT;
   SIGNAL s_counter1_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_program_rom_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_incrementer_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_mux1_out : std_logic_vector(7 DOWNTO 0);
 BEGIN
   counter1_instance : counter1
     GENERIC MAP (g_word_size => 7)
@@ -124,7 +113,7 @@ BEGIN
       p_clk,
       p_reset,
       '1',
-      s_mux1_out,
+      s_counter1_out,
       p_counter_out
     );
   output_register2_instance : output_register2
@@ -133,7 +122,7 @@ BEGIN
       p_clk,
       p_reset,
       '1',
-      s_mux1_out,
+      s_program_rom_out,
       p_rom_out
     );
   program_rom_instance : program_rom
@@ -142,21 +131,24 @@ BEGIN
       s_counter1_out,
       s_program_rom_out
     );
-  mux1_instance : mux1
-    GENERIC MAP (g_word_size => 7)
-    PORT MAP (
-      s_counter1_out,
-      s_program_rom_out,
-      '1',
-      s_mux1_out
-    );
   incrementer_instance : incrementer
     GENERIC MAP (g_word_size => 7)
     PORT MAP (
       s_counter1_out,
       "00000001",
+      OPEN,
       s_incrementer_out,
       OPEN
     );
-
+  memory_instance : memory
+    GENERIC MAP (g_address_size => 7, g_word_size => 7)
+    PORT MAP (
+      p_clk,
+      p_reset,
+      p_mem_in,
+      p_mem_in_adr,
+      p_mem_out_adr,
+      p_mem_out,
+      p_mem_control
+    );
 END behavior;

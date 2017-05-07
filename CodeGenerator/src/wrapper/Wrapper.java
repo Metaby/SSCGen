@@ -12,4 +12,12 @@ public class Wrapper {
 		return "";
 	}
 	
+	public static int log2(int value) {
+		return (int)Math.ceil(Math.log(value) / Math.log(2));
+	}
+	
+	public static String getBinaryString(int value, int digits) {
+		return String.format("%" + digits + "s", Integer.toBinaryString(value)).replace(' ', '0');
+	}
+	
 }

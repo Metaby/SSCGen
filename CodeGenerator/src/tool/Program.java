@@ -6,6 +6,7 @@ import java.util.List;
 
 import wrapper.*;
 
+@SuppressWarnings("ucd")
 public class Program {
 	
 	private static long time;
@@ -22,7 +23,7 @@ public class Program {
 		startTimeMeasuring();
 		String processor = "counter";
 //		createMDF("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
-//		generateProcessor("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/generated_code/");
+//		generateProcessor("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
 		generateProcessor("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
 		stopTimeMeasureing();
 //		System.out.println("-- Mikrocode-Design-Filge");
@@ -50,19 +51,19 @@ public class Program {
 	}
 	
 	public static void createMDF(String architectureFile, String outputFile) {
-		ArchitectureFactory factory = new ArchitectureFactory();
-		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
-		Architecture arch = factory.ReadSpecification(architectureFile);
-		assertion(factory.ValidateIds(arch));
-		assertion(factory.ValidateConnections(arch));
-		List<String> cv = factory.GenerateControlVector(arch);
-		File file = new File(outputFile);
-		try {
-			Files.write(file.toPath(), ("-- control-vector:" + System.lineSeparator() + "-- " + cv.toString().replace("[", "").replace("]", "")).getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
-		}
+//		ArchitectureFactory factory = new ArchitectureFactory();
+//		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
+//		Architecture arch = factory.ReadSpecification(architectureFile);
+//		assertion(factory.ValidateIds(arch));
+//		assertion(factory.ValidateConnections(arch));
+//		List<String> cv = factory.GenerateControlVector(arch);
+//		File file = new File(outputFile);
+//		try {
+//			Files.write(file.toPath(), ("-- control-vector:" + System.lineSeparator() + "-- " + cv.toString().replace("[", "").replace("]", "")).getBytes());
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
+//		}
 	}
 	
 	public static void compileMDF(String architectureFile, String mdf, String outputFile) {

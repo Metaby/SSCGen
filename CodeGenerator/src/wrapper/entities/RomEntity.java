@@ -1,20 +1,23 @@
-package wrapper;
+package wrapper.entities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Rom {
+import tool.ControlField;
+import tool.ControlVector;
+import wrapper.Connector;
+import wrapper.ConnectorType;
+import wrapper.Wrapper;
+
+public class RomEntity extends BaseEntity{
 
 	private List<Connector> addresses;
 	private Connector output;
-	private Connector control;
 	private String contentFile;
-	private String id;
 	private int addressSize;
-	private int wordSize;
 	
-	Rom(jaxb.Rom rom) {
+	public RomEntity(jaxb.Rom rom) {
 		id = rom.getId();
 		contentFile = rom.getContentFile();
 		addressSize = rom.getAddressSize();
@@ -27,12 +30,20 @@ public class Rom {
 		control = new Connector(rom.getControl(), (int)Math.ceil(Math.log(addresses.size()) / Math.log(2)));	
 	}
 	
-	public List<String> getControlVector() {
-		List<String> cv = new ArrayList<String>();
-		cv.add(Wrapper.IntToRange(id + "_asel", (int)Math.ceil(Math.log(addresses.size()) / Math.log(2))));
-		cv.add(id + "_write");
-		cv.removeAll(Arrays.asList("", null));
-		return cv;
+	public ControlVector getControlVector() {
+		if (control.type == ConnectorType.SYSTEM_AUTO) {
+			int aselSize = Wrapper.log2(addresses.size());
+			ControlVector cv = new ControlVector(aselSize);
+			if (aselSize > 0) {
+				ControlField iselField = new ControlField(id + "_isel", 0, aselSize - 1);
+				for (int i = 0; i < addresses.size(); i++) {
+					iselField.addParameter(addresses.get(i).toString(), i);		
+				}
+				cv.addField(iselField);
+			}
+			return cv;			
+		}
+		return new ControlVector(0);
 	}
 	
 	public List<Connector> getAddresses() {
@@ -43,24 +54,11 @@ public class Rom {
 		return output;
 	}
 
-	public String getId() {
-		return id;
-	}
-
 	public int getAddressSize() {
 		return addressSize;
 	}
-
-	public int getWordSize() {
-		return wordSize;
-	}
-
+	
 	public String getContentFile() {
 		return contentFile;
-	}
-
-	public Connector getControl() {
-		return control;
-	}
-	
+	}	
 }

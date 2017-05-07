@@ -5,17 +5,17 @@ USE ieee.std_logic_1164.all;
 
 ENTITY program_rom IS
   GENERIC (
-    g_addressSize : integer := 7;
-    g_wordSize : integer := 7
+    g_address_size : integer := 7;
+    g_word_size : integer := 7
   );
   PORT (
-    p_address0 : in std_logic_vector(g_addressSize DOWNTO 0);
-    p_word : out std_logic_vector(g_wordSize DOWNTO 0)
+    p_address0 : in std_logic_vector(g_address_size DOWNTO 0);
+    p_word : out std_logic_vector(g_word_size DOWNTO 0)
   );
 END program_rom;
 
 ARCHITECTURE behavior OF program_rom IS
-  SIGNAL s_address : std_logic_vector(g_addressSize DOWNTO 0);
+  SIGNAL s_address : std_logic_vector(g_address_size DOWNTO 0);
 BEGIN
   s_address <= p_address0;
   -- Behavior

@@ -13,7 +13,7 @@
 		<id>output_register1</id>
 		<size>8</size>
 		<inputs>
-			<input>mux1.out</input>
+			<input>counter1.out</input>
 		</inputs>
 		<output>system.out.counter_out</output>
 		<control>system.const.1</control>
@@ -22,7 +22,7 @@
 		<id>output_register2</id>
 		<size>8</size>
 		<inputs>
-			<input>mux1.out</input>
+			<input>program_rom.out</input>
 		</inputs>
 		<output>system.out.rom_out</output>
 		<control>system.const.1</control>
@@ -31,7 +31,7 @@
 		<id>program_rom</id>
 		<wordSize>8</wordSize>
 		<addressSize>8</addressSize>
-		<contentFile>C:/program.hex</contentFile>
+		<contentFile>C:/program1.hex</contentFile>
 		<addresses>
 			<address>counter1.out</address>
 		</addresses>
@@ -79,14 +79,4 @@
 		<control>system.auto</control>
 		<status>system.open</status>
 	</alu>
-	<multiplexer x="0" y="0">
-		<id>mux1</id>
-		<wordSize>8</wordSize>
-		<inputs>
-			<input>counter1.out</input>
-			<input>program_rom.out</input>
-		</inputs>
-		<output>mux1.out</output>
-		<control>system.const.1</control>
-	</multiplexer>
 </architecture>

@@ -3,7 +3,7 @@ package tool;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VhdlComponent {
+class VhdlComponent {
 
 	private List<String> libraries;
 	private List<String> generics;
@@ -15,7 +15,7 @@ public class VhdlComponent {
 	private String name;
 	private String nl;
 	
-	public VhdlComponent(String name) {
+	VhdlComponent(String name) {
 		libraries = new ArrayList<String>();
 		generics = new ArrayList<String>();
 		signals = new ArrayList<String>();
@@ -27,37 +27,49 @@ public class VhdlComponent {
 		nl = System.lineSeparator();
 	}
 
-	public void AddLibrary(String library) {
+	void AddLibrary(String library) {
 		if (!libraries.contains(library)) {
 			libraries.add(library);			
 		}
 	}
 	
-	public void AddGeneric(String generic) {
+	void AddGeneric(String generic) {
 		if (!generics.contains(generic)) {
 			generics.add(generic);			
 		}
 	}
 
-	public void AddPort(String port) {
+	void AddPort(String port, int size) {
+		if (size > 1) {
+			port += " std_logic_vector(" + (size - 1) + " DOWNTO 0)";
+		} else {
+			port += " std_logic";
+		}
 		if (!ports.contains(port)) {
 			ports.add(port);			
 		}
 	}
 	
-	public void AddSignal(String signal) {
+	void AddPort(String port, String upperBound) {
+		port += " std_logic_vector(" + upperBound + " DOWNTO 0)";
+		if (!ports.contains(port)) {
+			ports.add(port);			
+		}
+	}
+	
+	void AddSignal(String signal) {
 		if (!signals.contains(signal)) {
 			signals.add(signal);			
 		}
 	}
 	
-	public void AddImport(String imprt) {
+	void AddImport(String imprt) {
 		if (!imports.contains(imprt)) {
 			imports.add(imprt);			
 		}
 	}
 	
-	public void AddType(String type) {
+	void AddType(String type) {
 		if (!types.contains(type)) {
 			types.add(type);			
 		}
