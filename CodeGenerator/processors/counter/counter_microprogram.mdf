@@ -28,11 +28,10 @@
 --   CONST(1)
 --   counter1.out
 
-import processors/counter/counter_microprogram.def;
+import processors/counter/counter_microprogram.def
 
 function add (0x00) {
 	call loadA;
 	call loadB;
-	set memory_port2_asel(system.mem_out_adr2), memory_port2_write, mux1_isel(CONST(1));
-	set memory_port2_asel(system.mem_out_adr2), memory_port2_write, mux1_isel(CONST(1));	
-};
+	set alu_csel(ADD), cache_port0_isel(alu.out), cache_port0_write;
+}

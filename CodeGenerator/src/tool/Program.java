@@ -24,14 +24,19 @@ public class Program {
 		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
-}
+	}
 	
-	public static void generateMicrocodeDesignFiles(String architectureFile, String outputFile) {
+	public static Architecture validateAndLoadArchitecture(String architectureFile) {
 		ArchitectureFactory factory = new ArchitectureFactory();
 		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
 		Architecture arch = factory.ReadSpecification(architectureFile);
 		assertion(factory.ValidateIds(arch));
 		assertion(factory.ValidateConnections(arch));
+		return arch;
+	}
+	
+	public static void generateMicrocodeDesignFiles(String architectureFile, String outputFile) {
+		Architecture arch = validateAndLoadArchitecture(architectureFile);
 		ControlVector cv = arch.getControlVector();
 		String mdfContent = "";
 		mdfContent += "-- Konventionen:" + System.lineSeparator();
@@ -62,23 +67,28 @@ public class Program {
 			defFile += ".def";
 		}
 		mdfContent += System.lineSeparator() + "import " + defFile + System.lineSeparator() + System.lineSeparator();
-		String defContent = "";
+		String fields = "";
+		String singles = "";
 		for (ControlField cf : cv.getFields()) {
 			if (cf.getSize() > 1) {
-				defContent += cf.getName() + " = {" + cf.getStart() + "," + cf.getEnd() + "}{";
+				fields += "field " + cf.getName() + " = {" + cf.getStart() + "," + cf.getEnd() + "}{";
+				String values = "{";
 				for (String param : cf.getParameters().keySet()) {
-					defContent += param + ", ";
+					fields += param + ", ";
+					values += cf.getParameters().get(param) + ", ";
 				}
-				defContent = defContent.substring(0, defContent.length() - 2) + "}" + System.lineSeparator();
+				values = values.substring(0, values.length() - 2);
+				values += "};";
+				fields = fields.substring(0, fields.length() - 2) + "}" + values + System.lineSeparator();
 			} else {
-				defContent += cf.getName() + " = {" + cf.getStart() + "}{}" + System.lineSeparator();
+				singles += "single " + cf.getName() + " = {" + cf.getStart() + "};" + System.lineSeparator();
 			}
 		}
 		File mdfPath = new File(outputFile);
 		File defPath = new File(defFile);
 		try {
 			Files.write(mdfPath.toPath(), mdfContent.getBytes());
-			Files.write(defPath.toPath(), defContent.getBytes());
+			Files.write(defPath.toPath(), (singles + fields).getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
@@ -92,10 +102,7 @@ public class Program {
 	public static void generateArchitecture(String architectureFile, String mdf, String outputDirectory) {
 		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory factory = new ArchitectureFactory();
-		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
-		Architecture arch = factory.ReadSpecification(architectureFile);
-		assertion(factory.ValidateIds(arch));
-		assertion(factory.ValidateConnections(arch));
+		Architecture arch = validateAndLoadArchitecture(architectureFile);
 		factory.GenerateArchitecture(outputDirectory, arch);		
 	}
 	
