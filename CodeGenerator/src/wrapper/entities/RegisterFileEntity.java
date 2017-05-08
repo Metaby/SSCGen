@@ -1,17 +1,17 @@
 package wrapper.entities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import tool.ControlField;
 import tool.ControlVector;
 import wrapper.Connector;
+import wrapper.ConnectorType;
 import wrapper.Port;
 import wrapper.PortDirection;
 import wrapper.Wrapper;
 
 public class RegisterFileEntity extends BaseEntity {
-
 	private List<Port> ports;
 	private int addressSize;
 	
@@ -25,23 +25,68 @@ public class RegisterFileEntity extends BaseEntity {
 			Port p = new Port(rf.getPorts().getPort().get(i), wordSize, addressSize, id);
 			ports.add(p);
 			if (p.getDirection() == PortDirection.IN) {
-				ctrlSize += log2(p.getAddresses().size());
-				ctrlSize += log2(p.getInputs().size());
+				ctrlSize += Wrapper.log2(p.getAddresses().size());
+				ctrlSize += Wrapper.log2(p.getInputs().size());
 				ctrlSize++;
 			} else {
-				ctrlSize += log2(p.getAddresses().size());				
+				ctrlSize += Wrapper.log2(p.getAddresses().size());				
 			}
 		}
 		control = new Connector(rf.getControl(), ctrlSize);
 	}
 	
-	private int log2(int value) {
-		return (int)Math.ceil(Math.log(value) / Math.log(2));
-	}
-	
 	public ControlVector getControlVector() {
-		ControlVector cv = new ControlVector(0);
-		return cv;
+		if (control.type == ConnectorType.SYSTEM_AUTO) {
+			int cvSize = 0;
+			for (int i = 0; i < ports.size(); i++) {
+				if (ports.get(i).getDirection() == PortDirection.IN) {
+					cvSize += Wrapper.log2(ports.get(i).getInputs().size());
+					cvSize += Wrapper.log2(ports.get(i).getAddresses().size());
+					cvSize++;
+				} else {
+					cvSize += Wrapper.log2(ports.get(i).getAddresses().size());					
+				}
+			}
+			int offset = 0;
+			ControlVector cv = new ControlVector(cvSize);
+			for (int i = 0; i < ports.size(); i++) {
+				if (ports.get(i).getDirection() == PortDirection.IN) {
+					int iselSize = Wrapper.log2(ports.get(i).getInputs().size());
+					int aselSize = Wrapper.log2(ports.get(i).getAddresses().size());
+					if (iselSize > 0) {
+						ControlField iselField = new ControlField(id + "_port" + i + "_isel", offset, offset + iselSize - 1);
+						offset += iselSize;
+						for (int j = 0; j < ports.get(i).getInputs().size(); j++) {
+							iselField.addParameter(ports.get(i).getInputs().get(j).toString(), j);		
+						}
+						cv.addField(iselField);
+					}
+					if (aselSize > 0) {
+						ControlField aselField = new ControlField(id + "_port" + i + "_asel", offset, offset + aselSize - 1);
+						offset += aselSize;
+						for (int j = 0; j < ports.get(i).getAddresses().size(); j++) {
+							aselField.addParameter(ports.get(i).getAddresses().get(j).toString(), j);		
+						}
+						cv.addField(aselField);
+					}
+					ControlField writeField = new ControlField(id + "_port" + i + "_write", offset, offset);
+					offset++;
+					cv.addField(writeField);
+				} else {
+					int aselSize = Wrapper.log2(ports.get(i).getAddresses().size());
+					if (aselSize > 0) {
+						ControlField aselField = new ControlField(id + "_port" + i + "_asel", offset, offset + aselSize - 1);
+						offset += aselSize;
+						for (int j = 0; j < ports.get(i).getAddresses().size(); j++) {
+							aselField.addParameter(ports.get(i).getAddresses().get(j).toString(), j);		
+						}
+						cv.addField(aselField);
+					}					
+				}
+			}
+			return cv;			
+		}
+		return new ControlVector(0);
 	}
 	
 	public List<Port> getPorts() {

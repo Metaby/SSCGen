@@ -22,6 +22,11 @@ public class ControlField {
 			parameters.put(key, value);
 		}
 	}
+	
+	public void move(int offset) {
+		start += offset;
+		end += offset;
+	}
 
 	public Map<String, Integer> getParameters() {
 		return parameters;

@@ -1,9 +1,7 @@
 package wrapper.entities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import tool.ControlField;
 import tool.ControlVector;
 import wrapper.Connector;

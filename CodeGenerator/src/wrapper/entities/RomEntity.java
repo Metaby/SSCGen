@@ -1,9 +1,7 @@
 package wrapper.entities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import tool.ControlField;
 import tool.ControlVector;
 import wrapper.Connector;
@@ -35,11 +33,11 @@ public class RomEntity extends BaseEntity{
 			int aselSize = Wrapper.log2(addresses.size());
 			ControlVector cv = new ControlVector(aselSize);
 			if (aselSize > 0) {
-				ControlField iselField = new ControlField(id + "_isel", 0, aselSize - 1);
+				ControlField aselField = new ControlField(id + "_asel", 0, aselSize - 1);
 				for (int i = 0; i < addresses.size(); i++) {
-					iselField.addParameter(addresses.get(i).toString(), i);		
+					aselField.addParameter(addresses.get(i).toString(), i);		
 				}
-				cv.addField(iselField);
+				cv.addField(aselField);
 			}
 			return cv;			
 		}

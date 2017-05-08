@@ -3,6 +3,7 @@ package wrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import tool.ControlVector;
 import wrapper.entities.*;
 
 public class Architecture {
@@ -36,6 +37,14 @@ public class Architecture {
 		for (jaxb.Multiplexer mux : arch.getMultiplexer()) {
 			multiplexers.add(new MultiplexerEntity(mux));
 		}
+	}
+	
+	public ControlVector getControlVector() {
+		ControlVector cv = new ControlVector(0);
+		for (BaseEntity be : getAllEntites()) {
+			cv = ControlVector.concatenate(cv, be.getControlVector());
+		}
+		return cv;
 	}
 	
 	public List<Connector> getInputConnectors(Boolean complete) {

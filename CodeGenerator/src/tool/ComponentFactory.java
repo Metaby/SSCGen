@@ -734,7 +734,7 @@ class ComponentFactory {
 		List<String> imports = new ArrayList<String>();
 		List<String> subComponents = getAluSubComponents(alu);
 		try {
-		if (subComponents.contains("ADDER")) {
+			if (subComponents.contains("ADDER")) {
 				copy(new File("processors/components/alu/adder"), new File(targetDirectory + "/components/alu"));
 				String imprt = "";
 				imprt += "  COMPONENT carry_select_adder" + System.lineSeparator();
@@ -971,7 +971,6 @@ class ComponentFactory {
 	    if (!target.exists()) {
 	        target.mkdir();
 	    }
-
 	    for (String f : source.list()) {
 	        copy(new File(source, f), new File(target, f));
 	    }

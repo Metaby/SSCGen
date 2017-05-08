@@ -1,15 +1,15 @@
 package wrapper.entities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import tool.ControlField;
 import tool.ControlVector;
 import wrapper.Connector;
+import wrapper.ConnectorType;
 import wrapper.Wrapper;
 
 public class MultiplexerEntity extends BaseEntity {
-
 	private List<Connector> inputs;
 	private Connector output;
 	
@@ -25,8 +25,19 @@ public class MultiplexerEntity extends BaseEntity {
 	}
 	
 	public ControlVector getControlVector() {
-		ControlVector cv = new ControlVector(0);
-		return cv;
+		if (control.type == ConnectorType.SYSTEM_AUTO) {
+			int iselSize = Wrapper.log2(inputs.size());
+			ControlVector cv = new ControlVector(iselSize);
+			if (iselSize > 0) {
+				ControlField iselField = new ControlField(id + "_isel", 0, iselSize - 1);
+				for (int i = 0; i < inputs.size(); i++) {
+					iselField.addParameter(inputs.get(i).toString(), i);		
+				}
+				cv.addField(iselField);
+			}
+			return cv;			
+		}
+		return new ControlVector(0);
 	}
 	
 	public List<Connector> getInputs() {

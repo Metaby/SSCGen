@@ -3,13 +3,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;
 import javax.xml.transform.stream.StreamSource;
@@ -53,7 +49,6 @@ class ArchitectureFactory {
 	Boolean ValidateIds(Architecture arch) {
 		List<String> ids = new ArrayList<String>();
 		for (BaseEntity be : arch.getAllEntites()) {
-			System.out.println(be.getControlVector().toString());
 			if (ids.contains(be.getId())) {
 				System.out.println("Error: Id \"" + be.getId() + "\" already exist, Ids have to be unique");
 				return false;
@@ -102,80 +97,31 @@ class ArchitectureFactory {
 		return true;
 	}
 	
-	private String getImport(VhdlComponent component) {
-		String imprt = "";
-		imprt += "  COMPONENT " + component.getName() + System.lineSeparator();
-		if (component.getGenerics().size() > 0) {
-			imprt += "    GENERIC (" + System.lineSeparator();
-			for (int i = 0; i < component.getGenerics().size(); i++) {
-				if (i < component.getGenerics().size() - 1) {
-					imprt += "      " + component.getGenerics().get(i) + ";" + System.lineSeparator();					
-				} else {
-					imprt += "      " + component.getGenerics().get(i) + System.lineSeparator();
-				}
-			}
-			imprt += "    );" + System.lineSeparator();
-		}
-		if (component.getPorts().size() > 0) {
-			imprt += "    PORT (" + System.lineSeparator();
-			for (int i = 0; i < component.getPorts().size(); i++) {
-				if (i < component.getPorts().size() - 1) {
-					imprt += "      " + component.getPorts().get(i) + ";" + System.lineSeparator();
-				} else {
-					imprt += "      " + component.getPorts().get(i) + System.lineSeparator();					
-				}
-			}
-			imprt += "    );" + System.lineSeparator();
-		}
-		imprt += "  END COMPONENT;";
-		return imprt;
-	}
-	
-	List<String> GenerateControlVector(Architecture arch) {
-		List<String> cv = new LinkedList<String>();
-//		for (RegisterEntity reg : arch.getRegisters()) {
-//			cv.addAll(reg.getControlVector());
-//		}
-//		for (RomEntity rom : arch.getRoms()) {
-//			cv.addAll(rom.getControlVector());
-//		}
-//		for (RegisterFileEntity rf : arch.getRegisterFiles()) {
-//			cv.addAll(rf.getControlVector());
-//		}
-//		for (AluEntity alu : arch.getAlus()) {
-//			cv.addAll(alu.getControlVector());
-//		}
-//		for (MultiplexerEntity jl : arch.getMultiplexers()) {
-//			cv.addAll(jl.getControlVector());
-//		}
-		return cv;
-	}
-	
 	void GenerateArchitecture(String directory, Architecture arch) {
-		ComponentFactory factory = new ComponentFactory(directory);
+		ComponentFactory cFactory = new ComponentFactory(directory);
+		InstanceFactory iFactory = new InstanceFactory(arch);
 		List<VhdlComponent> archComponents = new ArrayList<VhdlComponent>();
 		new File(directory + "/components/").mkdirs();
-		InstanceFactory instFact = new InstanceFactory(arch);
 		String behavior = "";
 		for (RegisterEntity reg : arch.getRegisters()) {
-			archComponents.add(factory.generateComponent(reg));
-			behavior += instFact.generateInstance(reg) + System.lineSeparator();
+			archComponents.add(cFactory.generateComponent(reg));
+			behavior += iFactory.generateInstance(reg) + System.lineSeparator();
 		}
 		for (RomEntity rom : arch.getRoms()) {
-			archComponents.add(factory.generateComponent(rom));
-			behavior += instFact.generateInstance(rom) + System.lineSeparator();
+			archComponents.add(cFactory.generateComponent(rom));
+			behavior += iFactory.generateInstance(rom) + System.lineSeparator();
 		}
 		for (MultiplexerEntity mux : arch.getMultiplexers()) {
-			archComponents.add(factory.generateComponent(mux));
-			behavior += instFact.generateInstance(mux) + System.lineSeparator();
+			archComponents.add(cFactory.generateComponent(mux));
+			behavior += iFactory.generateInstance(mux) + System.lineSeparator();
 		}
 		for (AluEntity alu : arch.getAlus()) {
-			archComponents.add(factory.generateComponent(alu));
-			behavior += instFact.generateInstance(alu) + System.lineSeparator();
+			archComponents.add(cFactory.generateComponent(alu));
+			behavior += iFactory.generateInstance(alu) + System.lineSeparator();
 		}
 		for (RegisterFileEntity rf : arch.getRegisterFiles()) {
-			archComponents.add(factory.generateComponent(rf));
-			behavior += instFact.generateInstance(rf);
+			archComponents.add(cFactory.generateComponent(rf));
+			behavior += iFactory.generateInstance(rf);
 		}
 		VhdlComponent topLevelEntity = new VhdlComponent("processor");
 		topLevelEntity.AddGeneric("g_word_size : integer := " + (arch.getWordSize() - 1));
@@ -206,7 +152,7 @@ class ArchitectureFactory {
 			}
 		}
 		for (VhdlComponent vc : archComponents) {
-			topLevelEntity.AddImport(getImport(vc));
+			topLevelEntity.AddImport(vc.getImport());
 		}
 		//
 		// PROVISORISCH FÜR MODELSIM

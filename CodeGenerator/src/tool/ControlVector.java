@@ -29,8 +29,20 @@ public class ControlVector {
 		cvString += "size: " + size + System.lineSeparator();
 		for (ControlField cf : fields) {
 			cvString += "  " + cf.getName() + System.lineSeparator();
-			cvString += "    " + cf.getParameters().toString() + System.lineSeparator();
+			cvString += "    [" + cf.getStart() + "," + cf.getEnd() + "]" + cf.getParameters().toString() + System.lineSeparator();
 		}
 		return cvString;
+	}
+	
+	public static ControlVector concatenate(ControlVector cv1, ControlVector cv2) {
+		ControlVector cv = new ControlVector(cv1.size + cv2.size);
+		for (ControlField cf : cv1.fields) {
+			cv.fields.add(cf);
+		}
+		for (ControlField cf : cv2.fields) {
+			cf.move(cv1.size);
+			cv.fields.add(cf);
+		}
+		return cv;
 	}
 }

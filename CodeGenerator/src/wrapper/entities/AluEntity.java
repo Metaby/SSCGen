@@ -1,15 +1,15 @@
 package wrapper.entities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import tool.ControlField;
 import tool.ControlVector;
 import wrapper.Connector;
+import wrapper.ConnectorType;
 import wrapper.Wrapper;
 
 public class AluEntity extends BaseEntity {
-
 	private List<Connector> inputsA;
 	private List<Connector> inputsB;
 	private List<String> operations;
@@ -42,12 +42,42 @@ public class AluEntity extends BaseEntity {
 		for (int i = 0; i < alu.getInputsOperandB().getInput().size(); i++) {
 			inputsB.add(new Connector(alu.getInputsOperandB().getInput().get(i), wordSize));
 		}
-		control = new Connector(alu.getControl(), (int)Math.ceil(Math.log(inputsA.size()) / Math.log(2)) + (int)Math.ceil(Math.log(inputsB.size()) / Math.log(2)) + (int)Math.ceil(Math.log(operations.size() + conditions.size()) / Math.log(2)));
+		control = new Connector(alu.getControl(), Wrapper.log2(inputsA.size()) + Wrapper.log2(inputsB.size()) + Wrapper.log2(operations.size() + conditions.size()));
 	}
 	
 	public ControlVector getControlVector() {
-		ControlVector cv = new ControlVector(0);
-		return cv;
+		if (control.type == ConnectorType.SYSTEM_AUTO) {
+			int iselASize = Wrapper.log2(inputsA.size());
+			int iselBSize = Wrapper.log2(inputsB.size());
+			int cselSize = Wrapper.log2(operations.size() + conditions.size());
+			ControlVector cv = new ControlVector(iselASize + iselBSize);
+			if (iselASize > 0) {
+				ControlField field = new ControlField(id + "_iselA", 0, iselASize - 1);
+				for (int i = 0; i < inputsA.size(); i++) {
+					field.addParameter(inputsA.get(i).toString(), i);		
+				}
+				cv.addField(field);
+			}
+			if (iselBSize > 0) {
+				ControlField field = new ControlField(id + "_iselB", iselASize, iselASize + iselBSize - 1);
+				for (int i = 0; i < inputsB.size(); i++) {
+					field.addParameter(inputsB.get(i).toString(), i);		
+				}
+				cv.addField(field);
+			}
+			if (cselSize > 0) {
+				ControlField field = new ControlField(id + "_csel", iselASize + iselBSize, iselASize + iselBSize + cselSize - 1);
+				for (int i = 0; i < operations.size(); i++) {
+					field.addParameter(operations.get(i).toString(), i);		
+				}
+				for (int i = 0; i < conditions.size(); i++) {
+					field.addParameter(conditions.get(i), i + operations.size());
+				}
+				cv.addField(field);
+			}
+			return cv;
+		}
+		return new ControlVector(0);
 	}
 
 	public List<Connector> getInputsA() {

@@ -1,0 +1,6 @@
+memory_port0_asel = {0,1}{system.mem_out_adr4, system.mem_out_adr5, system.mem_out_adr6}
+memory_port1_isel = {2,3}{system.mem_in2, system.mem_in3, system.mem_in1}
+memory_port1_asel = {4,5}{system.mem_in_adr1, system.mem_in_adr3, system.mem_in_adr2}
+memory_port1_write = {6}{}
+memory_port2_asel = {7,8}{system.mem_out_adr3, system.mem_out_adr1, system.mem_out_adr2}
+mux1_isel = {9,10}{incrementer.out, CONST(1), counter1.out}

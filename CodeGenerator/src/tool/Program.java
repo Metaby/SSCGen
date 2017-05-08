@@ -20,57 +20,76 @@ public class Program {
 	}
 	
 	public static void main(String[] args) {
-		startTimeMeasuring();
 		String processor = "counter";
-//		createMDF("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
-//		generateProcessor("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
-		generateProcessor("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
-		stopTimeMeasureing();
-//		System.out.println("-- Mikrocode-Design-Filge");
-//		System.out.println("--");
-//		System.out.println("-- csel = condition-select (JumpLogic)");
-//		System.out.println("-- csel = command-select (ALU)");
-//		System.out.println("-- isel = input-select");
-//		System.out.println("-- asel = address-select");
-//		System.out.println("--");
-//		System.out.println("-- control-vector-bits:");
-//		System.out.println("-- " + cv.toString().replace("[", "").replace("]", ""));
-//		System.out.println("--");
-//		System.out.println("-- [command, address]\t\tstart microcode-program (µp) named <command> at <address>, address is optional");
-//		System.out.println("-- bit, bit, bit, bit\t\tlist all bits to be one at this state of the µp");
-//		System.out.println("-- :command\t\t\trun µp named command (nest µp in µp)");
-//		System.out.println("-- <cv>(<name> | <integer>)");
-//		System.out.println("--");
-//		System.out.println("-- Example:");
-//		System.out.println("[add, 0]");
-//		System.out.println("alu_op1_isel(reg.out1), alu_op2_isel(reg.out2), alu_csel(add), reg_p0_asel(ir.inst), reg_p1_asel(ir.inst), reg_p2_asel(ir.inst), reg_p2_isel(alu.out)");
-//		System.out.println("alu_op1_isel(reg.out1), alu_op2_isel(reg.out2), alu_csel(add), reg_p0_asel(ir.inst), reg_p1_asel(ir.inst), reg_p2_asel(ir.inst), reg_p2_isel(alu.out), reg_p2_write");
-//		System.out.println("[subtract, 1]");
-//		System.out.println("alu_op1_isel(reg.out1), alu_op2_isel(reg.out2), alu_csel(subtract), reg_p0_asel(ir.inst), reg_p1_asel(ir.inst), reg_p2_asel(ir.inst), reg_p2_isel(alu.out)");
-//		System.out.println("alu_op1_isel(reg.out1), alu_op2_isel(reg.out2), alu_csel(subtract), reg_p0_asel(ir.inst), reg_p1_asel(ir.inst), reg_p2_asel(ir.inst), reg_p2_isel(alu.out), reg_p2_write");
-	}
+		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
+		generateArchitecture("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
+		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
+}
 	
-	public static void createMDF(String architectureFile, String outputFile) {
-//		ArchitectureFactory factory = new ArchitectureFactory();
-//		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
-//		Architecture arch = factory.ReadSpecification(architectureFile);
-//		assertion(factory.ValidateIds(arch));
-//		assertion(factory.ValidateConnections(arch));
-//		List<String> cv = factory.GenerateControlVector(arch);
-//		File file = new File(outputFile);
-//		try {
-//			Files.write(file.toPath(), ("-- control-vector:" + System.lineSeparator() + "-- " + cv.toString().replace("[", "").replace("]", "")).getBytes());
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
-//		}
+	public static void generateMicrocodeDesignFiles(String architectureFile, String outputFile) {
+		ArchitectureFactory factory = new ArchitectureFactory();
+		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
+		Architecture arch = factory.ReadSpecification(architectureFile);
+		assertion(factory.ValidateIds(arch));
+		assertion(factory.ValidateConnections(arch));
+		ControlVector cv = arch.getControlVector();
+		String mdfContent = "";
+		mdfContent += "-- Konventionen:" + System.lineSeparator();
+		mdfContent += "-- isel = input-select" + System.lineSeparator();
+		mdfContent += "-- asel = address-select" + System.lineSeparator();
+		mdfContent += "-- csel = command-select" + System.lineSeparator();
+		mdfContent += "--" + System.lineSeparator();
+		mdfContent += "-- Steuervektor:" + System.lineSeparator();
+		mdfContent += "-- ";
+		String mdfFields = "--" + System.lineSeparator();
+		mdfFields += "-- Parameter:" + System.lineSeparator();
+		for (ControlField cf : cv.getFields()) {
+			if (cf.getSize() > 1) {
+				mdfContent += cf.getName() + "[0," + (cf.getEnd() - cf.getStart()) + "], ";
+				mdfFields += "-- " + cf.getName() + System.lineSeparator();
+				for (String param : cf.getParameters().keySet()) {
+					mdfFields += "--   " + param + System.lineSeparator();
+				}
+			} else {
+				mdfContent += cf.getName() + ", ";
+			}
+		}
+		mdfContent = mdfContent.substring(0, mdfContent.length() - 2) + System.lineSeparator() + mdfFields;
+		String defFile = outputFile;
+		if (defFile.contains(".")) {
+			defFile = defFile.substring(0, defFile.indexOf('.')) + ".def";
+		} else {
+			defFile += ".def";
+		}
+		mdfContent += System.lineSeparator() + "import " + defFile + System.lineSeparator() + System.lineSeparator();
+		String defContent = "";
+		for (ControlField cf : cv.getFields()) {
+			if (cf.getSize() > 1) {
+				defContent += cf.getName() + " = {" + cf.getStart() + "," + cf.getEnd() + "}{";
+				for (String param : cf.getParameters().keySet()) {
+					defContent += param + ", ";
+				}
+				defContent = defContent.substring(0, defContent.length() - 2) + "}" + System.lineSeparator();
+			} else {
+				defContent += cf.getName() + " = {" + cf.getStart() + "}{}" + System.lineSeparator();
+			}
+		}
+		File mdfPath = new File(outputFile);
+		File defPath = new File(defFile);
+		try {
+			Files.write(mdfPath.toPath(), mdfContent.getBytes());
+			Files.write(defPath.toPath(), defContent.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
+		}
 	}
 	
 	public static void compileMDF(String architectureFile, String mdf, String outputFile) {
 		
 	}
 	
-	public static void generateProcessor(String architectureFile, String mdf, String outputDirectory) {
+	public static void generateArchitecture(String architectureFile, String mdf, String outputDirectory) {
 		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory factory = new ArchitectureFactory();
 		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));

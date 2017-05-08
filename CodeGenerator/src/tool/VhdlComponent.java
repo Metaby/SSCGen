@@ -151,7 +151,36 @@ class VhdlComponent {
 			behavior += "  " + outp + " <= " + inputName + "0;" + System.lineSeparator();
 		}
 		return behavior;
-	}	
+	}
+	
+	public String getImport() {
+		String imprt = "";
+		imprt += "  COMPONENT " + name + System.lineSeparator();
+		if (generics.size() > 0) {
+			imprt += "    GENERIC (" + System.lineSeparator();
+			for (int i = 0; i < generics.size(); i++) {
+				if (i < generics.size() - 1) {
+					imprt += "      " + generics.get(i) + ";" + System.lineSeparator();					
+				} else {
+					imprt += "      " + generics.get(i) + System.lineSeparator();
+				}
+			}
+			imprt += "    );" + System.lineSeparator();
+		}
+		if (ports.size() > 0) {
+			imprt += "    PORT (" + System.lineSeparator();
+			for (int i = 0; i < ports.size(); i++) {
+				if (i < ports.size() - 1) {
+					imprt += "      " + ports.get(i) + ";" + System.lineSeparator();
+				} else {
+					imprt += "      " + ports.get(i) + System.lineSeparator();					
+				}
+			}
+			imprt += "    );" + System.lineSeparator();
+		}
+		imprt += "  END COMPONENT;";
+		return imprt;
+	}
 	
 	public List<String> getGenerics() {
 		return generics;
