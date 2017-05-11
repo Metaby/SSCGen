@@ -1,9 +1,16 @@
 package tool;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTree;
 
+import antlr.MicrocodeDesignLanguageLexer;
+import antlr.MicrocodeDesignLanguageParser;
 import wrapper.*;
 
 @SuppressWarnings("ucd")
@@ -21,9 +28,12 @@ public class Program {
 	
 	public static void main(String[] args) {
 		String processor = "counter";
-		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
-		generateArchitecture("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
-		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
+//		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
+//		generateArchitecture("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
+//		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
+		Microcode mc = loadMicrocode("processors/" + processor + "/counter_microprogram.mdf");
+		String mcBytes = compileMicrocode(mc);
+		saveMicrocode(mcBytes, "");
 	}
 	
 	public static Architecture validateAndLoadArchitecture(String architectureFile) {
@@ -95,8 +105,36 @@ public class Program {
 		}
 	}
 	
-	public static void compileMDF(String architectureFile, String mdf, String outputFile) {
-		
+	@SuppressWarnings("deprecation")
+	public static Microcode loadMicrocode(String mdfFilePath) {
+		try {
+			ANTLRInputStream mdlFile = new ANTLRInputStream(new FileReader(mdfFilePath));
+			MicrocodeDesignLanguageLexer lexer = new MicrocodeDesignLanguageLexer(mdlFile);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			MicrocodeDesignLanguageParser parser = new MicrocodeDesignLanguageParser(tokens);
+			ParseTree tree = parser.gr_mdf();
+			MicrocodeDesignLanguageVisitor visitor = new MicrocodeDesignLanguageVisitor();
+			visitor.visit(tree);
+			return visitor.getMicrocode();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;		
+	}
+	
+	public static String compileMicrocode(Microcode mc) {
+		if (mc != null) {
+			String bytes = "";
+			for (String str : mc.getImports()) {
+				bytes += str + System.lineSeparator();
+			}
+			return bytes;
+		}
+		return "";
+	}
+	
+	public static void saveMicrocode(String bytes, String outputFile) {
+		System.out.println(bytes);
 	}
 	
 	public static void generateArchitecture(String architectureFile, String mdf, String outputDirectory) {
