@@ -1,4 +1,4 @@
-package tool;
+package microcode;
 
 import antlr.MicrocodeDesignLanguageParser.Gr_fileContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_functionContext;
@@ -57,7 +57,7 @@ public class MicrocodeDesignLanguageVisitor extends antlr.MicrocodeDesignLanguag
 	
 	@Override
 	public String visitGr_function_call_code(Gr_function_call_codeContext ctx) {
-		function.addCall(ctx.getText());
+		function.addFunctionLine("c:" + ctx.getText());
 		return ctx.getText();
 	}
 	
@@ -68,7 +68,7 @@ public class MicrocodeDesignLanguageVisitor extends antlr.MicrocodeDesignLanguag
 	
 	@Override
 	public String visitGr_function_set_code(Gr_function_set_codeContext ctx) {
-		function.addSet(ctx.getText());
+		function.addFunctionLine("s:" + ctx.getText());
 		return ctx.getText();
 	}
 	

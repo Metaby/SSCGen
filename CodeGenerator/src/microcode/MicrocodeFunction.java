@@ -1,35 +1,25 @@
-package tool;
+package microcode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MicrocodeFunction {
-	private List<String> calls;
-	private List<String> sets;
+	private List<String> funcRow;
 	private String name;
 	private int position;
 	
 	public MicrocodeFunction() {
-		this.calls = new ArrayList<String>();
-		this.sets = new ArrayList<String>();
+		this.funcRow = new ArrayList<String>();
 		this.name = "";
 		this.position = -1;
 	}
 	
-	public void addCall(String call) {
-		calls.add(call);
-	}
-	
-	public void addSet(String set) {
-		sets.add(set);
+	public void addFunctionLine(String call) {
+		funcRow.add(call);
 	}
 
-	public List<String> getCalls() {
-		return calls;
-	}
-
-	public List<String> getSets() {
-		return sets;
+	public List<String> getFunctionLines() {
+		return funcRow;
 	}
 
 	public String getName() {

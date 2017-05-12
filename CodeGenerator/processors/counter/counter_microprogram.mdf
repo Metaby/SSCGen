@@ -4,21 +4,19 @@ definition processors/counter/counter_microprogram.def
 function add() {
 	call loadA;
 	call loadB;
-	set alu_csel(ADD);
-	set memory_port1_write;
+	set memory_port0_asel(system.mem_out_adr4), memory_port1_write;
 }
 
 function sub() {
 	call loadA;
 	call loadB;
-	set alu_csel(SUB);
 	set memory_port1_write;
 }
 
 function loadA() {
-	set memory_port0_asel(instRegister.out1);
+	set memory_port0_asel(system.mem_out_adr4);
 }
 
 function loadB() {
-	set memory_port0_asel(instRegister.out1);
+	set memory_port0_asel(system.mem_out_adr4);
 }
