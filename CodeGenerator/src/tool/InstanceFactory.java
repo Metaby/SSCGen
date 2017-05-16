@@ -73,7 +73,7 @@ class InstanceFactory {
 		for (Connector con : alu.getInputsB()) {
 			instance += "      " + generateInputSignal(con) + "," + System.lineSeparator();
 		}
-		if (alu.getConditions().size() > 1 || alu.getInputsA().size() > 1 || alu.getInputsB().size() > 1) {
+		if (alu.getConditions().size() > 1 || alu.getOperations().size() > 1 || alu.getInputsA().size() > 1 || alu.getInputsB().size() > 1) {
 			instance += "      " + generateInputSignal(alu.getControl()) + "," + System.lineSeparator();		
 		}
 		if (alu.getConditions().size() > 0 || alu.getOperations().contains("ADD") || alu.getOperations().contains("ADD_U") || alu.getOperations().contains("SUB") || alu.getOperations().contains("SUB_U")) {

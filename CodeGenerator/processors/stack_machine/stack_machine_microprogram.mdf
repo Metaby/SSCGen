@@ -1,0 +1,24 @@
+-- Konventionen:
+-- isel = input-select
+-- asel = address-select
+-- csel = command-select
+--
+-- Steuervektor:
+-- pcReg_write, pcReg_isel, mpcReg_write, mpcReg_isel[0,1], op1_register_write, op2_register_write, stackPtr_write, stackPtr_isel, stack_port0_isel[0,1], stack_port0_write, math_csel[0,1], stackAlu_csel
+--
+-- Parameter:
+-- mpcReg_isel
+--   mpcReg.out
+--   mpcInc.out
+--   progMem.out
+-- stack_port0_isel
+--   math.low
+--   math.high
+--   progMem.out
+-- math_csel
+--   ADD_U
+--   MUL_U
+--   SUB_U
+
+import processors/stack_machine/stack_machine_microprogram.def
+

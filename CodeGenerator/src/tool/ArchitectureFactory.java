@@ -115,13 +115,13 @@ class ArchitectureFactory {
 			archComponents.add(cFactory.generateComponent(mux));
 			behavior += iFactory.generateInstance(mux) + System.lineSeparator();
 		}
-		for (AluEntity alu : arch.getAlus()) {
-			archComponents.add(cFactory.generateComponent(alu));
-			behavior += iFactory.generateInstance(alu) + System.lineSeparator();
-		}
 		for (RegisterFileEntity rf : arch.getRegisterFiles()) {
 			archComponents.add(cFactory.generateComponent(rf));
 			behavior += iFactory.generateInstance(rf);
+		}
+		for (AluEntity alu : arch.getAlus()) {
+			archComponents.add(cFactory.generateComponent(alu));
+			behavior += iFactory.generateInstance(alu) + System.lineSeparator();
 		}
 		VhdlComponent topLevelEntity = new VhdlComponent("processor");
 		topLevelEntity.AddGeneric("g_word_size : integer := " + (arch.getWordSize() - 1));
@@ -150,6 +150,9 @@ class ArchitectureFactory {
 					topLevelEntity.AddSignal(signal);				
 				}				
 			}
+		}
+		if (arch.getControlVector().getSize() > 0) {
+			topLevelEntity.AddSignal("s_ctrl_vector : std_logic_vector(" + (arch.getControlVector().getSize() - 1) + " DOWNTO 0)");
 		}
 		for (VhdlComponent vc : archComponents) {
 			topLevelEntity.AddImport(vc.getImport());

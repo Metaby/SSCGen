@@ -3,7 +3,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-ENTITY decrementer IS
+ENTITY pcInc IS
   GENERIC (
     g_word_size : integer := 7
   );
@@ -14,9 +14,9 @@ ENTITY decrementer IS
     p_output_1 : out std_logic_vector(g_word_size DOWNTO 0);
     p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
   );
-END decrementer;
+END pcInc;
 
-ARCHITECTURE behavior OF decrementer IS
+ARCHITECTURE behavior OF pcInc IS
   COMPONENT carry_select_adder
     GENERIC (
       g_block_size : integer := 7;
@@ -38,6 +38,7 @@ ARCHITECTURE behavior OF decrementer IS
   SIGNAL s_adder_ovflw : std_logic;
   SIGNAL s_adder_result : std_logic_vector(g_word_size DOWNTO 0);
 BEGIN
+  -- Control Vector Binding
   -- Input A Multiplexing
   s_input_A <= p_input_A0;
   -- Input B Multiplexing
@@ -49,6 +50,6 @@ BEGIN
   p_flag <= s_adder_ovflw;
   -- Command Tables
   s_sgnd <= '0';
-  s_adder_sub <= '1';
+  s_adder_sub <= '0';
 
 END behavior;

@@ -3,33 +3,39 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-ENTITY port IS
+ENTITY stackPtr IS
   GENERIC (
     g_word_size : integer := 7
   );
   PORT (
     p_clk : in std_logic;
     p_rst : in std_logic;
-    p_write : in std_logic;
+    p_ctrl : in  std_logic_vector(1 DOWNTO 0);
     p_input0 : in std_logic_vector(g_word_size DOWNTO 0);
+    p_input1 : in std_logic_vector(g_word_size DOWNTO 0);
     p_word : out std_logic_vector(g_word_size DOWNTO 0)
   );
-END port;
+END stackPtr;
 
-ARCHITECTURE behavior OF port IS
-  SIGNAL s_input : std_logic_vector(g_word_size DOWNTO 0;
+ARCHITECTURE behavior OF stackPtr IS
+  SIGNAL s_write : std_logic;
+  SIGNAL s_isel : std_logic;
+  SIGNAL s_input : std_logic_vector(g_word_size DOWNTO 0);
 BEGIN
-  s_input <= p_input0;
   -- Behavior
+  s_write <= p_ctrl(0);
+  s_isel <= p_ctrl(1);
+  WITH s_isel SELECT s_input <=
+    p_input0 WHEN '0',
+    p_input1 WHEN '1',
+    (OTHERS => '0') WHEN OTHERS;
   PROCESS (p_clk) BEGIN
     IF rising_edge(p_clk) THEN
       IF p_rst = '1' THEN
         p_word <= (OTHERS => '0');
-      ELSIF p_write = '1' THEN
+      ELSIF s_write = '1' THEN
         p_word <= s_input;
-      ELSE
-        p_word <= p_word;
-      END IF;;
+      END IF;
     END IF;
   END PROCESS;
 END behavior;

@@ -1,93 +1,112 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<architecture wordSize="32">
-	<register x="0" y="0">
-		<id>counter1</id>
+<architecture wordSize="8">
+	<register>
+		<id>pcReg</id>
 		<size>8</size>
 		<inputs>
-			<input>incrementer.out</input>
+			<input>pcReg.out</input>
+			<input>pcInc.out</input>
 		</inputs>
-		<output>counter1.out</output>
-		<control>system.const.1</control>
+		<output>pcReg.out</output>
+		<control>system.auto</control>
 	</register>
-	<register x="0" y="0">
-		<id>output_register1</id>
+	<register>
+		<id>mpcReg</id>
 		<size>8</size>
 		<inputs>
-			<input>counter1.out</input>
+			<input>progMem.out</input>
+			<input>mpcInc.out</input>
+			<input>mpcReg.out</input>
 		</inputs>
-		<output>system.out.counter_out</output>
-		<control>system.const.1</control>
+		<output>mpcReg.out</output>
+		<control>system.auto</control>
 	</register>
-	<register x="0" y="0">
-		<id>output_register2</id>
+	<register>
+		<id>op1_register</id>
 		<size>8</size>
 		<inputs>
-			<input>program_rom.out</input>
+			<input>stack.out</input>
 		</inputs>
-		<output>system.out.rom_out</output>
-		<control>system.const.1</control>
+		<output>op1_register.out</output>
+		<control>system.auto</control>
+	</register>
+	<register>
+		<id>op2_register</id>
+		<size>8</size>
+		<inputs>
+			<input>stack.out</input>
+		</inputs>
+		<output>op2_register.out</output>
+		<control>system.auto</control>
+	</register>
+	<register>
+		<id>stackPtr</id>
+		<size>8</size>
+		<inputs>
+			<input>stackPtr.out</input>
+			<input>stackAlu.out</input>
+		</inputs>
+		<output>stackPtr.out</output>
+		<control>system.auto</control>
 	</register>
 	<rom>
-		<id>program_rom</id>
+		<id>progMem</id>
 		<wordSize>8</wordSize>
 		<addressSize>8</addressSize>
-		<contentFile>processors/counter/counter_microprogram.hex</contentFile>
+		<contentFile>blank</contentFile>
 		<addresses>
-			<address>counter1.out</address>
+			<address>pcReg.out</address>
 		</addresses>
-		<output>program_rom.out</output>
+		<output>progMem.out</output>
+		<control>system.auto</control>
+	</rom>
+	<rom>
+		<id>mProgMem</id>
+		<wordSize>8</wordSize>
+		<addressSize>8</addressSize>
+		<contentFile>blank</contentFile>
+		<addresses>
+			<address>mpcReg.out</address>
+		</addresses>
+		<output>system.control</output>
 		<control>system.auto</control>
 	</rom>
 	<registerFile>
-		<id>memory</id>
+		<id>stack</id>
 		<wordSize>8</wordSize>
 		<addressSize>8</addressSize>
 		<ports>
 			<port>
-				<type>out</type>
-				<addresses>
-					<address>system.in.mem_out_adr4</address>
-					<address>system.in.mem_out_adr5</address>
-					<address>system.in.mem_out_adr6</address>
-				</addresses>
-				<output>system.out.mem_out2</output>
-			</port>
-			<port>
 				<type>in</type>
 				<addresses>
-					<address>system.in.mem_in_adr1</address>
-					<address>system.in.mem_in_adr2</address>
-					<address>system.in.mem_in_adr3</address>
+					<address>stackPtr.out</address>
 				</addresses>
 				<inputs>
-					<input>system.in.mem_in1</input>
-					<input>system.in.mem_in2</input>
-					<input>system.in.mem_in3</input>
+					<input>progMem.out</input>
+					<input>math.low</input>
+					<input>math.high</input>
 				</inputs>
 			</port>
 			<port>
 				<type>out</type>
 				<addresses>
-					<address>system.in.mem_out_adr1</address>
-					<address>system.in.mem_out_adr2</address>
-					<address>system.in.mem_out_adr3</address>
+					<address>stackPtr.out</address>
 				</addresses>
-				<output>system.out.mem_out</output>
+				<output>stack.out</output>
 			</port>
 		</ports>
 		<control>system.auto</control>
-		<!--<control>system.in.mem_control</control>-->
 	</registerFile>
-	<alu x="0" y="0">
-		<id>incrementer</id>
+	<alu>
+		<id>pcInc</id>
 		<wordSize>8</wordSize>
 		<inputsOperandA>
-			<input>counter1.out</input>
+			<input>pcReg.out</input>
 		</inputsOperandA>
 		<inputsOperandB>
 			<input>system.const.1</input>
 		</inputsOperandB>
-		<output1>incrementer.out</output1>
+		<output1>pcInc.out</output1>
 		<output2>system.open</output2>
 		<operations>
 			<operation>add_u</operation>
@@ -95,15 +114,58 @@
 		<control>system.auto</control>
 		<status>system.open</status>
 	</alu>
-	<multiplexer>
-		<id>mux1</id>
+	<alu>
+		<id>mpcInc</id>
 		<wordSize>8</wordSize>
-		<inputs>
-			<input>incrementer.out</input>
-			<input>counter1.out</input>
+		<inputsOperandA>
+			<input>mpcReg.out</input>
+		</inputsOperandA>
+		<inputsOperandB>
 			<input>system.const.1</input>
-		</inputs>
-		<output>mux1.out</output>
+		</inputsOperandB>
+		<output1>mpcInc.out</output1>
+		<output2>system.open</output2>
+		<operations>
+			<operation>add_u</operation>
+		</operations>
 		<control>system.auto</control>
-	</multiplexer>
+		<status>system.open</status>
+	</alu>
+	<alu>
+		<id>math</id>
+		<wordSize>8</wordSize>
+		<inputsOperandA>
+			<input>op1_register.out</input>
+		</inputsOperandA>
+		<inputsOperandB>
+			<input>op2_register.out</input>
+		</inputsOperandB>
+		<output1>math.low</output1>
+		<output2>math.high</output2>
+		<operations>
+			<operation>add_u</operation>
+			<operation>sub_u</operation>
+			<operation>mul_u</operation>
+		</operations>
+		<control>system.auto</control>
+		<status>math.status</status>
+	</alu>
+	<alu>
+		<id>stackAlu</id>
+		<wordSize>8</wordSize>
+		<inputsOperandA>
+			<input>stackPtr.out</input>
+		</inputsOperandA>
+		<inputsOperandB>
+			<input>system.const.1</input>
+		</inputsOperandB>
+		<output1>stackAlu.out</output1>
+		<output2>system.open</output2>
+		<operations>
+			<operation>add_u</operation>
+			<operation>sub_u</operation>
+		</operations>
+		<control>system.auto</control>
+		<status>system.open</status>
+	</alu>
 </architecture>

@@ -1,0 +1,31 @@
+-- Konventionen:
+-- isel = input-select
+-- asel = address-select
+-- csel = command-select
+--
+-- Steuervektor:
+-- counter1_write, counter1_isel[0,2], incrementer_iselA[0,1], incrementer_iselB[0,1], incrementer_csel[0,2]
+--
+-- Parameter:
+-- counter1_isel
+--   incrementer.out
+--   CONST(256)
+--   CONST(253)
+--   CONST(252)
+--   CONST(255)
+--   CONST(254)
+-- incrementer_iselA
+--   counter1.out
+-- incrementer_iselB
+--   CONST(1)
+--   CONST(2)
+--   CONST(3)
+-- incrementer_csel
+--   ADD
+--   ADD_U
+--   MUL
+--   LT_U
+--   SUB_U
+
+import processors/counter/counter_microprogram.def
+

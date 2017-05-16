@@ -3,7 +3,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-ENTITY output_register2 IS
+ENTITY op2_register IS
   GENERIC (
     g_word_size : integer := 7
   );
@@ -14,9 +14,9 @@ ENTITY output_register2 IS
     p_input0 : in std_logic_vector(g_word_size DOWNTO 0);
     p_word : out std_logic_vector(g_word_size DOWNTO 0)
   );
-END output_register2;
+END op2_register;
 
-ARCHITECTURE behavior OF output_register2 IS
+ARCHITECTURE behavior OF op2_register IS
   SIGNAL s_write : std_logic;
   SIGNAL s_input : std_logic_vector(g_word_size DOWNTO 0);
 BEGIN

@@ -50,7 +50,7 @@ public class AluEntity extends BaseEntity {
 			int iselASize = Wrapper.log2(inputsA.size());
 			int iselBSize = Wrapper.log2(inputsB.size());
 			int cselSize = Wrapper.log2(operations.size() + conditions.size());
-			ControlVector cv = new ControlVector(iselASize + iselBSize);
+			ControlVector cv = new ControlVector(iselASize + iselBSize + cselSize);
 			if (iselASize > 0) {
 				ControlField field = new ControlField(id + "_iselA", 0, iselASize - 1);
 				for (int i = 0; i < inputsA.size(); i++) {

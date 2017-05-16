@@ -1,88 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <architecture wordSize="32">
-	<register x="0" y="0">
-		<id>counter1</id>
+	<register>
+		<id>counter</id>
 		<size>8</size>
 		<inputs>
 			<input>incrementer.out</input>
 		</inputs>
-		<output>counter1.out</output>
-		<control>system.const.1</control>
+		<output>counter.out</output>
+		<control>system.auto</control>
 	</register>
 	<register x="0" y="0">
-		<id>output_register1</id>
+		<id>output_register</id>
 		<size>8</size>
 		<inputs>
-			<input>counter1.out</input>
+			<input>counter.out</input>
 		</inputs>
 		<output>system.out.counter_out</output>
 		<control>system.const.1</control>
 	</register>
-	<register x="0" y="0">
-		<id>output_register2</id>
-		<size>8</size>
-		<inputs>
-			<input>program_rom.out</input>
-		</inputs>
-		<output>system.out.rom_out</output>
-		<control>system.const.1</control>
-	</register>
-	<rom>
-		<id>program_rom</id>
-		<wordSize>8</wordSize>
-		<addressSize>8</addressSize>
-		<contentFile>C:/program1.hex</contentFile>
-		<addresses>
-			<address>counter1.out</address>
-		</addresses>
-		<output>program_rom.out</output>
-		<control>system.auto</control>
-	</rom>
-	<registerFile>
-		<id>memory</id>
-		<wordSize>8</wordSize>
-		<addressSize>8</addressSize>
-		<ports>
-			<port>
-				<type>out</type>
-				<addresses>
-					<address>system.in.mem_out_adr4</address>
-					<address>system.in.mem_out_adr5</address>
-					<address>system.in.mem_out_adr6</address>
-				</addresses>
-				<output>system.out.mem_out2</output>
-			</port>
-			<port>
-				<type>in</type>
-				<addresses>
-					<address>system.in.mem_in_adr1</address>
-					<address>system.in.mem_in_adr2</address>
-					<address>system.in.mem_in_adr3</address>
-				</addresses>
-				<inputs>
-					<input>system.in.mem_in1</input>
-					<input>system.in.mem_in2</input>
-					<input>system.in.mem_in3</input>
-				</inputs>
-			</port>
-			<port>
-				<type>out</type>
-				<addresses>
-					<address>system.in.mem_out_adr1</address>
-					<address>system.in.mem_out_adr2</address>
-					<address>system.in.mem_out_adr3</address>
-				</addresses>
-				<output>system.out.mem_out</output>
-			</port>
-		</ports>
-		<control>system.auto</control>
-		<!--<control>system.in.mem_control</control>-->
-	</registerFile>
 	<alu x="0" y="0">
 		<id>incrementer</id>
 		<wordSize>8</wordSize>
 		<inputsOperandA>
-			<input>counter1.out</input>
+			<input>counter.out</input>
 		</inputsOperandA>
 		<inputsOperandB>
 			<input>system.const.1</input>
@@ -95,15 +35,4 @@
 		<control>system.auto</control>
 		<status>system.open</status>
 	</alu>
-	<multiplexer>
-		<id>mux1</id>
-		<wordSize>8</wordSize>
-		<inputs>
-			<input>incrementer.out</input>
-			<input>counter1.out</input>
-			<input>system.const.1</input>
-		</inputs>
-		<output>mux1.out</output>
-		<control>system.auto</control>
-	</multiplexer>
 </architecture>

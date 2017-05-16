@@ -165,35 +165,45 @@ class ComponentFactory {
 	}
 	
 	VhdlComponent generateComponent(RomEntity rom) {	
-		int content[] = new int[] { 1 };
+		int content[] = new int[] { };
 		String contentFile = rom.getContentFile();
 		int addressSize = rom.getAddressSize();
 		int wordSize = rom.getWordSize();
-		File inputFile = new File(contentFile);
-		if (!inputFile.exists()) {
-			System.out.println("Error: Content file does not exist. (" + contentFile + ")");
-			return null;
-		}
-		try {
-			List<String> strContent = Files.readAllLines(inputFile.toPath());
-			if (strContent.size() > 0 && strContent.get(0).equals("v2.0 raw")) {
-				String strBytes = "";
-				for (int i = 1; i < strContent.size(); i++) {
-					strBytes += strContent.get(i) + " ";
-				}
-				String strBytesArray[] = strBytes.split("\\s+");
-				content = new int[strBytesArray.length];
-				for (int i = 0; i < strBytesArray.length; i++) {
-					content[i] = Integer.parseInt(strBytesArray[i], 16);
-				}
-			} else {
-				System.out.println("Error: Wrong file format. (" + contentFile + ")");
+		if (contentFile.equals("blank")) {
+			content = new int[(int)Math.pow(2, addressSize)];
+			for (int i = 0; i < content.length; i++) {
+				content[i] = 0;
+			}
+		} else {
+			File inputFile = new File(contentFile);
+			if (!inputFile.exists()) {
+				System.out.println("Error: Content file does not exist. (" + contentFile + ")");
+				System.exit(-1);
 				return null;
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Error: Reading content file. (" + contentFile + ")");
-			return null;
+			try {
+				List<String> strContent = Files.readAllLines(inputFile.toPath());
+				if (strContent.size() > 0 && strContent.get(0).equals("v2.0 raw")) {
+					String strBytes = "";
+					for (int i = 1; i < strContent.size(); i++) {
+						strBytes += strContent.get(i) + " ";
+					}
+					String strBytesArray[] = strBytes.split("\\s+");
+					content = new int[strBytesArray.length];
+					for (int i = 0; i < strBytesArray.length; i++) {
+						content[i] = Integer.parseInt(strBytesArray[i], 16);
+					}
+				} else {
+					System.out.println("Error: Wrong file format. (" + contentFile + ")");
+					System.exit(-1);
+					return null;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Error: Reading content file. (" + contentFile + ")");
+				System.exit(-1);
+				return null;
+			}		
 		}
 		VhdlComponent component = new VhdlComponent(rom.getId());
 		component.AddGeneric("g_address_size : integer := " + (addressSize - 1));

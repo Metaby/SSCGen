@@ -1,0 +1,5 @@
+single counter1_write = {0};
+field counter1_isel = {1,3}{incrementer.out, CONST(256), CONST(253), CONST(252), CONST(255), CONST(254)}{0, 1, 3, 2, 5, 4};
+field incrementer_iselA = {4,5}{counter1.out}{0};
+field incrementer_iselB = {6,7}{CONST(1), CONST(2), CONST(3)}{0, 1, 2};
+field incrementer_csel = {8,10}{ADD, ADD_U, MUL, LT_U, SUB_U}{1, 0, 3, 4, 2};

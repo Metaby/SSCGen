@@ -30,11 +30,11 @@ public class Program {
 	}
 	
 	public static void main(String[] args) {
-		String processor = "counter";
-//		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/counter_microprogram.mdf");
+		String processor = "stack_machine";
+		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_microprogram.mdf");
 //		generateArchitecture("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
-//		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
-		compileMicrocode("processors/" + processor + "/counter_microprogram.mdf", "processors/" + processor + "/counter_microprogram.hex");
+		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
+//		compileMicrocode("processors/" + processor + "/counter_microprogram.mdf", "processors/" + processor + "/counter_microprogram.hex");
 	}
 	
 	public static Architecture validateAndLoadArchitecture(String architectureFile) {
