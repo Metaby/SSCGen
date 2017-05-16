@@ -19,7 +19,7 @@ public class MicrocodeField {
 	}
 	
 	public void addKeyVal(String key, int val) {
-		fields.put(key, val);
+		fields.put(key.trim(), val);
 	}
 
 	public String getId() {

@@ -81,17 +81,6 @@ public class MicrocodeCompiler {
 		return null;		
 	}
 	
-	private int getCommandInteger(List<MicrocodeField> fields, String qualifier, String key) {
-		for (MicrocodeField field : fields) {
-			if (field.getId().equals(qualifier)) {
-				return field.getValue(key);
-			}
-		}
-		System.out.println("Error compiling mdf: Qualifier \"" + qualifier + "\" or key \"" + key + "\" not found.");
-		System.exit(-1);
-		return -1;
-	}
-	
 	private String compileMicrocode(Microcode mc) {
 		if (mc != null) {
 			List<MicrocodeField> fields = new ArrayList<MicrocodeField>();
@@ -137,14 +126,7 @@ public class MicrocodeCompiler {
 			String replacedBytes = "";
 			for (String str : split) {
 				if (str.startsWith("s:")) {
-					System.out.println(microcodeFieldLookup(fields, str.substring(2)));
-//					String[] split2 = str.split(",");
-//					for (String str2 : split2) {
-//						System.out.println(str2);
-//						String qualifier =  str2.substring(2, str2.indexOf('('));
-//						String key = str2.substring(str.indexOf('(') + 1, str.indexOf(')'));
-//						System.out.println(qualifier + " " + key + " " + getCommandInteger(fields, qualifier, key));						
-//					}
+					replacedBytes += "s:" + microcodeFieldLookup(fields, str.substring(2)) + System.lineSeparator();
 					addressCounter++;
 				} else if (str.startsWith("p:auto")) {
 					replacedBytes += "p:" + addressCounter + System.lineSeparator();
@@ -164,10 +146,65 @@ public class MicrocodeCompiler {
 	}
 	
 	private int microcodeFieldLookup(List<MicrocodeField> fields, String functionLine) {
-		return 0;
+		int code = 0;
+		String[] bitSets = functionLine.split(",");
+		for (String bitSet : bitSets) {
+			Boolean single = true;
+			String key = "";
+			if (bitSet.contains("(")) {
+				single = false;
+				key = bitSet.split("\\(")[1];
+				key = key.substring(0, key.indexOf(")"));
+				bitSet = bitSet.substring(0, bitSet.indexOf('('));
+			}
+			for (MicrocodeField field : fields) {
+				if (bitSet.equals(field.getId())) {
+					if (single) {
+						code += (1 << field.getCvStart());
+					} else {
+						code += (field.getValue(key) << field.getCvStart());
+					}
+				}
+			}
+		}
+		return code;
 	}
 	
 	private void saveMicrocode(String bytes, String outputFile) {
-		System.out.println(bytes);
+		String hexContent = "v2.0 raw" + System.lineSeparator();
+		int currentPos = 0;
+		String[] parts = bytes.split(System.lineSeparator());
+		for (String part : parts) {
+			if (part.startsWith("p:")) {
+				int pos = Integer.parseInt(part.substring(2));
+				while (pos > currentPos) {
+					hexContent += "00 ";
+					currentPos++;
+					if (currentPos % 8 == 0) {
+						hexContent += System.lineSeparator();
+					}
+				}
+			} else if (part.startsWith("s:")) {
+				String cb = Integer.toHexString(Integer.parseInt(part.substring(2)));
+				if (cb.length() == 1) {
+					cb = "0" + cb;
+				}
+				hexContent += cb + " ";
+				currentPos++;
+				if (currentPos % 8 == 0) {
+					hexContent += System.lineSeparator();
+				}
+			}
+		}
+		if (!outputFile.contains(".")) {
+			outputFile += ".hex";
+		}
+		File f = new File(outputFile);
+		try {
+			Files.write(f.toPath(), hexContent.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
+		}
 	}
 }
