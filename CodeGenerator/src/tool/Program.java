@@ -33,8 +33,8 @@ public class Program {
 		String processor = "stack_machine";
 		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_microprogram.mdf");
 //		generateArchitecture("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
+		compileMicrocode("processors/" + processor + "/" + processor + "_microprogram.mdf", "processors/" + processor + "/" + processor + "_microprogram.hex");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
-//		compileMicrocode("processors/" + processor + "/counter_microprogram.mdf", "processors/" + processor + "/counter_microprogram.hex");
 	}
 	
 	public static Architecture validateAndLoadArchitecture(String architectureFile) {
@@ -50,21 +50,21 @@ public class Program {
 		Architecture arch = validateAndLoadArchitecture(architectureFile);
 		ControlVector cv = arch.getControlVector();
 		String mdfContent = "";
-		mdfContent += "-- Konventionen:" + System.lineSeparator();
-		mdfContent += "-- isel = input-select" + System.lineSeparator();
-		mdfContent += "-- asel = address-select" + System.lineSeparator();
-		mdfContent += "-- csel = command-select" + System.lineSeparator();
-		mdfContent += "--" + System.lineSeparator();
-		mdfContent += "-- Steuervektor:" + System.lineSeparator();
-		mdfContent += "-- ";
-		String mdfFields = "--" + System.lineSeparator();
-		mdfFields += "-- Parameter:" + System.lineSeparator();
+		mdfContent += "// Konventionen:" + System.lineSeparator();
+		mdfContent += "// isel = input-select" + System.lineSeparator();
+		mdfContent += "// asel = address-select" + System.lineSeparator();
+		mdfContent += "// csel = command-select" + System.lineSeparator();
+		mdfContent += "//" + System.lineSeparator();
+		mdfContent += "// Steuervektor:" + System.lineSeparator();
+		mdfContent += "// ";
+		String mdfFields = "//" + System.lineSeparator();
+		mdfFields += "// Parameter:" + System.lineSeparator();
 		for (ControlField cf : cv.getFields()) {
 			if (cf.getSize() > 1) {
 				mdfContent += cf.getName() + "[0," + (cf.getEnd() - cf.getStart()) + "], ";
-				mdfFields += "-- " + cf.getName() + System.lineSeparator();
+				mdfFields += "// " + cf.getName() + System.lineSeparator();
 				for (String param : cf.getParameters().keySet()) {
-					mdfFields += "--   " + param + System.lineSeparator();
+					mdfFields += "//   " + param + System.lineSeparator();
 				}
 			} else {
 				mdfContent += cf.getName() + ", ";
@@ -77,29 +77,30 @@ public class Program {
 		} else {
 			defFile += ".def";
 		}
-		mdfContent += System.lineSeparator() + "import " + defFile + System.lineSeparator() + System.lineSeparator();
+		mdfContent += System.lineSeparator() + "definition " + defFile + System.lineSeparator() + System.lineSeparator();
 		String fields = "";
-		String singles = "";
 		for (ControlField cf : cv.getFields()) {
-			if (cf.getSize() > 1) {
-				fields += "field " + cf.getName() + " = {" + cf.getStart() + "," + cf.getEnd() + "}{";
-				String values = "{";
+			fields += "field " + cf.getName() + " = {" + cf.getStart() + "," + cf.getEnd() + "}{";
+			String values = "{";
+			if (cf.getParameters().size() == 0) {
+				fields += "H, L";
+				values += "1, 0";
+			} else {
 				for (String param : cf.getParameters().keySet()) {
 					fields += param + ", ";
 					values += cf.getParameters().get(param) + ", ";
 				}
 				values = values.substring(0, values.length() - 2);
-				values += "};";
-				fields = fields.substring(0, fields.length() - 2) + "}" + values + System.lineSeparator();
-			} else {
-				singles += "single " + cf.getName() + " = {" + cf.getStart() + "};" + System.lineSeparator();
+				fields = fields.substring(0, fields.length() - 2);
 			}
+			values += "};";
+			fields = fields + "}" + values + System.lineSeparator();
 		}
 		File mdfPath = new File(outputFile);
 		File defPath = new File(defFile);
 		try {
-			Files.write(mdfPath.toPath(), mdfContent.getBytes());
-			Files.write(defPath.toPath(), (singles + fields).getBytes());
+//			Files.write(mdfPath.toPath(), mdfContent.getBytes());
+			Files.write(defPath.toPath(), fields.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error: Could not write to target file. (" + outputFile + ")");

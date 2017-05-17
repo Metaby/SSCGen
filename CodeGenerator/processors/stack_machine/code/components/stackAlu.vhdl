@@ -56,24 +56,24 @@ BEGIN
   --
   -- Output 1 Multiplexing
   WITH s_csel SELECT p_output_1 <=
-    s_adder_result WHEN "0",
-    s_adder_result WHEN "1",
+    s_adder_result WHEN '0',
+    s_adder_result WHEN '1',
     "00000000" WHEN OTHERS;
   -- Output 2 Multiplexing
   WITH s_csel SELECT p_output_2 <=
     "00000000" WHEN OTHERS;
   -- Flag Multiplexing
   WITH s_csel SELECT p_flag <=
-    s_adder_ovflw WHEN "0",
-    s_adder_ovflw WHEN "1",
+    s_adder_ovflw WHEN '0',
+    s_adder_ovflw WHEN '1',
     '0' WHEN OTHERS;
   -- Command Tables
   WITH s_csel SELECT s_sgnd <=
     '0' WHEN OTHERS;
   -- Adder Control
   WITH s_csel SELECT s_adder_sub <=
-    '0' WHEN "0",
-    '1' WHEN "1",
+    '0' WHEN '0',
+    '1' WHEN '1',
     '0' WHEN OTHERS;
 
 END behavior;

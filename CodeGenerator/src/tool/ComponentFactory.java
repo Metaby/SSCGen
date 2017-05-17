@@ -227,13 +227,13 @@ class ComponentFactory {
 			behavior += "\",";
 			behavior += System.lineSeparator();
 		}
-		if (content.length < Math.pow(2, addressSize)) {
-			behavior += "    \"" + getBinaryString(0, wordSize) + "\" WHEN others;" + System.lineSeparator();			
-		} else {
-			char ca[] = behavior.toCharArray();
-			ca[behavior.length() - 3] = ';';
-			behavior = new String(ca);
-		}
+//		if (content.length < Math.pow(2, addressSize)) {
+			behavior += "    \"" + getBinaryString(0, wordSize) + "\" WHEN OTHERS;" + System.lineSeparator();			
+//		} else {
+//			char ca[] = behavior.toCharArray();
+//			ca[behavior.length() - 3] = ';';
+//			behavior = new String(ca);
+//		}
 		component.setBehavior(behavior);
 		String targetFile = targetDirectory + "/components/" + rom.getId() + ".vhdl";
 		File outputFile = new File(targetFile);
@@ -433,6 +433,14 @@ class ComponentFactory {
 		return component;
 	}
 	
+	private String getVhdlBitString(String bits) {
+		if (bits.length() == 1) {
+			return "\'" + bits + "\'";
+		} else {
+			return "\"" + bits + "\"";
+		}
+	}
+	
 	private String generateAluCommandTable(AluEntity alu) {
 		String table = "";
 		List<String> subComponents = getAluSubComponents(alu);
@@ -457,15 +465,15 @@ class ComponentFactory {
 				table += "  WITH s_csel SELECT s_adder_sub <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("ADD")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
-						table += "    \'0\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
+						table += "    \'0\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("ADD_U")) {
-						table += "    \'0\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \'0\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("SUB")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
-						table += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
+						table += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("SUB_U")) {
-						table += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					}
 				}
 				table += "    \'0\' WHEN OTHERS;" + System.lineSeparator();
@@ -475,13 +483,13 @@ class ComponentFactory {
 				table += "  WITH s_csel SELECT s_logic_cmd <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("AND")) {
-						table += "    \"00\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"00\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("OR")) {
-						table += "    \"01\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"01\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("XOR")) {
-						table += "    \"10\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"10\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("NOT")) {
-						table += "    \"11\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"11\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					}
 				}
 				table += "    \"00\" WHEN OTHERS;" + System.lineSeparator();
@@ -489,13 +497,13 @@ class ComponentFactory {
 			if (subComponents.contains("DIVIDER") || subComponents.contains("MULTIPLIER")) {
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("DIV")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("DIV_U")) {
-						sgnTable += "    \'0\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'0\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("MUL")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("MUL_U")) {
-						sgnTable += "    \'0\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'0\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					}
 				}
 			}
@@ -508,17 +516,17 @@ class ComponentFactory {
 				table += "  WITH s_csel SELECT s_shft_ctrl <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("RR")) {
-						table += "    \"1010\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"1010\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("RL")) {
-						table += "    \"1001\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"1001\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("SRL")) {
-						table += "    \"0010\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"0010\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("SLL")) {
-						table += "    \"0001\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"0001\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("SRA")) {
-						table += "    \"0110\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"0110\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("SLA")) {
-						table += "    \"0101\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"0101\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					}
 				}
 				table += "    \"0000\" WHEN OTHERS;" + System.lineSeparator();
@@ -528,27 +536,27 @@ class ComponentFactory {
 				table += "  WITH s_csel SELECT s_comp_cmd <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("GT")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
-						table += "    \"000\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
+						table += "    \"000\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("GT_U")) {
-						table += "    \"000\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"000\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("LT")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
-						table += "    \"001\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
+						table += "    \"001\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("LT_U")) {
-						table += "    \"001\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"001\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("GEQ")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
-						table += "    \"010\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
+						table += "    \"010\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("GEQ_U")) {
-						table += "    \"010\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"010\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("LEQ")) {
-						sgnTable += "    \'1\' WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
-						table += "    \"011\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						sgnTable += "    \'1\' WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
+						table += "    \"011\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("LEQ_U")) {
-						table += "    \"011\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"011\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					} else if (cmd[i].equals("EQ")) {
-						table += "    \"100\" WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();
+						table += "    \"100\" WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();
 					}
 				}
 				table += "    \"000\" WHEN OTHERS;" + System.lineSeparator();
@@ -669,17 +677,17 @@ class ComponentFactory {
 			cmdTable += "  --" + System.lineSeparator() + "  -- Output 1 Multiplexing" + System.lineSeparator();
 			cmdTable += "  WITH s_csel SELECT p_output_1 <=" + System.lineSeparator();
 			for (int i = 0; i < operationsCnt; i++) {
-				cmdTable += "    " + getAluOutputSignal(cmd[i]) + " WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();				
+				cmdTable += "    " + getAluOutputSignal(cmd[i]) + " WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();				
 			}
 			cmdTable += "    \"" + getBinaryString(0, alu.getWordSize()) + "\" WHEN OTHERS;" + System.lineSeparator();
 			cmdTable += "  -- Output 2 Multiplexing" + System.lineSeparator();
 			cmdTable += "  WITH s_csel SELECT p_output_2 <=" + System.lineSeparator();
 			for (int i = 0; i < operationsCnt; i++) {
 				if (cmd[i].matches("MUL|MUL_U")) {
-					cmdTable += "    s_mul_result_hi WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();						
+					cmdTable += "    s_mul_result_hi WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();						
 				}
 				if (cmd[i].matches("DIV|DIV_U")) {
-					cmdTable += "    s_div_remain WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();							
+					cmdTable += "    s_div_remain WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();							
 				}			
 			}
 			cmdTable += "    \"" + getBinaryString(0, alu.getWordSize()) + "\" WHEN OTHERS;" + System.lineSeparator();
@@ -687,12 +695,12 @@ class ComponentFactory {
 			cmdTable += "  WITH s_csel SELECT p_flag <=" + System.lineSeparator();
 			for (int i = 0; i < operationsCnt; i++) {
 				if (cmd[i].matches("ADD|ADD_U|SUB|SUB_U")) {
-					cmdTable += "    s_adder_ovflw WHEN \"" + cmdBits[i] + "\"," + System.lineSeparator();						
+					cmdTable += "    s_adder_ovflw WHEN " + getVhdlBitString(cmdBits[i]) + "," + System.lineSeparator();						
 				}
 			}
 			for (int i = 0; i < operationsCnt; i++) {
 				if (cmd[i + conditionsCnt].matches("ZERO|GT|GT_U|LT|LT_U|GEQ|GEQ_U|LEQ|LEQ_U|EQ")) {
-					cmdTable += "    s_comp_result WHEN \"" + cmdBits[i + conditionsCnt] + "\"," + System.lineSeparator();						
+					cmdTable += "    s_comp_result WHEN " + getVhdlBitString(cmdBits[i + conditionsCnt]) + "," + System.lineSeparator();						
 				}
 			}
 			cmdTable += "    \'0\' WHEN OTHERS;" + System.lineSeparator();

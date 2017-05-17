@@ -23,7 +23,7 @@ public class MicrocodeDesignLanguageVisitor extends antlr.MicrocodeDesignLanguag
 	}
 	
 	@Override
-	public String visitGr_function(Gr_functionContext ctx) {		
+	public String visitGr_function(Gr_functionContext ctx) {
 		return visitChildren(ctx);
 	}
 	

@@ -17,13 +17,6 @@ public class MicrocodeDesignLanguageBaseVisitor<T> extends AbstractParseTreeVisi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitGr_comment(MicrocodeDesignLanguageParser.Gr_commentContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitGr_mdf(MicrocodeDesignLanguageParser.Gr_mdfContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

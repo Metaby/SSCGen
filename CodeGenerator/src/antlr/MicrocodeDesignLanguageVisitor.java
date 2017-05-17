@@ -11,12 +11,6 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface MicrocodeDesignLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_comment}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitGr_comment(MicrocodeDesignLanguageParser.Gr_commentContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_mdf}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
