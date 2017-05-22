@@ -111,10 +111,6 @@ class ArchitectureFactory {
 			archComponents.add(cFactory.generateComponent(rom));
 			behavior += iFactory.generateInstance(rom) + System.lineSeparator();
 		}
-		for (MultiplexerEntity mux : arch.getMultiplexers()) {
-			archComponents.add(cFactory.generateComponent(mux));
-			behavior += iFactory.generateInstance(mux) + System.lineSeparator();
-		}
 		for (RegisterFileEntity rf : arch.getRegisterFiles()) {
 			archComponents.add(cFactory.generateComponent(rf));
 			behavior += iFactory.generateInstance(rf);
@@ -122,6 +118,10 @@ class ArchitectureFactory {
 		for (AluEntity alu : arch.getAlus()) {
 			archComponents.add(cFactory.generateComponent(alu));
 			behavior += iFactory.generateInstance(alu) + System.lineSeparator();
+		}
+		for (MultiplexerEntity mux : arch.getMultiplexers()) {
+			archComponents.add(cFactory.generateComponent(mux));
+			behavior += iFactory.generateInstance(mux) + System.lineSeparator();
 		}
 		VhdlComponent topLevelEntity = new VhdlComponent("processor");
 		topLevelEntity.AddGeneric("g_word_size : integer := " + (arch.getWordSize() - 1));

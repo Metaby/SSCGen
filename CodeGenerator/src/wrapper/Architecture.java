@@ -125,8 +125,8 @@ public class Architecture {
 		entities.addAll(registers);
 		entities.addAll(roms);
 		entities.addAll(registerFiles);
-		entities.addAll(multiplexers);
 		entities.addAll(alus);
+		entities.addAll(multiplexers);
 		return entities;
 	}
 

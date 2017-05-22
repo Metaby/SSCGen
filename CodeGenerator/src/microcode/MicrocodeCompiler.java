@@ -162,7 +162,7 @@ public class MicrocodeCompiler {
 					if (single) {
 						code += (1 << field.getCvStart());
 					} else {
-						code += (field.getValue(key) << field.getCvStart());
+						code += (field.getValue(key) << (field.getCvStart()));
 					}
 				}
 			}
