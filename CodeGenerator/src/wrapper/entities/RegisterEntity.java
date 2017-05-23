@@ -23,12 +23,23 @@ public class RegisterEntity extends BaseEntity {
 		}
 		control = new Connector(reg.getControl(), (int)Math.ceil(Math.log(inputs.size()) / Math.log(2)) + 1);
 	}
+	
+	@Override
+	public void setWordSize(int wordSize) {
+		this.wordSize = wordSize;
+		output.size = wordSize;
+		for (Connector c : inputs) {
+			c.size = wordSize;
+		}
+	}
 
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int iselSize = Wrapper.log2(inputs.size());
 			ControlVector cv = new ControlVector(iselSize + 1);
 			ControlField writeField = new ControlField(id + "_write", 0, 0);
+			writeField.addParameter("H", 1);
+			writeField.addParameter("L", 0);
 			cv.addField(writeField);
 			if (iselSize > 0) {
 				ControlField iselField = new ControlField(id + "_isel", 1, iselSize);

@@ -81,7 +81,7 @@ class ArchitectureFactory {
 							return false;
 						} else if (ub - lb + 1 < inputCon.size) {
 							System.out.println("Warning: Input-Connection-Size is lower than expected, Zeros are added as MSBs");
-							System.out.println("\t> " + inputCon.origin + "." + inputCon.pin);				
+							System.out.println("\t> " + sourceCon.origin + "." + sourceCon.pin + " -> " + inputCon.origin + "." + inputCon.pin);				
 						}
 					} else {
 						System.out.println("Error: Source-Connection-Size \"" + inputCon.origin + "." + inputCon.pin + "\" does not fit size of Input-Connection");
@@ -89,7 +89,7 @@ class ArchitectureFactory {
 					}
 				} else if (sourceCon.size < inputCon.size) {
 					System.out.println("Warning: Input-Connection-Size is lower than expected, Zeros are added as MSBs");
-					System.out.println("\t> " + inputCon.origin + "." + inputCon.pin);	
+					System.out.println("\t> " + sourceCon.origin + "." + sourceCon.pin + " -> " + inputCon.origin + "." + inputCon.pin);
 					
 				}
 			}

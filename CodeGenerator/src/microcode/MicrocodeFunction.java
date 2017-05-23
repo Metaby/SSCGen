@@ -5,13 +5,15 @@ import java.util.List;
 
 public class MicrocodeFunction {
 	private List<String> funcRow;
+	private Boolean virtual;
 	private String name;
 	private int position;
-	
-	public MicrocodeFunction() {
+
+	public MicrocodeFunction(Boolean isVirtual) {
 		this.funcRow = new ArrayList<String>();
 		this.name = "";
 		this.position = -1;
+		this.virtual = isVirtual;
 	}
 	
 	public void addFunctionLine(String call) {
@@ -40,5 +42,9 @@ public class MicrocodeFunction {
 		} else {
 			this.position = -1;
 		}
+	}
+	
+	public Boolean isVirtual() {
+		return virtual;
 	}
 }

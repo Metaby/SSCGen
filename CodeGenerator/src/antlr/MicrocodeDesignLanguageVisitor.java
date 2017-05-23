@@ -65,6 +65,18 @@ public interface MicrocodeDesignLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitGr_function_call_code(MicrocodeDesignLanguageParser.Gr_function_call_codeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_function_fix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_function_fix(MicrocodeDesignLanguageParser.Gr_function_fixContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_function_fix_code}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_function_fix_code(MicrocodeDesignLanguageParser.Gr_function_fix_codeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_function_body}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -76,6 +88,18 @@ public interface MicrocodeDesignLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitGr_function(MicrocodeDesignLanguageParser.Gr_functionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_virtual_head}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_virtual_head(MicrocodeDesignLanguageParser.Gr_virtual_headContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_virtual}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_virtual(MicrocodeDesignLanguageParser.Gr_virtualContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_qualifier}.
 	 * @param ctx the parse tree

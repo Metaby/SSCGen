@@ -32,7 +32,6 @@ public class Program {
 	public static void main(String[] args) {
 		String processor = "stack_machine";
 		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_microprogram.mdf");
-//		generateArchitecture("processors/" + processor + "/architecture.xml", "", "D:/OneDrive/Uni/Masterarbeit/Modelsim/" + processor + "/");
 		compileMicrocode("processors/" + processor + "/" + processor + "_microprogram.mdf", "processors/" + processor + "/" + processor + "_microprogram.hex");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
 	}
@@ -49,28 +48,20 @@ public class Program {
 	public static void generateMicrocodeDesignFiles(String architectureFile, String outputFile) {
 		Architecture arch = validateAndLoadArchitecture(architectureFile);
 		ControlVector cv = arch.getControlVector();
-		String mdfContent = "";
-		mdfContent += "// Konventionen:" + System.lineSeparator();
-		mdfContent += "// isel = input-select" + System.lineSeparator();
-		mdfContent += "// asel = address-select" + System.lineSeparator();
-		mdfContent += "// csel = command-select" + System.lineSeparator();
-		mdfContent += "//" + System.lineSeparator();
-		mdfContent += "// Steuervektor:" + System.lineSeparator();
-		mdfContent += "// ";
-		String mdfFields = "//" + System.lineSeparator();
-		mdfFields += "// Parameter:" + System.lineSeparator();
+		String mdfContent = "/*" + System.lineSeparator();
+		mdfContent += " *\tConventions:" + System.lineSeparator();
+		mdfContent += " *\tisel = input-select" + System.lineSeparator();
+		mdfContent += " *\tasel = address-select" + System.lineSeparator();
+		mdfContent += " *\tcsel = command-select" + System.lineSeparator() + " *" + System.lineSeparator();
+		mdfContent += " *\tFields and Parameters:" + System.lineSeparator();
 		for (ControlField cf : cv.getFields()) {
-			if (cf.getSize() > 1) {
-				mdfContent += cf.getName() + "[0," + (cf.getEnd() - cf.getStart()) + "], ";
-				mdfFields += "// " + cf.getName() + System.lineSeparator();
-				for (String param : cf.getParameters().keySet()) {
-					mdfFields += "//   " + param + System.lineSeparator();
-				}
-			} else {
-				mdfContent += cf.getName() + ", ";
+			mdfContent += " *\t" + cf.getName() + "[" + cf.getStart() + ":" + cf.getEnd() + "] = {";
+			for (String param : cf.getParameters().keySet()) {
+				mdfContent += param + ", ";
 			}
+			mdfContent = mdfContent.substring(0, mdfContent.length() -2) + "}" + System.lineSeparator();
 		}
-		mdfContent = mdfContent.substring(0, mdfContent.length() - 2) + System.lineSeparator() + mdfFields;
+		mdfContent += " */" + System.lineSeparator() + System.lineSeparator();
 		String defFile = outputFile;
 		if (defFile.contains(".")) {
 			defFile = defFile.substring(0, defFile.indexOf('.')) + ".def";
@@ -78,6 +69,7 @@ public class Program {
 			defFile += ".def";
 		}
 		mdfContent += System.lineSeparator() + "definition " + defFile + System.lineSeparator() + System.lineSeparator();
+		mdfContent += "function init(0x00) {" + System.lineSeparator() + "\t" + System.lineSeparator() + "}";
 		String fields = "";
 		for (ControlField cf : cv.getFields()) {
 			fields += "field " + cf.getName() + " = {" + cf.getStart() + "," + cf.getEnd() + "}{";
@@ -99,7 +91,9 @@ public class Program {
 		File mdfPath = new File(outputFile);
 		File defPath = new File(defFile);
 		try {
-//			Files.write(mdfPath.toPath(), mdfContent.getBytes());
+			if (!mdfPath.exists()) {
+				Files.write(mdfPath.toPath(), mdfContent.getBytes());
+			}
 			Files.write(defPath.toPath(), fields.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();

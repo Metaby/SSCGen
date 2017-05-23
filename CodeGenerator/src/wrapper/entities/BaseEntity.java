@@ -8,6 +8,8 @@ public abstract class BaseEntity {
 	String id;
 	int wordSize;
 	
+	public abstract void setWordSize(int wordSize);
+
 	public Connector getControl() {
 		return control;
 	}

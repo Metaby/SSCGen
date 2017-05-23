@@ -45,6 +45,19 @@ public class AluEntity extends BaseEntity {
 		control = new Connector(alu.getControl(), Wrapper.log2(inputsA.size()) + Wrapper.log2(inputsB.size()) + Wrapper.log2(operations.size() + conditions.size()));
 	}
 	
+	@Override
+	public void setWordSize(int wordSize) {
+		this.wordSize = wordSize;
+		output1.size = wordSize;
+		output2.size = wordSize;
+		for (Connector c : inputsA) {
+			c.size = wordSize;
+		}
+		for (Connector c : inputsB) {
+			c.size = wordSize;
+		}
+	}
+	
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int iselASize = Wrapper.log2(inputsA.size());

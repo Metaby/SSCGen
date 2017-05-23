@@ -35,6 +35,20 @@ public class RegisterFileEntity extends BaseEntity {
 		control = new Connector(rf.getControl(), ctrlSize);
 	}
 	
+	@Override
+	public void setWordSize(int wordSize) {
+		this.wordSize = wordSize;
+		for (Port p : ports) {
+			if (p.getDirection() == PortDirection.IN) {
+				for (Connector c : p.getInputs()) {
+					c.size = wordSize;
+				}
+			} else {
+				p.getOutput().size = wordSize;
+			}
+		}
+	}
+	
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int cvSize = 0;
@@ -70,6 +84,8 @@ public class RegisterFileEntity extends BaseEntity {
 						cv.addField(aselField);
 					}
 					ControlField writeField = new ControlField(id + "_port" + i + "_write", offset, offset);
+					writeField.addParameter("H", 1);
+					writeField.addParameter("L", 0);
 					offset++;
 					cv.addField(writeField);
 				} else {

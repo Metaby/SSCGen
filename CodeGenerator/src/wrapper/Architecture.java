@@ -37,6 +37,19 @@ public class Architecture {
 		for (jaxb.Multiplexer mux : arch.getMultiplexer()) {
 			multiplexers.add(new MultiplexerEntity(mux));
 		}
+		for (BaseEntity entity : getAllEntites()) {
+			entity.setWordSize(replaceWordSize(entity.getWordSize()));			
+		}
+	}
+	
+	private int replaceWordSize(int wwordSize) {
+		if (wwordSize == -1) {
+			return getControlVector().getSize();
+		}
+		if (wwordSize == -2) {
+			return this.wordSize;
+		}
+		return wwordSize;
 	}
 	
 	public ControlVector getControlVector() {

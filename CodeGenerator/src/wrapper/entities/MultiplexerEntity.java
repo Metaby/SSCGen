@@ -24,6 +24,14 @@ public class MultiplexerEntity extends BaseEntity {
 		control = new Connector(mux.getControl(), (int)Math.ceil(Math.log(inputs.size()) / Math.log(2)));
 	}
 	
+	@Override
+	public void setWordSize(int wordSize) {
+		this.wordSize = wordSize;
+		for (Connector c : inputs) {
+			c.size = wordSize;
+		}
+	}
+	
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int iselSize = Wrapper.log2(inputs.size());

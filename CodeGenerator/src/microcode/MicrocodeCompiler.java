@@ -91,13 +91,15 @@ public class MicrocodeCompiler {
 			}
 			// Alle Funktionszeilen einlesen
 			for (MicrocodeFunction mf : mc.getFunctions()) {
-				if (mf.getPosition() != -1) {
-					bytes += "p:" + mf.getPosition() + System.lineSeparator();
-				} else {
-					bytes += "p:auto" + System.lineSeparator();
-				}
-				for (String str : mf.getFunctionLines()) {
-					bytes += str + System.lineSeparator();
+				if (!mf.isVirtual()) {
+					if (mf.getPosition() != -1) {
+						bytes += "p:" + mf.getPosition() + System.lineSeparator();
+					} else {
+						bytes += "p:auto" + System.lineSeparator();
+					}
+					for (String str : mf.getFunctionLines()) {
+						bytes += str + System.lineSeparator();
+					}
 				}
 			}
 			// Calls rekursiv durch ihre Funktion ersetzen
@@ -124,10 +126,13 @@ public class MicrocodeCompiler {
 			int addressCounter = 0;
 			String[] split = bytes.split(System.lineSeparator());
 			String replacedBytes = "";
+			int fixes = 0;
 			for (String str : split) {
 				if (str.startsWith("s:")) {
-					replacedBytes += "s:" + microcodeFieldLookup(fields, str.substring(2)) + System.lineSeparator();
+					replacedBytes += "s:" + (microcodeFieldLookup(fields, str.substring(2)) + fixes) + System.lineSeparator();
 					addressCounter++;
+				} else if (str.startsWith("f:")) {
+					fixes = microcodeFieldLookup(fields, str.substring(2));
 				} else if (str.startsWith("p:auto")) {
 					replacedBytes += "p:" + addressCounter + System.lineSeparator();
 				} else if (str.startsWith("p:")) {

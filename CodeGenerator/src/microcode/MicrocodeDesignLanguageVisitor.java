@@ -1,10 +1,15 @@
 package microcode;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import antlr.MicrocodeDesignLanguageParser.Gr_fileContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_functionContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_function_bodyContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_function_callContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_function_call_codeContext;
+import antlr.MicrocodeDesignLanguageParser.Gr_function_fixContext;
+import antlr.MicrocodeDesignLanguageParser.Gr_function_fix_codeContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_function_headContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_function_nameContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_function_posContext;
@@ -13,23 +18,32 @@ import antlr.MicrocodeDesignLanguageParser.Gr_function_set_codeContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_function_tailContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_importContext;
 import antlr.MicrocodeDesignLanguageParser.Gr_mdfContext;
+import antlr.MicrocodeDesignLanguageParser.Gr_virtual_headContext;
 
 public class MicrocodeDesignLanguageVisitor extends antlr.MicrocodeDesignLanguageBaseVisitor<String> {
+	private List<String> functionNames;
 	private Microcode microcode;
 	private MicrocodeFunction function;
 	
 	public MicrocodeDesignLanguageVisitor() {
 		microcode = new Microcode();
+		functionNames = new ArrayList<String>();
 	}
 	
 	@Override
 	public String visitGr_function(Gr_functionContext ctx) {
 		return visitChildren(ctx);
 	}
-	
+
 	@Override
 	public String visitGr_function_head(Gr_function_headContext ctx) {
-		function = new MicrocodeFunction();
+		function = new MicrocodeFunction(false);
+		return visitChildren(ctx);
+	}
+	
+	@Override
+	public String visitGr_virtual_head(Gr_virtual_headContext ctx) {
+		function = new MicrocodeFunction(true);
 		return visitChildren(ctx);
 	}
 	
@@ -73,8 +87,25 @@ public class MicrocodeDesignLanguageVisitor extends antlr.MicrocodeDesignLanguag
 	}
 	
 	@Override
+	public String visitGr_function_fix(Gr_function_fixContext ctx) {
+		return visitChildren(ctx);
+	}
+	
+	@Override
+	public String visitGr_function_fix_code(Gr_function_fix_codeContext ctx) {
+		function.addFunctionLine("f:" + ctx.getText());
+		return ctx.getText();
+	}
+	
+	@Override
 	public String visitGr_function_tail(Gr_function_tailContext ctx) {
 		microcode.addFunction(function);
+		if (functionNames.contains(function.getName())) {
+			System.out.println("Error: Qualifier \"" + function.getName() + "\" for function or virtual already in use.");
+			System.exit(-1);
+		} else {
+			functionNames.add(function.getName());
+		}
 		function = null;
 		return null;
 	}

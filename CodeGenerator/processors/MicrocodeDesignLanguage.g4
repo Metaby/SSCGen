@@ -1,5 +1,6 @@
+// virtual darf keine calls ausführen
 grammar MicrocodeDesignLanguage;
-gr_mdf: gr_import* gr_function*;
+gr_mdf: gr_import* (gr_function | gr_virtual)*;
 gr_function_head: 'function' gr_function_name '(' gr_function_pos? ')' '{';
 gr_function_name: gr_qualifier;
 gr_function_pos: gr_hex;
@@ -7,9 +8,13 @@ gr_function_tail: '}';
 gr_function_set: 'set' gr_function_set_code ';';
 gr_function_set_code: (gr_field | ((gr_field ',')+ gr_field));
 gr_function_call: 'call' gr_function_call_code ';';
-gr_function_call_code: gr_qualifier;
-gr_function_body: (gr_function_set | gr_function_call)*;
+gr_function_call_code: gr_qualifier '()';
+gr_function_fix: 'fix' gr_function_fix_code ';';
+gr_function_fix_code: (gr_field | ((gr_field ',')+ gr_field));
+gr_function_body: (gr_function_set | gr_function_call | gr_function_fix)*;
 gr_function: gr_function_head gr_function_body gr_function_tail;
+gr_virtual_head: 'virtual' gr_function_name '()' '{';
+gr_virtual: gr_virtual_head gr_function_body gr_function_tail;
 gr_qualifier: (gr_char | gr_digit | '_')+;
 gr_field: gr_qualifier '(' gr_parameter ')';
 gr_parameter: gr_qualifier '.' gr_qualifier | 'CONST(' gr_number ')' | gr_qualifier;

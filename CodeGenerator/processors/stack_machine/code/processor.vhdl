@@ -5,12 +5,12 @@ USE ieee.std_logic_1164.all;
 
 ENTITY processor IS
   GENERIC (
-    g_word_size : integer := 7
+    g_word_size : integer := 31
   );
   PORT (
     p_clk : in std_logic;
     p_reset : in std_logic;
-    p_blub : out std_logic_vector(7 DOWNTO 0)
+    p_output : out std_logic_vector(31 DOWNTO 0)
   );
 END processor;
 
@@ -35,14 +35,15 @@ ARCHITECTURE behavior OF processor IS
     PORT (
       p_clk : in std_logic;
       p_rst : in std_logic;
-      p_ctrl : in std_logic;
+      p_ctrl : in  std_logic_vector(1 DOWNTO 0);
       p_input0 : in std_logic_vector(g_word_size DOWNTO 0);
+      p_input1 : in std_logic_vector(g_word_size DOWNTO 0);
       p_word : out std_logic_vector(g_word_size DOWNTO 0)
     );
   END COMPONENT;
   COMPONENT op1_register
     GENERIC (
-      g_word_size : integer := 7
+      g_word_size : integer := 31
     );
     PORT (
       p_clk : in std_logic;
@@ -54,7 +55,7 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   COMPONENT op2_register
     GENERIC (
-      g_word_size : integer := 7
+      g_word_size : integer := 31
     );
     PORT (
       p_clk : in std_logic;
@@ -77,9 +78,9 @@ ARCHITECTURE behavior OF processor IS
       p_word : out std_logic_vector(g_word_size DOWNTO 0)
     );
   END COMPONENT;
-  COMPONENT port
+  COMPONENT output
     GENERIC (
-      g_word_size : integer := 7
+      g_word_size : integer := 31
     );
     PORT (
       p_clk : in std_logic;
@@ -102,7 +103,7 @@ ARCHITECTURE behavior OF processor IS
   COMPONENT mProgMem
     GENERIC (
       g_address_size : integer := 7;
-      g_word_size : integer := 12
+      g_word_size : integer := 14
     );
     PORT (
       p_address0 : in std_logic_vector(g_address_size DOWNTO 0);
@@ -112,7 +113,7 @@ ARCHITECTURE behavior OF processor IS
   COMPONENT stack
     GENERIC (
       g_address_size : integer := 7;
-      g_word_size : integer := 7
+      g_word_size : integer := 31
     );
     PORT (
       p_clk : in std_logic;
@@ -152,7 +153,7 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   COMPONENT math
     GENERIC (
-      g_word_size : integer := 7
+      g_word_size : integer := 31
     );
     PORT (
       p_input_A0 : in std_logic_vector(g_word_size DOWNTO 0);
@@ -176,32 +177,21 @@ ARCHITECTURE behavior OF processor IS
       p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
     );
   END COMPONENT;
-  COMPONENT mpcMux
-    GENERIC (
-      g_word_size : integer := 7
-    );
-    PORT (
-      p_input0 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_input1 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_isel : in std_logic;
-      p_word : out std_logic_vector(g_word_size DOWNTO 0)
-    );
-  END COMPONENT;
   SIGNAL s_pcReg_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_mpcReg_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_op1_register_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_op2_register_out : std_logic_vector(7 DOWNTO 0);
+  SIGNAL s_op1_register_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_op2_register_out : std_logic_vector(31 DOWNTO 0);
   SIGNAL s_stackPtr_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_progMem_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_stack_out : std_logic_vector(7 DOWNTO 0);
+  SIGNAL s_stack_out : std_logic_vector(31 DOWNTO 0);
   SIGNAL s_pcInc_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_mpcInc_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_math_low : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_math_high : std_logic_vector(7 DOWNTO 0);
+  SIGNAL s_math_low : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_math_high : std_logic_vector(31 DOWNTO 0);
   SIGNAL s_math_status : std_logic;
   SIGNAL s_stackAlu_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_mpcMux_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_ctrl_vector : std_logic_vector(13 DOWNTO 0);
+  SIGNAL s_ctrl_vector : std_logic_vector(14 DOWNTO 0);
+  SIGNAL s_tmp_0 : std_logic_vector(31 DOWNTO 0);
 BEGIN
   pcReg_instance : pcReg
     GENERIC MAP (g_word_size => 7)
@@ -218,25 +208,26 @@ BEGIN
     PORT MAP (
       p_clk,
       p_reset,
-      '1',
-      s_mpcMux_out,
+      s_ctrl_vector(3 DOWNTO 2),
+      s_mpcInc_out,
+      s_progMem_out,
       s_mpcReg_out
     );
   op1_register_instance : op1_register
-    GENERIC MAP (g_word_size => 7)
+    GENERIC MAP (g_word_size => 31)
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(2),
+      s_ctrl_vector(4),
       s_stack_out,
       s_op1_register_out
     );
   op2_register_instance : op2_register
-    GENERIC MAP (g_word_size => 7)
+    GENERIC MAP (g_word_size => 31)
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(3),
+      s_ctrl_vector(5),
       s_stack_out,
       s_op2_register_out
     );
@@ -245,19 +236,19 @@ BEGIN
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(5 DOWNTO 4),
+      s_ctrl_vector(7 DOWNTO 6),
       s_stackPtr_out,
       s_stackAlu_out,
       s_stackPtr_out
     );
-  port_instance : port
-    GENERIC MAP (g_word_size => 7)
+  output_instance : output
+    GENERIC MAP (g_word_size => 31)
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(6),
+      s_ctrl_vector(8),
       s_stack_out,
-      p_blub
+      p_output
     );
   progMem_instance : progMem
     GENERIC MAP (g_address_size => 7, g_word_size => 7)
@@ -266,23 +257,23 @@ BEGIN
       s_progMem_out
     );
   mProgMem_instance : mProgMem
-    GENERIC MAP (g_address_size => 7, g_word_size => 12)
+    GENERIC MAP (g_address_size => 7, g_word_size => 14)
     PORT MAP (
       s_mpcReg_out,
       s_ctrl_vector
     );
   stack_instance : stack
-    GENERIC MAP (g_address_size => 7, g_word_size => 7)
+    GENERIC MAP (g_address_size => 7, g_word_size => 31)
     PORT MAP (
       p_clk,
       p_reset,
-      s_progMem_out,
+      s_tmp_0,
       s_math_low,
       s_math_high,
       s_stackPtr_out,
       s_stackPtr_out,
       s_stack_out,
-      s_ctrl_vector(9 DOWNTO 7)
+      s_ctrl_vector(11 DOWNTO 9)
     );  pcInc_instance : pcInc
     GENERIC MAP (g_word_size => 7)
     PORT MAP (
@@ -302,11 +293,11 @@ BEGIN
       OPEN
     );
   math_instance : math
-    GENERIC MAP (g_word_size => 7)
+    GENERIC MAP (g_word_size => 31)
     PORT MAP (
       s_op1_register_out,
       s_op2_register_out,
-      s_ctrl_vector(11 DOWNTO 10),
+      s_ctrl_vector(13 DOWNTO 12),
       s_math_status,
       s_math_low,
       s_math_high
@@ -316,18 +307,11 @@ BEGIN
     PORT MAP (
       s_stackPtr_out,
       "00000001",
-      s_ctrl_vector(12),
+      s_ctrl_vector(14),
       OPEN,
       s_stackAlu_out,
       OPEN
     );
-  mpcMux_instance : mpcMux
-    GENERIC MAP (g_word_size => 7)
-    PORT MAP (
-      s_mpcInc_out,
-      s_progMem_out,
-      s_ctrl_vector(13),
-      s_mpcMux_out
-    );
+  s_tmp_0 <= "000000000000000000000000" & s_progMem_out;
 
 END behavior;

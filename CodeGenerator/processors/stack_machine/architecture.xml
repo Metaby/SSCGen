@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<architecture wordSize="8">
+<architecture wordSize="32">
 	<register>
 		<id>pcReg</id>
 		<size>8</size>
@@ -14,14 +14,15 @@
 		<id>mpcReg</id>
 		<size>8</size>
 		<inputs>
-			<input>mpcMux.out</input>
+			<input>mpcInc.out</input>
+			<input>progMem.out</input>
 		</inputs>
 		<output>mpcReg.out</output>
-		<control>system.const.1</control>
+		<control>system.auto</control>
 	</register>
 	<register>
 		<id>op1_register</id>
-		<size>8</size>
+		<size>-2</size>
 		<inputs>
 			<input>stack.out</input>
 		</inputs>
@@ -30,7 +31,7 @@
 	</register>
 	<register>
 		<id>op2_register</id>
-		<size>8</size>
+		<size>-2</size>
 		<inputs>
 			<input>stack.out</input>
 		</inputs>
@@ -48,12 +49,12 @@
 		<control>system.auto</control>
 	</register>
 	<register>
-		<id>port</id>
-		<size>8</size>
+		<id>output</id>
+		<size>-2</size>
 		<inputs>
 			<input>stack.out</input>
 		</inputs>
-		<output>system.out.blub</output>
+		<output>system.out.output</output>
 		<control>system.auto</control>
 	</register>
 	<rom>
@@ -69,7 +70,7 @@
 	</rom>
 	<rom>
 		<id>mProgMem</id>
-		<wordSize>13</wordSize>
+		<wordSize>-1</wordSize>
 		<addressSize>8</addressSize>
 		<contentFile>processors/stack_machine/stack_machine_microprogram.hex</contentFile>
 		<addresses>
@@ -80,7 +81,7 @@
 	</rom>
 	<registerFile>
 		<id>stack</id>
-		<wordSize>8</wordSize>
+		<wordSize>-2</wordSize>
 		<addressSize>8</addressSize>
 		<ports>
 			<port>
@@ -140,7 +141,7 @@
 	</alu>
 	<alu>
 		<id>math</id>
-		<wordSize>8</wordSize>
+		<wordSize>-2</wordSize>
 		<inputsOperandA>
 			<input>op1_register.out</input>
 		</inputsOperandA>
@@ -175,14 +176,4 @@
 		<control>system.auto</control>
 		<status>system.open</status>
 	</alu>
-	<multiplexer>
-		<id>mpcMux</id>
-		<wordSize>8</wordSize>
-		<inputs>
-			<input>mpcInc.out</input>
-			<input>progMem.out</input>
-		</inputs>
-		<output>mpcMux.out</output>
-		<control>system.auto</control>
-	</multiplexer>
 </architecture>

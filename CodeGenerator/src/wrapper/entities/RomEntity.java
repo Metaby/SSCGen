@@ -28,6 +28,12 @@ public class RomEntity extends BaseEntity{
 		control = new Connector(rom.getControl(), (int)Math.ceil(Math.log(addresses.size()) / Math.log(2)));	
 	}
 	
+	@Override
+	public void setWordSize(int wordSize) {
+		this.wordSize = wordSize;
+		output.size = wordSize;
+	}
+	
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int aselSize = Wrapper.log2(addresses.size());
