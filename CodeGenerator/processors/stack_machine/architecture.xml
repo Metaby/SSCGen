@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<architecture wordSize="32">
+<architecture wordSize="8">
 	<register>
 		<id>pcReg</id>
 		<size>8</size>
@@ -22,7 +22,7 @@
 	</register>
 	<register>
 		<id>op1_register</id>
-		<size>-2</size>
+		<size>8</size>
 		<inputs>
 			<input>stack.out</input>
 		</inputs>
@@ -31,7 +31,7 @@
 	</register>
 	<register>
 		<id>op2_register</id>
-		<size>-2</size>
+		<size>8</size>
 		<inputs>
 			<input>stack.out</input>
 		</inputs>
@@ -50,7 +50,7 @@
 	</register>
 	<register>
 		<id>output</id>
-		<size>-2</size>
+		<size>8</size>
 		<inputs>
 			<input>stack.out</input>
 		</inputs>
@@ -72,7 +72,7 @@
 		<id>mProgMem</id>
 		<wordSize>-1</wordSize>
 		<addressSize>8</addressSize>
-		<contentFile>processors/stack_machine/stack_machine_microprogram.hex</contentFile>
+		<contentFile>processors/stack_machine/stack_machine_mp.hex</contentFile>
 		<addresses>
 			<address>mpcReg.out</address>
 		</addresses>
@@ -81,7 +81,7 @@
 	</rom>
 	<registerFile>
 		<id>stack</id>
-		<wordSize>-2</wordSize>
+		<wordSize>8</wordSize>
 		<addressSize>8</addressSize>
 		<ports>
 			<port>
@@ -141,7 +141,7 @@
 	</alu>
 	<alu>
 		<id>math</id>
-		<wordSize>-2</wordSize>
+		<wordSize>8</wordSize>
 		<inputsOperandA>
 			<input>op1_register.out</input>
 		</inputsOperandA>

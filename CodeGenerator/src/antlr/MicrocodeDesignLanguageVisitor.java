@@ -101,6 +101,36 @@ public interface MicrocodeDesignLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitGr_virtual(MicrocodeDesignLanguageParser.Gr_virtualContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_init_perm}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_init_perm(MicrocodeDesignLanguageParser.Gr_init_permContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_init_perm_code}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_init_perm_code(MicrocodeDesignLanguageParser.Gr_init_perm_codeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_init_head}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_init_head(MicrocodeDesignLanguageParser.Gr_init_headContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_init_body}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_init_body(MicrocodeDesignLanguageParser.Gr_init_bodyContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_init}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_init(MicrocodeDesignLanguageParser.Gr_initContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_qualifier}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -161,15 +191,33 @@ public interface MicrocodeDesignLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitGr_hex(MicrocodeDesignLanguageParser.Gr_hexContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_file}.
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_field_declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitGr_file(MicrocodeDesignLanguageParser.Gr_fileContext ctx);
+	T visitGr_field_declaration(MicrocodeDesignLanguageParser.Gr_field_declarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_import}.
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_field_id}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitGr_import(MicrocodeDesignLanguageParser.Gr_importContext ctx);
+	T visitGr_field_id(MicrocodeDesignLanguageParser.Gr_field_idContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_field_positions}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_field_positions(MicrocodeDesignLanguageParser.Gr_field_positionsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_field_params}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_field_params(MicrocodeDesignLanguageParser.Gr_field_paramsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MicrocodeDesignLanguageParser#gr_field_values}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGr_field_values(MicrocodeDesignLanguageParser.Gr_field_valuesContext ctx);
 }

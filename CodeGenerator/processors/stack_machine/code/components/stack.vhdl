@@ -7,7 +7,7 @@ USE ieee.numeric_std.all;
 ENTITY stack IS
   GENERIC (
     g_address_size : integer := 7;
-    g_word_size : integer := 31
+    g_word_size : integer := 7
   );
   PORT (
     p_clk : in std_logic;

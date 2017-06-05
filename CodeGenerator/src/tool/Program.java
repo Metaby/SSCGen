@@ -31,8 +31,8 @@ public class Program {
 	
 	public static void main(String[] args) {
 		String processor = "stack_machine";
-		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_microprogram.mdf");
-		compileMicrocode("processors/" + processor + "/" + processor + "_microprogram.mdf", "processors/" + processor + "/" + processor + "_microprogram.hex");
+		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_mp.mdl");
+		compileMicrocode("processors/" + processor + "/" + processor + "_mp.mdl", "processors/" + processor + "/" + processor + "_mp.hex");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
 	}
 	
@@ -64,11 +64,11 @@ public class Program {
 		mdfContent += " */" + System.lineSeparator() + System.lineSeparator();
 		String defFile = outputFile;
 		if (defFile.contains(".")) {
-			defFile = defFile.substring(0, defFile.indexOf('.')) + ".def";
+			defFile = defFile.substring(0, defFile.indexOf('.')) + "_def.mdl";
 		} else {
-			defFile += ".def";
+			defFile += "_def.mdl";
 		}
-		mdfContent += System.lineSeparator() + "definition " + defFile + System.lineSeparator() + System.lineSeparator();
+		mdfContent += System.lineSeparator() + "#include " + defFile + System.lineSeparator() + System.lineSeparator();
 		mdfContent += "function init(0x00) {" + System.lineSeparator() + "\t" + System.lineSeparator() + "}";
 		String fields = "";
 		for (ControlField cf : cv.getFields()) {

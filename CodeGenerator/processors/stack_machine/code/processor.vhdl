@@ -5,12 +5,12 @@ USE ieee.std_logic_1164.all;
 
 ENTITY processor IS
   GENERIC (
-    g_word_size : integer := 31
+    g_word_size : integer := 7
   );
   PORT (
     p_clk : in std_logic;
     p_reset : in std_logic;
-    p_output : out std_logic_vector(31 DOWNTO 0)
+    p_output : out std_logic_vector(7 DOWNTO 0)
   );
 END processor;
 
@@ -43,7 +43,7 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   COMPONENT op1_register
     GENERIC (
-      g_word_size : integer := 31
+      g_word_size : integer := 7
     );
     PORT (
       p_clk : in std_logic;
@@ -55,7 +55,7 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   COMPONENT op2_register
     GENERIC (
-      g_word_size : integer := 31
+      g_word_size : integer := 7
     );
     PORT (
       p_clk : in std_logic;
@@ -80,7 +80,7 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   COMPONENT output
     GENERIC (
-      g_word_size : integer := 31
+      g_word_size : integer := 7
     );
     PORT (
       p_clk : in std_logic;
@@ -113,7 +113,7 @@ ARCHITECTURE behavior OF processor IS
   COMPONENT stack
     GENERIC (
       g_address_size : integer := 7;
-      g_word_size : integer := 31
+      g_word_size : integer := 7
     );
     PORT (
       p_clk : in std_logic;
@@ -153,7 +153,7 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   COMPONENT math
     GENERIC (
-      g_word_size : integer := 31
+      g_word_size : integer := 7
     );
     PORT (
       p_input_A0 : in std_logic_vector(g_word_size DOWNTO 0);
@@ -179,19 +179,18 @@ ARCHITECTURE behavior OF processor IS
   END COMPONENT;
   SIGNAL s_pcReg_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_mpcReg_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_op1_register_out : std_logic_vector(31 DOWNTO 0);
-  SIGNAL s_op2_register_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_op1_register_out : std_logic_vector(7 DOWNTO 0);
+  SIGNAL s_op2_register_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_stackPtr_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_progMem_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_stack_out : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_stack_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_pcInc_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_mpcInc_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_math_low : std_logic_vector(31 DOWNTO 0);
-  SIGNAL s_math_high : std_logic_vector(31 DOWNTO 0);
+  SIGNAL s_math_low : std_logic_vector(7 DOWNTO 0);
+  SIGNAL s_math_high : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_math_status : std_logic;
   SIGNAL s_stackAlu_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_ctrl_vector : std_logic_vector(14 DOWNTO 0);
-  SIGNAL s_tmp_0 : std_logic_vector(31 DOWNTO 0);
 BEGIN
   pcReg_instance : pcReg
     GENERIC MAP (g_word_size => 7)
@@ -214,7 +213,7 @@ BEGIN
       s_mpcReg_out
     );
   op1_register_instance : op1_register
-    GENERIC MAP (g_word_size => 31)
+    GENERIC MAP (g_word_size => 7)
     PORT MAP (
       p_clk,
       p_reset,
@@ -223,7 +222,7 @@ BEGIN
       s_op1_register_out
     );
   op2_register_instance : op2_register
-    GENERIC MAP (g_word_size => 31)
+    GENERIC MAP (g_word_size => 7)
     PORT MAP (
       p_clk,
       p_reset,
@@ -242,7 +241,7 @@ BEGIN
       s_stackPtr_out
     );
   output_instance : output
-    GENERIC MAP (g_word_size => 31)
+    GENERIC MAP (g_word_size => 7)
     PORT MAP (
       p_clk,
       p_reset,
@@ -263,11 +262,11 @@ BEGIN
       s_ctrl_vector
     );
   stack_instance : stack
-    GENERIC MAP (g_address_size => 7, g_word_size => 31)
+    GENERIC MAP (g_address_size => 7, g_word_size => 7)
     PORT MAP (
       p_clk,
       p_reset,
-      s_tmp_0,
+      s_progMem_out,
       s_math_low,
       s_math_high,
       s_stackPtr_out,
@@ -293,7 +292,7 @@ BEGIN
       OPEN
     );
   math_instance : math
-    GENERIC MAP (g_word_size => 31)
+    GENERIC MAP (g_word_size => 7)
     PORT MAP (
       s_op1_register_out,
       s_op2_register_out,
@@ -312,6 +311,5 @@ BEGIN
       s_stackAlu_out,
       OPEN
     );
-  s_tmp_0 <= "000000000000000000000000" & s_progMem_out;
 
 END behavior;

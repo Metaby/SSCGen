@@ -5,11 +5,11 @@ import java.util.List;
 
 public class Microcode {
 	private List<MicrocodeFunction> functions;
-	private List<String> imports;
+	private List<MicrocodeField> fields;
 	
 	public Microcode() {
 		functions = new ArrayList<MicrocodeFunction>();
-		imports = new ArrayList<String>();		
+		fields = new ArrayList<MicrocodeField>();
 	}
 
 	public void addFunction(MicrocodeFunction mf) {
@@ -18,9 +18,9 @@ public class Microcode {
 		}
 	}
 	
-	public void addImport(String imp) {
-		if (imp != null && imp.length() > 0) {
-			imports.add(imp);
+	public void addField(MicrocodeField field) {
+		if (field != null) {
+			fields.add(field);
 		}
 	}
 	
@@ -28,8 +28,8 @@ public class Microcode {
 		return functions;
 	}
 
-	public List<String> getImports() {
-		return imports;
+	public List<MicrocodeField> getFields() {
+		return fields;
 	}
 
 }

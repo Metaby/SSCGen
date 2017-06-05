@@ -1,21 +1,14 @@
 package microcode;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class MicrocodeField {
 	private Map<String, Integer> fields;
-	private Boolean single;
 	private String id;
 	private int cvStart;
 	private int cvEnd;
 
-	public MicrocodeField(String id, int cvStart, int cvEnd, Boolean single) {
-		this.fields = new HashMap<String, Integer>();
-		this.single = single;
-		this.id = id;
-		this.cvStart = cvStart;
-		this.cvEnd = cvEnd;
+	public MicrocodeField() {
 	}
 	
 	public void addKeyVal(String key, int val) {
@@ -42,7 +35,19 @@ public class MicrocodeField {
 		return cvEnd;
 	}
 
-	public Boolean getSingle() {
-		return single;
+	public void setFields(Map<String, Integer> fields) {
+		this.fields = fields;
+	}
+
+	public void setCvStart(int cvStart) {
+		this.cvStart = cvStart;
+	}
+
+	public void setCvEnd(int cvEnd) {
+		this.cvEnd = cvEnd;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

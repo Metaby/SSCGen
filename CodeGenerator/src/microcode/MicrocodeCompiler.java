@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -22,53 +24,26 @@ public class MicrocodeCompiler {
 		saveMicrocode(mcBytes, targetFile);
 	}
 	
-	private List<MicrocodeField> readDefinitionFile(String inputFile) {
-		List<MicrocodeField> fields = new ArrayList<MicrocodeField>();
-		try {
-			List<String> strContent = Files.readAllLines(new File(inputFile).toPath());
-			for (String f : strContent) {
-				if (f.startsWith("single")) {
-					fields.add(readSingle(f.substring(7)));
-				} else if (f.startsWith("field")) {
-					fields.add(readField(f.substring(6)));				
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return fields;
-	}
-	
-	private MicrocodeField readSingle(String def) {
-		String[] parts = def.split(" = ");
-		int pos = Integer.parseInt(parts[1].substring(1, parts[1].length() - 2).trim());
-		return new MicrocodeField(parts[0], pos, pos, true);
-	}
-	
-	private MicrocodeField readField(String def) {
-		String[] commandParts = def.split(" = ");
-		String[] fieldParts = commandParts[1].split("}");
-		int start = Integer.parseInt(fieldParts[0].substring(1).split(",")[0].trim());
-		int end = Integer.parseInt(fieldParts[0].substring(1).split(",")[1].trim());
-		MicrocodeField field = new MicrocodeField(commandParts[0], start, end, false);
-		String[] keys = fieldParts[1].substring(1).split(",");
-		String[] values = fieldParts[2].substring(1).split(",");
-		if (keys.length == values.length) {
-			for (int i = 0; i < keys.length; i++) {
-				field.addKeyVal(keys[i], Integer.parseInt(values[i].trim()));
-			}
-		} else {
-			System.out.println("Error: bad definition file.");
-			System.exit(-1);
-		}
-		return field;
-	}
-	
 	@SuppressWarnings("deprecation")
 	private Microcode readMicrocodeDesignFile(String mdfFilePath) {
 		try {
-			ANTLRInputStream mdlFile = new ANTLRInputStream(new FileReader(mdfFilePath));
-			MicrocodeDesignLanguageLexer lexer = new MicrocodeDesignLanguageLexer(mdlFile);
+			List<String> lines = Files.readAllLines(new File(mdfFilePath).toPath());
+			String file = "";
+			for (String line : lines) {
+				if (line.startsWith("#")) {
+					if (line.startsWith("#include ")) {
+						String path = line.split(" ")[1];
+						List<String> fields = Files.readAllLines(new File(path).toPath());
+						for (String field : fields) {
+							file += field + System.lineSeparator();
+						}
+					}
+				} else {
+					file += line + System.lineSeparator();
+				}
+			}
+			CharStream stream = new ANTLRInputStream(file);			
+			MicrocodeDesignLanguageLexer lexer = new MicrocodeDesignLanguageLexer(stream);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			MicrocodeDesignLanguageParser parser = new MicrocodeDesignLanguageParser(tokens);
 			ParseTree tree = parser.gr_mdf();
@@ -83,12 +58,7 @@ public class MicrocodeCompiler {
 	
 	private String compileMicrocode(Microcode mc) {
 		if (mc != null) {
-			List<MicrocodeField> fields = new ArrayList<MicrocodeField>();
 			String bytes = "";
-			// Definition lesen und parsen
-			for (String str : mc.getImports()) {
-				fields.addAll(readDefinitionFile(str));
-			}
 			// Alle Funktionszeilen einlesen
 			for (MicrocodeFunction mf : mc.getFunctions()) {
 				if (!mf.isVirtual()) {
@@ -108,7 +78,7 @@ public class MicrocodeCompiler {
 				String replacedBytes = "";
 				for (String str : split) {
 					if (str.startsWith("c:")) {
-						String functionName = str.substring(2);
+						String functionName = str.substring(2, str.indexOf('('));
 						for (MicrocodeFunction mf : mc.getFunctions()) {
 							if (mf.getName().equals(functionName)) {
 								for (String str2 : mf.getFunctionLines()) {
@@ -126,19 +96,25 @@ public class MicrocodeCompiler {
 			int addressCounter = 0;
 			String[] split = bytes.split(System.lineSeparator());
 			String replacedBytes = "";
-			int fixes = 0;
+			perm = 0;
+			int fix = 0;
+			List<MicrocodeField> fields = mc.getFields();
 			for (String str : split) {
 				if (str.startsWith("s:")) {
-					replacedBytes += "s:" + (microcodeFieldLookup(fields, str.substring(2)) + fixes) + System.lineSeparator();
+					replacedBytes += "s:" + (microcodeFieldLookup(fields, str.substring(2)) | perm | fix) + System.lineSeparator();
 					addressCounter++;
+				} else if (str.startsWith("P:")) {
+					perm |= microcodeFieldLookup(fields, str.substring(2));
 				} else if (str.startsWith("f:")) {
-					fixes = microcodeFieldLookup(fields, str.substring(2));
+					fix |= microcodeFieldLookup(fields, str.substring(2));
 				} else if (str.startsWith("p:auto")) {
+					fix = 0;
 					replacedBytes += "p:" + addressCounter + System.lineSeparator();
 				} else if (str.startsWith("p:")) {
+					fix = 0;
 					int address = Integer.parseInt(str.substring(2));
 					if (address < addressCounter) {
-						System.out.println("Error: Selected address imposible, because code already asigned to this address.");
+						System.out.println("Error: Code already asigned to address\"" + address + "\".");
 						System.exit(-1);
 					}
 					addressCounter = address;
@@ -149,6 +125,8 @@ public class MicrocodeCompiler {
 		}
 		return "";
 	}
+	
+	int perm;
 	
 	private int microcodeFieldLookup(List<MicrocodeField> fields, String functionLine) {
 		int code = 0;
@@ -183,7 +161,11 @@ public class MicrocodeCompiler {
 			if (part.startsWith("p:")) {
 				int pos = Integer.parseInt(part.substring(2));
 				while (pos > currentPos) {
-					hexContent += "00 ";
+					String cb = Integer.toHexString(perm);
+					if (cb.length() == 1) {
+						cb = "0" + cb;
+					}
+					hexContent += "00" + " ";
 					currentPos++;
 					if (currentPos % 8 == 0) {
 						hexContent += System.lineSeparator();

@@ -122,6 +122,41 @@ public class MicrocodeDesignLanguageBaseVisitor<T> extends AbstractParseTreeVisi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitGr_init_perm(MicrocodeDesignLanguageParser.Gr_init_permContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitGr_init_perm_code(MicrocodeDesignLanguageParser.Gr_init_perm_codeContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitGr_init_head(MicrocodeDesignLanguageParser.Gr_init_headContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitGr_init_body(MicrocodeDesignLanguageParser.Gr_init_bodyContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitGr_init(MicrocodeDesignLanguageParser.Gr_initContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitGr_qualifier(MicrocodeDesignLanguageParser.Gr_qualifierContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -192,12 +227,33 @@ public class MicrocodeDesignLanguageBaseVisitor<T> extends AbstractParseTreeVisi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitGr_file(MicrocodeDesignLanguageParser.Gr_fileContext ctx) { return visitChildren(ctx); }
+	@Override public T visitGr_field_declaration(MicrocodeDesignLanguageParser.Gr_field_declarationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitGr_import(MicrocodeDesignLanguageParser.Gr_importContext ctx) { return visitChildren(ctx); }
+	@Override public T visitGr_field_id(MicrocodeDesignLanguageParser.Gr_field_idContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitGr_field_positions(MicrocodeDesignLanguageParser.Gr_field_positionsContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitGr_field_params(MicrocodeDesignLanguageParser.Gr_field_paramsContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitGr_field_values(MicrocodeDesignLanguageParser.Gr_field_valuesContext ctx) { return visitChildren(ctx); }
 }

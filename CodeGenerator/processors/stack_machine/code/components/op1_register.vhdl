@@ -5,7 +5,7 @@ USE ieee.std_logic_1164.all;
 
 ENTITY op1_register IS
   GENERIC (
-    g_word_size : integer := 31
+    g_word_size : integer := 7
   );
   PORT (
     p_clk : in std_logic;

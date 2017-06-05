@@ -5,7 +5,7 @@ USE ieee.std_logic_1164.all;
 
 ENTITY math IS
   GENERIC (
-    g_word_size : integer := 31
+    g_word_size : integer := 7
   );
   PORT (
     p_input_A0 : in std_logic_vector(g_word_size DOWNTO 0);
@@ -62,7 +62,7 @@ BEGIN
   -- Input B Multiplexing
   s_input_B <= p_input_B0;
   -- Instances of Sub-Components
-  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => 3) PORT MAP (s_sgnd, s_adder_sub, s_input_A, s_input_B, s_adder_result, s_adder_ovflw);
+  adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => 0) PORT MAP (s_sgnd, s_adder_sub, s_input_A, s_input_B, s_adder_result, s_adder_ovflw);
   mul : four_quadrant_multiplier GENERIC MAP (g_size => g_word_size) PORT MAP (s_sgnd, s_input_A, s_input_B, (OTHERS => '0'), s_mul_result_lo, s_mul_result_hi);
   -- Output Multiplexers
   --
@@ -76,11 +76,11 @@ BEGIN
     s_adder_result WHEN "00",
     s_adder_result WHEN "01",
     s_mul_result_lo WHEN "10",
-    "00000000000000000000000000000000" WHEN OTHERS;
+    "00000000" WHEN OTHERS;
   -- Output 2 Multiplexing
   WITH s_csel SELECT p_output_2 <=
     s_mul_result_hi WHEN "10",
-    "00000000000000000000000000000000" WHEN OTHERS;
+    "00000000" WHEN OTHERS;
   -- Flag Multiplexing
   WITH s_csel SELECT p_flag <=
     s_adder_ovflw WHEN "00",
