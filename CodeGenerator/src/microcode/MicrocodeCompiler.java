@@ -56,7 +56,68 @@ public class MicrocodeCompiler {
 		return null;		
 	}
 	
+	private Boolean hasCycles(Microcode mc) {
+		List<MicrocodeFunction> funcs = mc.getFunctions();
+		int[][] adj = new int[funcs.size()][funcs.size()];
+		String[] names = new String[funcs.size()];
+		for (int i = 0; i < funcs.size(); i++) {
+			names[i] = funcs.get(i).getName();
+		}
+		for (int i = 0; i < funcs.size(); i++) {
+			for (String str : funcs.get(i).getFunctionLines()) {
+				if (str.startsWith("c:")) {
+					String f = str.substring(2, str.length() - 2);
+					for (int j = 0; j < names.length; j++) {
+						if (names[j].equals(f)) {
+							adj[i][j] = 1;
+						}
+					}
+				}
+			}
+		}
+		for (int i = 0; i < funcs.size(); i++) {
+			int[][] adjprod = power(adj, adj, funcs.size(), i + 1);
+			int diagSum = 0;
+			for (int j = 0; j < adj.length; j++) {
+				diagSum += adjprod[j][j];
+			}
+			if (diagSum != 0) {
+				System.out.println(i + 1);
+				return true;
+			}			
+		}
+		return false;
+	}
+	
+	private int[][] power(int[][] a, int[][] b, int size, int exp) {
+		int[][] prod = multiply(a, b, size);
+		for (int i = 0; i < exp - 1; i++) {
+			prod = multiply(prod, b, size);
+		}
+		return prod;
+	}
+	
+	private int[][] multiply(int[][] a, int[][] b, int size) {
+		int[][] adjprod = new int[size][size];
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				for (int z = 0; z < size; z++) {
+					adjprod[x][y] = adjprod[x][y] + a[x][z] * b[z][y];
+				}
+			}
+		}
+		return adjprod;
+	}
+	
+	private Microcode replaceCalls(Microcode mc) {
+		return null;
+	}
+	
 	private String compileMicrocode(Microcode mc) {
+		if (hasCycles(mc)) {
+			System.out.println("Error: Microcode has cycles in the call hirarchy.");
+			System.exit(1);
+		}
 		if (mc != null) {
 			String bytes = "";
 			// Alle Funktionszeilen einlesen

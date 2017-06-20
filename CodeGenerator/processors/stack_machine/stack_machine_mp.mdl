@@ -23,7 +23,7 @@
 #include processors/stack_machine/stack_machine_mp_def.mdl
 
 /*
-	Initialisierungssequenz f�r die Stack-Maschine
+	Initialisierungssequenz für die Stack-Maschine
 	init:
 		-> wird nicht als "function" oder "virtual" definiert und steht immer an "0x00"
 		-> muss vorhanden sein
