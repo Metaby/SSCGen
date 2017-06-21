@@ -142,18 +142,12 @@ class ArchitectureFactory {
 				} else if (con.type == ConnectorType.SYSTEM_IN) {
 					topLevelEntity.AddPort("p_" + con.pin.substring(con.pin.lastIndexOf('.') + 1) + " : in ", con.size);					
 				} else if (con.size > 0 && con.type == ConnectorType.STANDARD) {
-					String signal = "s_" + con.origin + "_" + con.pin + " : ";
-					if (con.size == 1) {
-						signal += "std_logic";
-					} else {
-						signal += "std_logic_vector(" + (con.size - 1) + " DOWNTO 0)";
-					}
-					topLevelEntity.AddSignal(signal);				
+					topLevelEntity.AddSignal("s_" + con.origin + "_" + con.pin, con.size);				
 				}				
 			}
 		}
 		if (arch.getControlVector().getSize() > 0) {
-			topLevelEntity.AddSignal("s_ctrl_vector : std_logic_vector(" + (arch.getControlVector().getSize() - 1) + " DOWNTO 0)");
+			topLevelEntity.AddSignal("s_ctrl_vector", arch.getControlVector().getSize());
 		}
 		for (VhdlComponent vc : archComponents) {
 			topLevelEntity.AddImport(vc.getImport());
@@ -181,7 +175,7 @@ class ArchitectureFactory {
 		int cnt = 0;
 		while (m.find()) {
 			behavior = behavior.replaceFirst("[\\\'|\\\"][01]+[\\\'|\\\"]\\ &\\ [a-zA-Z0-9\\_]+", "s_tmp_" + cnt);
-			vc.AddSignal("s_tmp_" + cnt + " : std_logic_vector(" + getSize(m.group(), vc) + " DOWNTO 0)");
+			vc.AddSignal("s_tmp_" + cnt, getSize(m.group(), vc));
 			behavior += "  s_tmp_" + cnt + " <= " + m.group() + ";" + System.lineSeparator();
 			cnt++;
 		}

@@ -57,7 +57,29 @@ class VhdlComponent {
 		}
 	}
 	
-	void AddSignal(String signal) {
+//	void AddSignal(String signal) {
+//		if (!signals.contains(signal)) {
+//			signals.add(signal);			
+//		}
+//	}
+	
+	void AddSignal(String signal, int size) {
+		if (size > 1) {
+			signal += " : std_logic_vector(" + (size - 1) + " DOWNTO 0)";
+		} else {
+			signal += " : std_logic";
+		}
+		if (!signals.contains(signal)) {
+			signals.add(signal);			
+		}
+	}
+	
+	void AddSignal(String signal, String type, String upperBound) {
+		if (type.equals("")) {
+			signal += " : std_logic_vector(" + upperBound + " DOWNTO 0)";
+		} else {
+			signal += " : " + type;			
+		}
 		if (!signals.contains(signal)) {
 			signals.add(signal);			
 		}

@@ -57,26 +57,26 @@ class ComponentFactory {
 				int adrBits = (int)Math.ceil(Math.log(p.getInputs().size()) / Math.log(2));
 				if (p.getInputs().size() == 2) {
 					ctrlBinding += "  s_port" + j + "_isel <= p_ctrl(" + ctrlSize++ + ");" + System.lineSeparator();
-					component.AddSignal("s_port" + j + "_isel : std_logic");
+					component.AddSignal("s_port" + j + "_isel", 1);
 				} else if (p.getInputs().size() > 2) {
 					ctrlBinding += "  s_port" + j + "_isel <= p_ctrl(" + (ctrlSize + adrBits - 1) + " DOWNTO " + ctrlSize + ");" + System.lineSeparator();
 					ctrlSize += adrBits;
-					component.AddSignal("s_port" + j + "_isel : std_logic_vector(" + (adrBits - 1) + " DOWNTO 0)");				
+					component.AddSignal("s_port" + j + "_isel", adrBits);				
 				}
 				adrBits = (int)Math.ceil(Math.log(p.getAddresses().size()) / Math.log(2));
 				if (p.getAddresses().size() == 2) {
 					ctrlBinding += "  s_port" + j + "_asel <= p_ctrl(" + ctrlSize++ + ");" + System.lineSeparator();
-					component.AddSignal("s_port" + j + "_asel : std_logic");
+					component.AddSignal("s_port" + j + "_asel", 1);
 				} else if (p.getAddresses().size() > 2) {
 					ctrlBinding += "  s_port" + j + "_asel <= p_ctrl(" + (ctrlSize + adrBits - 1) + " DOWNTO " + ctrlSize + ");" + System.lineSeparator();
 					ctrlSize += adrBits;
-					component.AddSignal("s_port" + j + "_asel : std_logic_vector(" + (adrBits - 1) + " DOWNTO 0)");				
+					component.AddSignal("s_port" + j + "_asel", adrBits);				
 				}
-				component.AddSignal("s_port" + j + "_inputSelect : std_logic_vector(g_word_size DOWNTO 0)");
+				component.AddSignal("s_port" + j + "_inputSelect", "", "g_word_size");
 				muxes += VhdlComponent.generateMux("s_port" + j + "_isel", "s_port" + j + "_inputSelect", "p_port" + j +  "_input", p.getInputs().size());
-				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_address_size DOWNTO 0)");
+				component.AddSignal("s_port" + j + "_addressSelect", "", "g_address_size");
 				muxes += VhdlComponent.generateMux("s_port" + j + "_asel", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
-				component.AddSignal("s_port" + j + "_write : std_logic");
+				component.AddSignal("s_port" + j + "_write", 1);
 				if (tmp > 1) {	
 					ctrlBinding += "  s_port" + j + "_write <= p_ctrl(" + ctrlSize++ + ");" + System.lineSeparator();			
 				} else {
@@ -93,13 +93,13 @@ class ComponentFactory {
 					} else {
 						ctrlBinding += "  s_port" + j + "_asel <= p_ctrl;" + System.lineSeparator();
 					}
-					component.AddSignal("s_port" + j + "_asel : std_logic");
+					component.AddSignal("s_port" + j + "_asel", 1);
 				} else if (p.getAddresses().size() > 2) {
 					ctrlBinding += "  s_port" + j + "_asel <= p_ctrl(" + (ctrlSize + adrBits - 1) + " DOWNTO " + ctrlSize + ");" + System.lineSeparator();
 					ctrlSize += adrBits;
-					component.AddSignal("s_port" + j + "_asel : std_logic_vector(" + (adrBits - 1) + " DOWNTO 0)");				
+					component.AddSignal("s_port" + j + "_asel", adrBits);				
 				}
-				component.AddSignal("s_port" + j + "_addressSelect : std_logic_vector(g_address_size DOWNTO 0)");
+				component.AddSignal("s_port" + j + "_addressSelect", "", "g_address_size");
 				muxes += VhdlComponent.generateMux("s_port" + j + "_addressSelect", "s_port" + j + "_addressSelect", "p_port" + j +  "_address", p.getAddresses().size());
 				component.AddPort("p_port" + j + "_output : out", "g_word_size");
 			}
@@ -110,7 +110,7 @@ class ComponentFactory {
 		} else if (tmp > 1) {
 			component.AddPort("p_ctrl : in", ctrlSize);
 		}
-		component.AddSignal("s_registers : registerArray");
+		component.AddSignal("s_registers", "registerArray", "");
 		String behavior = ctrlBinding;
 		behavior += "  PROCESS (p_clk) BEGIN" + System.lineSeparator();
 		behavior += "    IF rising_edge(p_clk) THEN" + System.lineSeparator();
@@ -216,7 +216,7 @@ class ComponentFactory {
 			component.AddPort("p_addressSelect : in", adrSize);
 		}
 		component.AddPort("p_word : out", "g_word_size");
-		component.AddSignal("s_address : std_logic_vector(g_address_size DOWNTO 0)");		
+		component.AddSignal("s_address", "", "g_address_size");		
 		String behavior = "";
 		behavior += VhdlComponent.generateMux("p_addrSelect", "s_address", "p_address", rom.getAddresses().size());
 		behavior += "  -- Behavior" + System.lineSeparator();
@@ -251,7 +251,7 @@ class ComponentFactory {
 		component.AddGeneric("g_word_size : integer := " + (register.getWordSize() - 1));
 		component.AddPort("p_clk : in", 1);
 		component.AddPort("p_rst : in", 1);
-		component.AddSignal("s_write : std_logic");
+		component.AddSignal("s_write", 1);
 		String behavior = "  -- Behavior" + System.lineSeparator();
 		int adrSize = log2(register.getInputs().size());
 		if (register.getInputs().size() == 1) {
@@ -271,13 +271,13 @@ class ComponentFactory {
 		}
 		if (register.getInputs().size() > 1) {
 			if (adrSize > 1) {
-				component.AddSignal("s_isel : std_logic_vector(" + (adrSize - 1) + " DOWNTO 0)");				
+				component.AddSignal("s_isel", adrSize);				
 			} else {
-				component.AddSignal("s_isel : std_logic");			
+				component.AddSignal("s_isel", 1);			
 			}			
 		}
 		component.AddPort("p_word : out", "g_word_size");
-		component.AddSignal("s_input : std_logic_vector(g_word_size DOWNTO 0)");
+		component.AddSignal("s_input", "", "g_word_size");
 		behavior += VhdlComponent.generateMux("s_isel", "s_input", "p_input", register.getInputs().size());
 		behavior += "  PROCESS (p_clk) BEGIN" + System.lineSeparator();
 		behavior += "    IF rising_edge(p_clk) THEN" + System.lineSeparator();
@@ -319,23 +319,13 @@ class ComponentFactory {
 			component.AddPort("p_input_B" + i + " : in", "g_word_size");			
 		}
 		if (alu.getInputsA().size() > 1) {
-			if (iselASize > 1) {
-				component.AddSignal("s_isel_A : std_logic_vector(" + (iselASize - 1) + " DOWNTO 0)");				
-			} else {
-				component.AddSignal("s_isel_A : std_logic");			
-			}
+			component.AddSignal("s_isel_A", iselASize);
 		}
 		if (alu.getInputsA().size() > 1) {
-			if (iselBSize > 1) {
-				component.AddSignal("s_isel_B : std_logic_vector(" + (iselBSize - 1) + " DOWNTO 0)");				
-			} else {
-				component.AddSignal("s_isel_B: std_logic");			
-			}
+			component.AddSignal("s_isel_B", iselBSize);		
 		}
-		if (cselSize == 1) {
-			component.AddSignal("s_csel : std_logic");
-		} else if (cselSize > 1) {
-			component.AddSignal("s_csel : std_logic_vector(" + (cselSize - 1) + " DOWNTO 0)");
+		if (cselSize > 0) {
+			component.AddSignal("s_csel", cselSize);
 		}
 		if (ctrlSize > 0) {
 			component.AddPort("p_ctrl : in", ctrlSize);
@@ -375,36 +365,36 @@ class ComponentFactory {
 		component.AddPort("p_output_1 : out", "g_word_size");
 		component.AddPort("p_output_2 : out", "g_word_size");
 		// Signals
-		component.AddSignal("s_input_A : std_logic_vector(g_word_size DOWNTO 0)");
-		component.AddSignal("s_input_B : std_logic_vector(g_word_size DOWNTO 0)");
-		component.AddSignal("s_sgnd : std_logic");
+		component.AddSignal("s_input_A", "", "g_word_size");
+		component.AddSignal("s_input_B", "", "g_word_size");
+		component.AddSignal("s_sgnd", 1);
 		if (subComponents.contains("ADDER")) {
-			component.AddSignal("s_adder_sub : std_logic");
-			component.AddSignal("s_adder_ovflw : std_logic");
-			component.AddSignal("s_adder_result : std_logic_vector(g_word_size DOWNTO 0)");			
+			component.AddSignal("s_adder_sub", 1);
+			component.AddSignal("s_adder_ovflw", 1);
+			component.AddSignal("s_adder_result", "", "g_word_size");			
 		}
 		if (subComponents.contains("BITLOGIC")) {
-			component.AddSignal("s_logic_cmd : std_logic_vector(1 DOWNTO 0");
-			component.AddSignal("s_logic_result : std_logic_vector(g_word_size DOWNTO 0)");
+			component.AddSignal("s_logic_cmd", 2);
+			component.AddSignal("s_logic_result", "", "g_word_size");
 		}
 		if (subComponents.contains("DIVIDER")) {
-			component.AddSignal("s_div_remain : std_logic_vector(g_word_size DOWNTO 0)");
-			component.AddSignal("s_div_result : std_logic_vector(g_word_size DOWNTO 0)");			
+			component.AddSignal("s_div_remain", "", "g_word_size");
+			component.AddSignal("s_div_result", "", "g_word_size");			
 		}
 		if (subComponents.contains("MULTIPLIER")) {
-			component.AddSignal("s_mul_result_hi : std_logic_vector(g_word_size DOWNTO 0)");
-			component.AddSignal("s_mul_result_lo : std_logic_vector(g_word_size DOWNTO 0)");			
+			component.AddSignal("s_mul_result_hi", "", "g_word_size");
+			component.AddSignal("s_mul_result_lo", "", "g_word_size");			
 		}
 		if (subComponents.contains("COMPARATOR")) {
-			component.AddSignal("s_comp_cmd : std_logic_vector(2 DOWNTO 0)");
-			component.AddSignal("s_comp_result : std_logic");
+			component.AddSignal("s_comp_cmd", 3);
+			component.AddSignal("s_comp_result", 1);
 		}
 		if (subComponents.contains("SHIFTER")) {
-			component.AddSignal("s_shft_ari : std_logic");
-			component.AddSignal("s_shft_rot : std_logic");
-			component.AddSignal("s_shft_cmd : std_logic_vector(1 DOWNTO 0");
-			component.AddSignal("s_shft_ctrl : std_logic_vector(3 DOWNTO 0)");
-			component.AddSignal("s_shft_result : std_logic_vector(g_word_size DOWNTO 0)");
+			component.AddSignal("s_shft_ari", 1);
+			component.AddSignal("s_shft_rot", 1);
+			component.AddSignal("s_shft_cmd", 2);
+			component.AddSignal("s_shft_ctrl", 4);
+			component.AddSignal("s_shft_result", "", "g_word_size");
 		}
 		String behavior = "";
 		behavior += ctrlBinding;
