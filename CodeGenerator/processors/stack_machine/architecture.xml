@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <architecture wordSize="8">
+	<!-- EXPERIMENTAL -->
+	<custom>
+		<port>
+			<in size="1">system.clock</in>
+			<in size="8">stack.out</in>
+			<in size="1">system.control</in>
+			<out size="4">system.out.sseg1</out>
+		</port>
+		<definition>hex_decoder.vhdl</definition>
+	</custom>
+	<!-- EXPERIMENTAL -->
 	<register>
 		<id>pcReg</id>
 		<size>8</size>
