@@ -30,6 +30,21 @@ import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser.Gr_virtual_headContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// TODO: URL von [1]
+/**
+ *  The following class will not be documented in fact
+ *  it is only an overwritten auto generated class.
+ *  For further details see [1].
+ *  
+ *  It is used to visit and parse the microcode design language
+ *  into an object of the type "Microcode". The microcode
+ *  itself is documented in the specific classes.
+ *  
+ *  [1] antlr.org (4.7)
+ *  
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 public class MicrocodeDesignLanguageVisitor extends de.uulm.cyv17.antlr.MicrocodeDesignLanguageBaseVisitor<String> {
 	private List<Integer> values;
 	private List<String> functionNames;

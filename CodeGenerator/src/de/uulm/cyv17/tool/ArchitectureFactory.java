@@ -21,9 +21,25 @@ import de.uulm.cyv17.wrapper.entities.RegisterEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterFileEntity;
 import de.uulm.cyv17.wrapper.entities.RomEntity;
 
+/**
+ * Factory class for generating a computer architecture
+ * out of a given architecture.xml file which describes
+ * the components and wiring of the architecture.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 class ArchitectureFactory {
 	
-	Architecture ReadSpecification(String SpecPath) {
+	/**
+	 * Reads the specification of the computer architecture 
+	 * from the given URL. The architecture is then parsed with
+	 * jaxb and converted into an object of the type "Architecture".
+	 * 
+	 * @param SpecPath the url of the specification
+	 * @return the architecture
+	 */
+	Architecture readSpecification(String SpecPath) {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(de.uulm.cyv17.jaxb.Architecture.class);
 			Unmarshaller u = jc.createUnmarshaller();
@@ -35,7 +51,15 @@ class ArchitectureFactory {
 		return null;
 	}
 	
-	Boolean ValidateSpecification(String SpecPath, String Schema) {
+	/**
+	 * Takes the xml schema definition (xsd) and validates the given
+	 * specificcation of the architecture.
+	 * 
+	 * @param SpecPath the URL of the specification
+	 * @param Schema the URL of the XSD
+	 * @return true if the validation was correct, false otherwise
+	 */
+	Boolean validateSpecification(String SpecPath, String Schema) {
 		SchemaFactory f = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		try {
 			Schema s = f.newSchema(new File(Schema));
@@ -47,7 +71,15 @@ class ArchitectureFactory {
 		return true;
 	}
 	
-	Boolean ValidateIds(Architecture arch) {
+	/**
+	 * Validates the components IDs of the given architecture.
+	 * If one ore more IDs are not unique, the validation
+	 * fails and will return false.
+	 * 
+	 * @param arch the architecture to be validated
+	 * @return true if the validation is correct, false otherwise
+	 */
+	Boolean validateIds(Architecture arch) {
 		List<String> ids = new ArrayList<String>();
 		for (BaseEntity be : arch.getAllEntites()) {
 			if (ids.contains(be.getId())) {
@@ -60,7 +92,15 @@ class ArchitectureFactory {
 		return true;
 	}
 
-	Boolean ValidateConnections(Architecture arch) {
+	/**
+	 * Validates the components connections of the given
+	 * architecture. If all connections are legit, the
+	 * validation is correct and it will return true.
+	 * 
+	 * @param arch the architecture to be validated
+	 * @return true if the validation is correct, false otherwise
+	 */
+	Boolean validateConnections(Architecture arch) {
 		List<Connector> inputConnectors = arch.getInputConnectors(false);
 		inputConnectors.remove(null);
 		List<Connector> outputConnectors = arch.getOutputConnectors(false);
@@ -98,7 +138,14 @@ class ArchitectureFactory {
 		return true;
 	}
 	
-	void GenerateArchitecture(String directory, Architecture arch) {
+	/**
+	 * Generates the VHDL-files for the given architecture. The
+	 * files are saved in the specified directory.
+	 * 
+	 * @param directory the directory where to save all files
+	 * @param arch the architecture
+	 */
+	void generateArchitecture(String directory, Architecture arch) {
 		ComponentFactory cFactory = new ComponentFactory(directory);
 		InstanceFactory iFactory = new InstanceFactory(arch);
 		List<VhdlComponent> archComponents = new ArrayList<VhdlComponent>();
@@ -169,6 +216,20 @@ class ArchitectureFactory {
 	//
 	// PROVISORISCH FÜR MODELSIM TEST
 	//
+	/**
+	 * This function replaces concatenated signals in the given behavior
+	 * of a given VHDL-Component. It replaces only concatenated signals
+	 * in component instantiation. The concatenation will be then done
+	 * as a new signal and the new signal is used in the instantiation.
+	 * 
+	 * This is only needed when simulating the computer architecture
+	 * with ModelSim, because the ModelSim VHDL-Compiler isn't able
+	 * to solve these concatenations.
+	 * 
+	 * @param behavior the behavior to vhdl-component
+	 * @param vc the vhdl-component
+	 * @return the fixed behavior
+	 */
 	private String replaceInfix(String behavior, VhdlComponent vc) {
 		Pattern p = Pattern.compile("[\\\'|\\\"][01]+[\\\'|\\\"]\\ &\\ [a-zA-Z0-9\\_]+");
 		Matcher m = p.matcher(behavior);
@@ -185,6 +246,14 @@ class ArchitectureFactory {
 	//
 	// PROVISORISCH FÜR MODELSIM
 	//
+	/**
+	 * This function retrieves the signal size of the given
+	 * infix (signal concatenation) in its VHDL-Component.
+	 * 
+	 * @param infix the signal concatenation
+	 * @param vc the VHDL-Component
+	 * @return the size of the concatenated signals
+	 */
 	private int getSize(String infix, VhdlComponent vc) {
 		Pattern p = Pattern.compile("[\\\'|\\\"][01]+[\\\'|\\\"]");
 		Matcher m = p.matcher(infix);

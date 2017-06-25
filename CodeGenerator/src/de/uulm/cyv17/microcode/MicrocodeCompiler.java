@@ -16,18 +16,39 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageLexer;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser;
 
+/**
+ * The compiler for the microcode of a specific
+ * computer architecture.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ */
 public class MicrocodeCompiler {
 	
-	public void compile(String mdfFile, String targetFile) {
-		Microcode mc = readMicrocodeDesignFile(mdfFile);
+	/**
+	 * Compiles the microcode given as a file and writes the output to a specified hex-file.
+	 * 
+	 * @param mdlFile the file containing the microcode, usually a .mdl file (Microcode-Design-Language)
+	 * @param targetFile the file where to write the hex-code, usually a .hex file
+	 */
+	public void compile(String mdlFile, String targetFile) {
+		Microcode mc = readMicrocodeDesignFile(mdlFile);
 		String mcBytes = compileMicrocode(mc);
 		saveMicrocode(mcBytes, targetFile);
 	}
 	
+	/**
+	 * Reads the microcode of a given file. The microcode will then
+	 * be tested for syntax errors and parsed into an object of the
+	 * type Microcode. The microcode is returned after testing and
+	 * parsing.
+	 * 
+	 * @param mdlFilePath the file containing the microcode, usually a .mdl file (Microcode-Design-Language)
+	 * @return the microcode encapsulated in an object of the type Microcode 
+	 */
 	@SuppressWarnings("deprecation")
-	private Microcode readMicrocodeDesignFile(String mdfFilePath) {
+	private Microcode readMicrocodeDesignFile(String mdlFilePath) {
 		try {
-			List<String> lines = Files.readAllLines(new File(mdfFilePath).toPath());
+			List<String> lines = Files.readAllLines(new File(mdlFilePath).toPath());
 			String file = "";
 			for (String line : lines) {
 				if (line.startsWith("#")) {
@@ -56,6 +77,13 @@ public class MicrocodeCompiler {
 		return null;		
 	}
 	
+	/**
+	 * Tests if the given microcode has cycles in the code.
+	 * If so, it will return true, otherwise it returns false.
+	 * 
+	 * @param mc the microcode to be tested
+	 * @return true if the microcode has cycles, false otherwise
+	 */
 	private Boolean hasCycles(Microcode mc) {
 		List<MicrocodeFunction> funcs = mc.getFunctions();
 		int[][] adj = new int[funcs.size()][funcs.size()];
@@ -89,6 +117,15 @@ public class MicrocodeCompiler {
 		return false;
 	}
 	
+	// TODO: a und b -> nur eine matrix als parameter
+	/**
+	 * Calculates and returns A^n of a quadratic matrix.
+	 * @param a the matrix to be raised
+	 * @param b the matrix to be raised
+	 * @param size the size of the matrix (m x m)
+	 * @param exp the epxonent
+	 * @return a^exp
+	 */
 	private int[][] power(int[][] a, int[][] b, int size, int exp) {
 		int[][] prod = multiply(a, b, size);
 		for (int i = 0; i < exp - 1; i++) {
@@ -97,6 +134,14 @@ public class MicrocodeCompiler {
 		return prod;
 	}
 	
+	/**
+	 * Multiplies two quadratic matrices.
+	 * 
+	 * @param a the first matrix
+	 * @param b the second matrix
+	 * @param size the size of the matrices
+	 * @return a*b
+	 */
 	private int[][] multiply(int[][] a, int[][] b, int size) {
 		int[][] adjprod = new int[size][size];
 		for (int x = 0; x < size; x++) {
@@ -109,6 +154,18 @@ public class MicrocodeCompiler {
 		return adjprod;
 	}
 	
+	/**
+	 * Replaces all calls in the given microcode by. Each call
+	 * is replaced with the code of the called microcode function.
+	 * The function iterates until all calls are solved.
+	 * 
+	 * If the code has cycles, the function will enter an infinite
+	 * loop. It is highly recommended to test the microcode for
+	 * cycles with the "hasCycles" function before.
+	 * 
+	 * @param mc the microcode with calls
+	 * @return mc without calls
+	 */
 	private Microcode replaceCalls(Microcode mc) {
 		List<MicrocodeFunction> functions = mc.getFunctions();
 		Boolean replace;
@@ -147,16 +204,16 @@ public class MicrocodeCompiler {
 		}
 		return replacedMc;
 	}
-	
-//	private void printFunctions(List<MicrocodeFunction> functions) {
-//		for (MicrocodeFunction function : functions) {
-//			System.out.println("// " + function.getName());
-//			for (String functionLine : function.getFunctionLines()) {
-//				System.out.println(functionLine);
-//			}
-//		}
-//	}
-	
+
+	/**
+	 * The core compiler function of the microcode compiler.
+	 * It calculates the correct positions of the functions
+	 * and generates and intermediate code containing only
+	 * control vectors and positions.
+	 * 
+	 * @param mc the microcode to be compiled
+	 * @return the intermediate code of the microcode
+	 */
 	private String compileMicrocode(Microcode mc) {
 		if (mc != null) {
 			if (hasCycles(mc)) {
@@ -181,13 +238,13 @@ public class MicrocodeCompiler {
 			// Positionen berechnen und felder ersetzen
 			int addressCounter = 0;
 			String[] split = bytes.split(System.lineSeparator());
-			String replacedBytes = "";
+			String intermediateCode = "";
 			perm = 0;
 			int fix = 0;
 			List<MicrocodeField> fields = mc.getFields();
 			for (String str : split) {
 				if (str.startsWith("s:")) {
-					replacedBytes += "s:" + (microcodeFieldLookup(fields, str.substring(2)) | perm | fix) + System.lineSeparator();
+					intermediateCode += "s:" + (microcodeFieldLookup(fields, str.substring(2)) | perm | fix) + System.lineSeparator();
 					addressCounter++;
 				} else if (str.startsWith("P:")) {
 					perm |= microcodeFieldLookup(fields, str.substring(2));
@@ -195,7 +252,7 @@ public class MicrocodeCompiler {
 					fix |= microcodeFieldLookup(fields, str.substring(2));
 				} else if (str.startsWith("p:auto")) {
 					fix = 0;
-					replacedBytes += "p:" + addressCounter + System.lineSeparator();
+					intermediateCode += "p:" + addressCounter + System.lineSeparator();
 				} else if (str.startsWith("p:")) {
 					fix = 0;
 					int address = Integer.parseInt(str.substring(2));
@@ -204,16 +261,27 @@ public class MicrocodeCompiler {
 						System.exit(-1);
 					}
 					addressCounter = address;
-					replacedBytes += "p:" +  address + System.lineSeparator();
+					intermediateCode += "p:" +  address + System.lineSeparator();
 				}
 			}
-			return replacedBytes;
+			return intermediateCode;
 		}
 		return "";
 	}
 	
 	int perm;
 	
+	/**
+	 * Converts one line of a function into the correct control vector.
+	 * 
+	 * The microcode line is being split into parts and each part will be
+	 * looked up in the fields of the microcode and replaced with its
+	 * value.
+	 * 
+	 * @param fields the fields of the microcode
+	 * @param functionLine the microcode line to be translated
+	 * @return the integer value of the control vector
+	 */
 	private int microcodeFieldLookup(List<MicrocodeField> fields, String functionLine) {
 		int code = 0;
 		String[] bitSets = functionLine.split(",");
@@ -239,10 +307,22 @@ public class MicrocodeCompiler {
 		return code;
 	}
 	
-	private void saveMicrocode(String bytes, String outputFile) {
+	/**
+	 * Takes the intermediate code of the "compileMicrocode" function,
+	 * converts it into bytes represented as hex-codes and saves it
+	 * to the specified url.
+	 * 
+	 * The generated format is the same as used in "Logisim". It 
+	 * starts with "v2.0 raw" in the first line and is then followed
+	 * by 10 8 Bit hex-codes per line.
+	 * 
+	 * @param intermediateCode the intermediate code to convert and save
+	 * @param outputFile the url of the file to which the hex code is saved
+	 */
+	private void saveMicrocode(String intermediateCode, String outputFile) {
 		String hexContent = "v2.0 raw" + System.lineSeparator();
 		int currentPos = 0;
-		String[] parts = bytes.split(System.lineSeparator());
+		String[] parts = intermediateCode.split(System.lineSeparator());
 		for (String part : parts) {
 			if (part.startsWith("p:")) {
 				int pos = Integer.parseInt(part.substring(2));
