@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.uulm.cyv17.wrapper.*;
 import de.uulm.cyv17.wrapper.entities.AluEntity;
+import de.uulm.cyv17.wrapper.entities.CustomEntity;
 import de.uulm.cyv17.wrapper.entities.MultiplexerEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterFileEntity;
@@ -108,6 +109,25 @@ class InstanceFactory {
 		instance += "      " + generateInputSignal(rf.getControl()) + System.lineSeparator();
 		instance += "    );";
 		return instance;		
+	}
+
+	public String generateInstance(CustomEntity cus) {
+		String instance = "  " + cus.getId() + "_instance : " + cus.getId() + System.lineSeparator();
+		if (cus.getGenerics().size() > 0) {
+			instance += "    GENERIC MAP (";
+			for (String key : cus.getGenerics().keySet()) {
+				instance += key + " => " + cus.getGenerics().get(key) + ", ";
+			}
+			instance = instance.substring(0, instance.length() - 2) + ")" + System.lineSeparator();
+		}
+		instance += "    PORT MAP(" + System.lineSeparator();
+		for (Connector con : cus.getInputConnectors()) {
+			instance += "      " + generateInputSignal(con) + "," + System.lineSeparator();
+		}
+		for (Connector con : cus.getOutputConnectors()) {
+			instance += "      " + generateInputSignal(con) + "," + System.lineSeparator();
+		}
+		return instance.substring(0, instance.length() - 2) + System.lineSeparator() + "    );";
 	}
 
 	private String generateInputSignal(Connector con) {

@@ -177,7 +177,7 @@
 		<status>system.open</status>
 	</alu>
 	<custom>
-		<id>hexdec1</id>
+		<id>hexdigit_1</id>
 		<connectors>
 			<connector>
 				<name>system.clock</name>
@@ -185,18 +185,18 @@
 				<type>in</type>
 			</connector>
 			<connector>
-				<name>stack.out</name>
-				<size>8</size>
+				<name>stack.out[0,3]</name>
+				<size>4</size>
 				<type>in</type>
 			</connector>
 			<connector>
-				<name>system.control</name>
+				<name>system.auto</name>
 				<size>1</size>
 				<type>in</type>
 			</connector>
 			<connector>
-				<name>hexdec1.out</name>
-				<size>8</size>
+				<name>system.out.hex1</name>
+				<size>7</size>
 				<type>out</type>
 			</connector>
 		</connectors>

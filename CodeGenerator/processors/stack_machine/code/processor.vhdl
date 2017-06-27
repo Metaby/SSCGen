@@ -10,7 +10,8 @@ ENTITY processor IS
   PORT (
     p_clk : in std_logic;
     p_reset : in std_logic;
-    p_output : out std_logic_vector(7 DOWNTO 0)
+    p_output : out std_logic_vector(7 DOWNTO 0);
+    p_hex1 : out std_logic_vector(6 DOWNTO 0)
   );
 END processor;
 
@@ -103,7 +104,7 @@ ARCHITECTURE behavior OF processor IS
   COMPONENT mProgMem
     GENERIC (
       g_address_size : integer := 7;
-      g_word_size : integer := 14
+      g_word_size : integer := 15
     );
     PORT (
       p_address0 : in std_logic_vector(g_address_size DOWNTO 0);
@@ -177,6 +178,14 @@ ARCHITECTURE behavior OF processor IS
       p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
     );
   END COMPONENT;
+COMPONENT hexdigit_1
+port (
+		clk	 : in std_logic;
+		bits : in std_logic_vector(3 downto 0);
+		wr   : in std_logic;
+		hex  : out std_logic_vector(6 downto 0)
+	);
+end COMPONENT;
   SIGNAL s_pcReg_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_mpcReg_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_op1_register_out : std_logic_vector(7 DOWNTO 0);
@@ -190,7 +199,7 @@ ARCHITECTURE behavior OF processor IS
   SIGNAL s_math_high : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_math_status : std_logic;
   SIGNAL s_stackAlu_out : std_logic_vector(7 DOWNTO 0);
-  SIGNAL s_ctrl_vector : std_logic_vector(14 DOWNTO 0);
+  SIGNAL s_ctrl_vector : std_logic_vector(15 DOWNTO 0);
 BEGIN
   pcReg_instance : pcReg
     GENERIC MAP (g_word_size => 7)
@@ -256,7 +265,7 @@ BEGIN
       s_progMem_out
     );
   mProgMem_instance : mProgMem
-    GENERIC MAP (g_address_size => 7, g_word_size => 14)
+    GENERIC MAP (g_address_size => 7, g_word_size => 15)
     PORT MAP (
       s_mpcReg_out,
       s_ctrl_vector
@@ -310,6 +319,13 @@ BEGIN
       OPEN,
       s_stackAlu_out,
       OPEN
+    );
+  hexdigit_1_instance : hexdigit_1
+    PORT MAP(
+      p_clk,
+      s_stack_out(3 DOWNTO 0),
+      s_ctrl_vector(15),
+      p_hex1,
     );
 
 END behavior;

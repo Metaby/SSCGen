@@ -27,7 +27,7 @@ public class Connector {
 			constValue = -1;
 			lowerBound = -1;
 			upperBound = -1;
-		}  else if (value.startsWith("system.const")) {
+		} else if (value.startsWith("system.const")) {
 			type = ConnectorType.SYSTEM_CONST;
 			origin = "";
 			pin = "";
@@ -50,6 +50,13 @@ public class Connector {
 			upperBound = getUpperBound(value);
 		}  else if (value.startsWith("system.open")) {
 			type = ConnectorType.SYSTEM_OPEN;
+			origin = "";
+			pin = "";
+			constValue = -1;
+			lowerBound = -1;
+			upperBound = -1;
+		} else if (value.startsWith("system.clock")) {
+			type = ConnectorType.SYSTEM_CLOCK;
 			origin = "";
 			pin = "";
 			constValue = -1;
@@ -110,6 +117,8 @@ public class Connector {
 			return "p_" + pin.replace('.', '_');			
 		} else if (type == ConnectorType.SYSTEM_OPEN) {
 			return "OPEN";
+		} else if (type == ConnectorType.SYSTEM_CLOCK) {
+			return "p_clk";
 		}
 		return "";
 	}

@@ -1,6 +1,10 @@
 package de.uulm.cyv17.tool;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +20,7 @@ import org.xml.sax.SAXException;
 import de.uulm.cyv17.wrapper.*;
 import de.uulm.cyv17.wrapper.entities.AluEntity;
 import de.uulm.cyv17.wrapper.entities.BaseEntity;
+import de.uulm.cyv17.wrapper.entities.CustomEntity;
 import de.uulm.cyv17.wrapper.entities.MultiplexerEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterFileEntity;
@@ -171,6 +176,9 @@ class ArchitectureFactory {
 			archComponents.add(cFactory.generateComponent(mux));
 			behavior += iFactory.generateInstance(mux) + System.lineSeparator();
 		}
+		for (CustomEntity cus : arch.getCustoms()) {
+			behavior += iFactory.generateInstance(cus) + System.lineSeparator();
+		}
 		VhdlComponent topLevelEntity = new VhdlComponent("processor");
 		topLevelEntity.AddGeneric("g_word_size : integer := " + (arch.getWordSize() - 1));
 		topLevelEntity.AddPort("p_clk : in", 1);
@@ -199,6 +207,7 @@ class ArchitectureFactory {
 		for (VhdlComponent vc : archComponents) {
 			topLevelEntity.AddImport(vc.getImport());
 		}
+		handleCustomEntities(topLevelEntity, arch.getCustoms(), directory);
 		//
 		// PROVISORISCH FÜR MODELSIM
 		//
@@ -213,6 +222,50 @@ class ArchitectureFactory {
 		}
 	}
 	
+	private void handleCustomEntities(VhdlComponent tle, List<CustomEntity> customs, String targetLocation) {
+		for (CustomEntity cus : customs) {
+			try {
+				String fp = cus.getFilePath();
+				File f = new File(fp);
+				if (f.exists()) {
+					if (fp.contains("\\")) {
+						fp = fp.substring(fp.lastIndexOf("\\"));
+					}
+					if (fp.contains("/")) {
+						fp = fp.substring(fp.lastIndexOf("/"));						
+					}
+					copyFile(f, new File(targetLocation + "/components/" + fp));
+					String component = "";
+					for (String line :  Files.readAllLines(f.toPath())) {
+						component += line + System.lineSeparator();
+					}
+					Pattern p = Pattern.compile("(generic|port)(.|\\s)*?end");
+					Matcher m = p.matcher(component.toLowerCase());
+					if (m.find()) {
+						tle.AddImport("COMPONENT " + cus.getId() + System.lineSeparator() + m.group() + " COMPONENT;");
+					} else {
+						System.out.println("ERROR: custom vhdl component is incorrect");
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void copyFile(File source, File target) throws IOException {        
+	    try (
+	            InputStream in = new FileInputStream(source);
+	            OutputStream out = new FileOutputStream(target)
+	    ) {
+	        byte[] buf = new byte[1024];
+	        int length;
+	        while ((length = in.read(buf)) > 0) {
+	            out.write(buf, 0, length);
+	        }
+	    }
+	}
+
 	//
 	// PROVISORISCH FÜR MODELSIM TEST
 	//

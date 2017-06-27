@@ -10,8 +10,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.util.Pair;
+
 import de.uulm.cyv17.wrapper.*;
 import de.uulm.cyv17.wrapper.entities.AluEntity;
+import de.uulm.cyv17.wrapper.entities.CustomEntity;
 import de.uulm.cyv17.wrapper.entities.MultiplexerEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterFileEntity;

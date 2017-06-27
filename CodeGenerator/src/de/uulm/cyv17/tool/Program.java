@@ -34,14 +34,15 @@ public class Program {
 		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_mp.mdl");
 		compileMicrocode("processors/" + processor + "/" + processor + "_mp.mdl", "processors/" + processor + "/" + processor + "_mp.hex");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
+		System.out.println("fin");
 	}
 	
 	public static Architecture validateAndLoadArchitecture(String architectureFile) {
 		ArchitectureFactory factory = new ArchitectureFactory();
-		assertion(factory.ValidateSpecification(architectureFile, "processors/specification.xsd"));
-		Architecture arch = factory.ReadSpecification(architectureFile);
-		assertion(factory.ValidateIds(arch));
-		assertion(factory.ValidateConnections(arch));
+		assertion(factory.validateSpecification(architectureFile, "processors/specification.xsd"));
+		Architecture arch = factory.readSpecification(architectureFile);
+		assertion(factory.validateIds(arch));
+		assertion(factory.validateConnections(arch));
 		return arch;
 	}
 	
@@ -110,7 +111,7 @@ public class Program {
 		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory factory = new ArchitectureFactory();
 		Architecture arch = validateAndLoadArchitecture(architectureFile);
-		factory.GenerateArchitecture(outputDirectory, arch);		
+		factory.generateArchitecture(outputDirectory, arch);		
 	}
 	
 	public static void assertion(Boolean pass) {

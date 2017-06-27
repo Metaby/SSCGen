@@ -11,3 +11,4 @@ field stack_port0_isel = {9,10}{math.low, math.high, progMem.out}{1, 2, 0};
 field stack_port0_write = {11,11}{H, L}{1, 0};
 field math_csel = {12,13}{ADD_U, MUL_U, SUB_U}{0, 2, 1};
 field stackAlu_csel = {14,14}{ADD_U, SUB_U}{0, 1};
+field hexdigit_1_custom = {15,16}{H, L}{1, 0};

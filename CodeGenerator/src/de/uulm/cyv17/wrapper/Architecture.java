@@ -13,6 +13,7 @@ public class Architecture {
 	private List<RegisterFileEntity> registerFiles;
 	private List<AluEntity> alus;
 	private List<MultiplexerEntity> multiplexers;
+	private List<CustomEntity> customs;
 	private int wordSize;
 	
 	public Architecture(de.uulm.cyv17.jaxb.Architecture arch) {
@@ -21,6 +22,7 @@ public class Architecture {
 		registerFiles = new ArrayList<RegisterFileEntity>();
 		alus = new ArrayList<AluEntity>();
 		multiplexers = new ArrayList<MultiplexerEntity>();
+		customs = new ArrayList<CustomEntity>();
 		wordSize = arch.getWordSize();
 		for (de.uulm.cyv17.jaxb.Register reg : arch.getRegister()) {
 			registers.add(new RegisterEntity(reg));
@@ -36,6 +38,9 @@ public class Architecture {
 		}
 		for (de.uulm.cyv17.jaxb.Multiplexer mux : arch.getMultiplexer()) {
 			multiplexers.add(new MultiplexerEntity(mux));
+		}
+		for (de.uulm.cyv17.jaxb.Custom cus : arch.getCustom()) {
+			customs.add(new CustomEntity(cus));
 		}
 		for (BaseEntity entity : getAllEntites()) {
 			entity.setWordSize(replaceWordSize(entity.getWordSize()));			
@@ -86,6 +91,9 @@ public class Architecture {
 			connectors.addAll(mux.getInputs());
 			connectors.add(mux.getControl());
 		}
+		for (CustomEntity cus : customs) {
+			connectors.addAll(cus.getInputConnectors());
+		}
 		if (!complete) {
 			for (int i = 0; i < connectors.size(); i++) {
 				if (connectors.get(i) != null) {
@@ -94,7 +102,7 @@ public class Architecture {
 						i--;
 					}
 				}
-			}	
+			}
 		}
 		return connectors;
 	}
@@ -120,6 +128,9 @@ public class Architecture {
 		for (MultiplexerEntity mux : multiplexers) {
 			connectors.add(mux.getOutput());
 		}
+		for (CustomEntity cus : customs) {
+			connectors.addAll(cus.getOutputConnectors());
+		}
 		if (!complete) {
 			for (int i = 0; i < connectors.size(); i++) {
 				if (connectors.get(i) != null) {
@@ -140,6 +151,7 @@ public class Architecture {
 		entities.addAll(registerFiles);
 		entities.addAll(alus);
 		entities.addAll(multiplexers);
+		entities.addAll(customs);
 		return entities;
 	}
 
@@ -161,6 +173,10 @@ public class Architecture {
 
 	public List<MultiplexerEntity> getMultiplexers() {
 		return multiplexers;
+	}
+
+	public List<CustomEntity> getCustoms() {
+		return customs;
 	}
 
 	public int getWordSize() {
