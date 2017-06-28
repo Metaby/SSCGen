@@ -16,11 +16,22 @@ public class CustomEntity extends BaseEntity {
 	private List<Connector> inputConnectors;	
 	private List<Connector> outputConnectors;
 	private String filePath;
+	private String name;
 	private int wordSize;
 	
 	public CustomEntity(de.uulm.cyv17.jaxb.Custom custom) {
 		id = custom.getId();
 		filePath = custom.getDefinition();
+		name = filePath;
+		if (name.contains("/")) {
+			name = name.substring(0, name.lastIndexOf("/"));
+		}
+		if (name.contains("\\")) {
+			name = name.substring(0, name.lastIndexOf("\\"));			
+		}
+		if (name.contains(".")) {
+			name = name.substring(0, name.indexOf("."));			
+		}
 		generics = new HashMap<String, Integer>();
 		inputConnectors = new ArrayList<Connector>();
 		outputConnectors = new ArrayList<Connector>();
@@ -43,6 +54,10 @@ public class CustomEntity extends BaseEntity {
 		}
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public void setWordSize(int wordSize) {
 		this.wordSize = wordSize;
@@ -52,7 +67,7 @@ public class CustomEntity extends BaseEntity {
 	public ControlVector getControlVector() {
 		if (control != null) {
 			ControlVector cv = new ControlVector(control.size);
-			cv.addField(new ControlField(id + "_custom", 0, control.size));
+			cv.addField(new ControlField(id + "_custom", 0, control.size - 1));
 			return cv;
 		}
 		return new ControlVector(0);

@@ -22,28 +22,31 @@
 
 #include processors/stack_machine/stack_machine_mp_def.mdl
 
+// No-Operation field
+field NOP = {0,16}{0}{0};
+
 /*
-	Initialisierungssequenz für die Stack-Maschine
+	Initialisierungssequenz fuer die Stack-Maschine
 	init:
 		-> wird nicht als "function" oder "virtual" definiert und steht immer an "0x00"
 		-> muss vorhanden sein
 		-> entspricht der "main"-Funktion von anderen Programmiersprachen
 		-> wird verwendet um die Architektur zu initialisieren (z.B. boot-loader, perm settings, etc.)
-		-> "perm" ist nur in init erlaubt und anders als "fix" global g�ltig
+		-> "perm" ist nur in init erlaubt und anders als "fix" global gueltig
 */
 init(0x00) {
-	perm mpcReg_write(H);														// Fixiere mpcReg_write damit das Register mit jedem Takt schreibt
-	set mpcReg_isel(progMem.out);												// Springe zu Mikrocode f�r ersten Befehl	
+	perm mpcReg_write(H);
+	set mpcReg_isel(progMem.out);
 }
 
 /*
-	L�dt eine Konstante aus dem Programspeicher
+	Laedt eine Konstante aus dem Programspeicher
 */
-function loadConstant(0x10) {
-	call incPc();																// Erh�he den PC f�r den Zugriff auf die Konstante
-	set stack_port0_isel(progMem.out), stack_port0_write(H);					// Speicher die Konstante aus dem Programmspeicher in den Stack
-	call incStack();															// Erh�he Stack-Pointer
-	call nextOperation();														// Lade n�chsten Befehl
+function push(0x10) {
+	call incPc();
+	call incStack();
+	set stack_port0_isel(progMem.out), stack_port0_write(H);
+	call nextOperation();
 }
 
 /*
@@ -51,84 +54,80 @@ function loadConstant(0x10) {
 	Die Beiden Werte, welche addiert werden, werden dabei vom Stack entfernt
 */
 function add(0x20) {
-	call decStack();															// Veringer den Stack-Pointer um 1
-	set op1_register_write(H);													// Schreibe den Wert des Stacks in das erste Operandenregister
-	set op1_register_write(H);													// -- TODO: Warum ist diese Zeile notwendig?
-	call decStack();															// Veringer den Stack-Pointer um 1
-	set op2_register_write(H), math_csel(ADD_U);								// Schreibe den Wert des Stacks in das zweite Operandenregister und schalte die Math-ALU auf addition
-	set op2_register_write(H), math_csel(ADD_U);								// -- TODO: Warum ist diese Zeile notwendig?
-	set math_csel(ADD_U), stack_port0_isel(math.low), stack_port0_write(H);		// Setze den Stack-Input auf den niederwertigen Math-ALU Ausgang und �bernehme den Wert
-	call incStack();															// Erh�he den Stack-Pointer um 1
-	call nextOperation();														// Lade n�chsten Befehl
+	set op1_register_write(H);
+	call decStack();
+	set op2_register_write(H);
+	fix math_csel(ADD_U), stack_port0_isel(math.low);
+	call incStack();
+	set stack_port0_write(H);
+	call nextOperation();
 }
 
 /*
 	Subtrahiert die oberen beiden Werte auf dem Stack und schreibt sie als neuen Wert auf den Stack
 	Die Beiden Werte, welche subtrahiert werden, werden dabei vom Stack entfernt
 */
-function sub(0x30) {
-	call decStack();															// Veringer den Stack-Pointer um 1
-	set op1_register_write(H);													// Schreibe den Wert des Stacks in das erste Operandenregister
-	set op1_register_write(H);													// -- TODO: Warum ist diese Zeile notwendig?
-	call decStack();															// Veringer den Stack-Pointer um 1
-	set op2_register_write(H), math_csel(SUB_U);								// Schreibe den Wert des Stacks in das zweite Operandenregister und schalte die Math-ALU auf subtraktion
-	set op2_register_write(H), math_csel(SUB_U);								// -- TODO: Warum ist diese Zeile notwendig?
-	set math_csel(SUB_U), stack_port0_isel(math.low), stack_port0_write(H);		// Setze den Stack-Input auf den niederwertigen Math-ALU Ausgang und �bernehme den Wert
-	call incStack();															// Erh�he den Stack-Pointer um 1
-	call nextOperation();														// Lade n�chsten Befehl
-}
-
-/*
-	Multipliziert die oberen beiden Werte auf dem Stack und schreibt sie als neuen Wert auf den Stack
-	Die Beiden Werte, welche multipliziert werden, werden dabei vom Stack entfernt
-*/
-function mul(0x40) {
-	call decStack();															// Veringer den Stack-Pointer um 1
-	set op1_register_write(H);													// Schreibe den Wert des Stacks in das erste Operandenregister
-	set op1_register_write(H);													// -- TODO: Warum ist diese Zeile notwendig?
-	call decStack();															// Veringer den Stack-Pointer um 1
-	set op2_register_write(H), math_csel(MUL_U);								// Schreibe den Wert des Stacks in das zweite Operandenregister und schalte die Math-ALU auf multiplikation
-	set op2_register_write(H), math_csel(MUL_U);								// -- TODO: Warum ist diese Zeile notwendig?
-	set math_csel(MUL_U), stack_port0_isel(math.low), stack_port0_write(H);		// Setze den Stack-Input auf den niederwertigen Math-ALU Ausgang und �bernehme den Wert
-	call incStack();															// Erh�he den Stack-Pointer um 1
-	call nextOperation();														// Lade n�chsten Befehl
-}
-
-function put(0x50) {
+function sub(0x40) {
+	//call decStack();
+	set op1_register_write(H);
 	call decStack();
-	set output_write(H);
-	set output_write(H);
+	set op2_register_write(H);
+	fix math_csel(SUB_U), stack_port0_isel(math.low);
+	call incStack();
+	set stack_port0_write(H);
+	call nextOperation();
+}
+
+function pop(0x60) {
+	set output_write(H), hexdigit_1_custom(H), hexdigit_2_custom(H);
+	call decStack();
+	call nextOperation();
+}
+
+function top(0x70) {
+	set output_write(H), hexdigit_1_custom(H), hexdigit_2_custom(H);
+	call nextOperation();
+}
+
+function addReverse(0x80) {
+	set op1_register_write(H);
+	call decStack();
+	set op2_register_write(H);
+	fix math_csel(ADD_U), stack_port0_isel(math.low);
+	set stack_port0_write(H);
 	call incStack();
 	call nextOperation();
 }
 
 /*
-	Erh�ht den Stack-Pointer um 1
+	Erhoeht den Stack-Pointer um 1
 */
 virtual incStack() {
-	set stackAlu_csel(ADD_U);													// Berechne Stack-Pointer + 1 mit Stack-Alu
-	set stackAlu_csel(ADD_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);	// W�hle Stack-Alu als eingang f�r den Stack-Pointer und �bernehme den Wert
+	set stackAlu_csel(ADD_U), stackPtr_isel(stackAlu.out);
+	set stackAlu_csel(ADD_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);
+	set NOP(0);
 }
 
 /*
 	Veringert den Stack-Pointer um 1
 */
 virtual decStack() {
-	set stackAlu_csel(SUB_U);													// Berechne Stack-Pointer - 1 mit Stack-Alu
-	set stackAlu_csel(SUB_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);	// W�hle Stack-Alu als eingang f�r den Stack-Pointer und �bernehme den Wert
+	set stackAlu_csel(SUB_U), stackPtr_isel(stackAlu.out);
+	set stackAlu_csel(SUB_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);
+	set NOP(0);
 }
 
 /*
-	Erh�ht den Program-Counter um 1
+	Erhoeht den Program-Counter um 1
 */
 virtual incPc() {
-	set pcReg_isel(pcInc.out), pcReg_write(H);									// W�hle Pc-Incrementer f�r PC + 1 aus und �bernehme den Wert
+	set pcReg_isel(pcInc.out), pcReg_write(H);
 }
 
 /*
-	Erh�ht den Program-Counter um 1 und l�dt den Mikrocode f�r den n�chsten Befehl 
+	Erhoeht den Program-Counter um 1 und laedt den Mikrocode fuer den naechsten Befehl 
 */
 virtual nextOperation() {
-	set pcReg_isel(pcInc.out), pcReg_write(H);									// W�hle Pc-Incrementer f�r PC + 1 aus und �bernehme den Wert
-	set mpcReg_isel(progMem.out);												// Springe zu Mikrocode f�r n�chsten Befehl
+	call incPc();
+	set mpcReg_isel(progMem.out);
 }

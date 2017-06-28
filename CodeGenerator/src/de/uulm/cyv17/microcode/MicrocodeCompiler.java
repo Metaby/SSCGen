@@ -257,7 +257,7 @@ public class MicrocodeCompiler {
 					fix = 0;
 					int address = Integer.parseInt(str.substring(2));
 					if (address < addressCounter) {
-						System.out.println("Error: Code already asigned to address\"" + address + "\".");
+						System.out.println("Error: Code already assigned to address \"0x" + Integer.toHexString(address) + "\".");
 						System.exit(-1);
 					}
 					addressCounter = address;

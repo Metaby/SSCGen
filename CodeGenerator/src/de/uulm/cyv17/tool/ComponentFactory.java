@@ -281,13 +281,17 @@ class ComponentFactory {
 		}
 		component.AddPort("p_word : out", "g_word_size");
 		component.AddSignal("s_input", "", "g_word_size");
+		component.AddSignal("s_out", "", "g_word_size");
 		behavior += VhdlComponent.generateMux("s_isel", "s_input", "p_input", register.getInputs().size());
+		behavior += "  p_word <= s_out;" + System.lineSeparator();
 		behavior += "  PROCESS (p_clk) BEGIN" + System.lineSeparator();
 		behavior += "    IF rising_edge(p_clk) THEN" + System.lineSeparator();
 		behavior += "      IF p_rst = '1' THEN" + System.lineSeparator();
-		behavior += "        p_word <= (OTHERS => '0');" + System.lineSeparator();
+		behavior += "        s_out <= (OTHERS => '0');" + System.lineSeparator();
 		behavior += "      ELSIF s_write = '1' THEN" + System.lineSeparator();
-		behavior += "        p_word <= s_input;" + System.lineSeparator();
+		behavior += "        s_out <= s_input;" + System.lineSeparator();
+		behavior += "      ELSE" + System.lineSeparator();
+		behavior += "        s_out <= s_out;" + System.lineSeparator();
 		behavior += "      END IF;" + System.lineSeparator();
 		behavior += "    END IF;" + System.lineSeparator();
 		behavior += "  END PROCESS;";

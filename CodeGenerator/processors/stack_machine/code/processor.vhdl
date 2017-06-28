@@ -11,7 +11,8 @@ ENTITY processor IS
     p_clk : in std_logic;
     p_reset : in std_logic;
     p_output : out std_logic_vector(7 DOWNTO 0);
-    p_hex1 : out std_logic_vector(6 DOWNTO 0)
+    p_hex1 : out std_logic_vector(6 DOWNTO 0);
+    p_hex2 : out std_logic_vector(6 DOWNTO 0)
   );
 END processor;
 
@@ -122,6 +123,7 @@ ARCHITECTURE behavior OF processor IS
       p_port0_input0 : in std_logic_vector(g_word_size DOWNTO 0);
       p_port0_input1 : in std_logic_vector(g_word_size DOWNTO 0);
       p_port0_input2 : in std_logic_vector(g_word_size DOWNTO 0);
+      p_port0_input3 : in std_logic_vector(g_word_size DOWNTO 0);
       p_port0_address0 : in std_logic_vector(g_address_size DOWNTO 0);
       p_port1_address0 : in std_logic_vector(g_address_size DOWNTO 0);
       p_port1_output : out std_logic_vector(g_word_size DOWNTO 0);
@@ -159,7 +161,7 @@ ARCHITECTURE behavior OF processor IS
     PORT (
       p_input_A0 : in std_logic_vector(g_word_size DOWNTO 0);
       p_input_B0 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_ctrl : in std_logic_vector(1 DOWNTO 0);
+      p_ctrl : in std_logic;
       p_flag : out std_logic;
       p_output_1 : out std_logic_vector(g_word_size DOWNTO 0);
       p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
@@ -178,14 +180,15 @@ ARCHITECTURE behavior OF processor IS
       p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
     );
   END COMPONENT;
-COMPONENT hexdigit_1
-port (
-		clk	 : in std_logic;
-		bits : in std_logic_vector(3 downto 0);
-		wr   : in std_logic;
-		hex  : out std_logic_vector(6 downto 0)
-	);
-end COMPONENT;
+  COMPONENT hex_decoder
+    PORT (
+      p_clk	 : IN std_logic;
+      p_bits : IN std_logic_vector(3 DOWNTO 0);
+      p_wr   : IN std_logic;
+      p_hex  : OUT std_logic_vector(6 DOWNTO 0)
+    );
+  END COMPONENT;
+
   SIGNAL s_pcReg_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_mpcReg_out : std_logic_vector(7 DOWNTO 0);
   SIGNAL s_op1_register_out : std_logic_vector(7 DOWNTO 0);
@@ -278,6 +281,7 @@ BEGIN
       s_progMem_out,
       s_math_low,
       s_math_high,
+      "00000000",
       s_stackPtr_out,
       s_stackPtr_out,
       s_stack_out,
@@ -305,7 +309,7 @@ BEGIN
     PORT MAP (
       s_op1_register_out,
       s_op2_register_out,
-      s_ctrl_vector(13 DOWNTO 12),
+      s_ctrl_vector(12),
       s_math_status,
       s_math_low,
       s_math_high
@@ -315,17 +319,24 @@ BEGIN
     PORT MAP (
       s_stackPtr_out,
       "00000001",
-      s_ctrl_vector(14),
+      s_ctrl_vector(13),
       OPEN,
       s_stackAlu_out,
       OPEN
     );
-  hexdigit_1_instance : hexdigit_1
+  hexdigit_1_instance : hex_decoder
     PORT MAP(
       p_clk,
       s_stack_out(3 DOWNTO 0),
+      s_ctrl_vector(14),
+      p_hex1
+    );
+  hexdigit_2_instance : hex_decoder
+    PORT MAP(
+      p_clk,
+      s_stack_out(7 DOWNTO 4),
       s_ctrl_vector(15),
-      p_hex1,
+      p_hex2
     );
 
 END behavior;

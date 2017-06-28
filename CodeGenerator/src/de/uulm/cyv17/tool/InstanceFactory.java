@@ -112,7 +112,7 @@ class InstanceFactory {
 	}
 
 	public String generateInstance(CustomEntity cus) {
-		String instance = "  " + cus.getId() + "_instance : " + cus.getId() + System.lineSeparator();
+		String instance = "  " + cus.getId() + "_instance : " + cus.getName() + System.lineSeparator();
 		if (cus.getGenerics().size() > 0) {
 			instance += "    GENERIC MAP (";
 			for (String key : cus.getGenerics().keySet()) {
@@ -127,7 +127,7 @@ class InstanceFactory {
 		for (Connector con : cus.getOutputConnectors()) {
 			instance += "      " + generateInputSignal(con) + "," + System.lineSeparator();
 		}
-		return instance.substring(0, instance.length() - 2) + System.lineSeparator() + "    );";
+		return instance.substring(0, instance.length() - 3) + System.lineSeparator() + "    );";
 	}
 
 	private String generateInputSignal(Connector con) {

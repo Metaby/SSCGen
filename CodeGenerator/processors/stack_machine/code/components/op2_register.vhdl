@@ -19,16 +19,20 @@ END op2_register;
 ARCHITECTURE behavior OF op2_register IS
   SIGNAL s_write : std_logic;
   SIGNAL s_input : std_logic_vector(g_word_size DOWNTO 0);
+  SIGNAL s_out : std_logic_vector(g_word_size DOWNTO 0);
 BEGIN
   -- Behavior
   s_write <= p_ctrl;
   s_input <= p_input0;
+  p_word <= s_out;
   PROCESS (p_clk) BEGIN
     IF rising_edge(p_clk) THEN
       IF p_rst = '1' THEN
-        p_word <= (OTHERS => '0');
+        s_out <= (OTHERS => '0');
       ELSIF s_write = '1' THEN
-        p_word <= s_input;
+        s_out <= s_input;
+      ELSE
+        s_out <= s_out;
       END IF;
     END IF;
   END PROCESS;

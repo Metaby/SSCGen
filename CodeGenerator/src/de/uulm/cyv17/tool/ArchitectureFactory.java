@@ -239,10 +239,26 @@ class ArchitectureFactory {
 					for (String line :  Files.readAllLines(f.toPath())) {
 						component += line + System.lineSeparator();
 					}
-					Pattern p = Pattern.compile("(generic|port)(.|\\s)*?end");
-					Matcher m = p.matcher(component.toLowerCase());
+					Pattern p = Pattern.compile("(?i)(generic|port)(.|\\s)*?end");
+					Matcher m = p.matcher(component);
 					if (m.find()) {
-						tle.AddImport("COMPONENT " + cus.getId() + System.lineSeparator() + m.group() + " COMPONENT;");
+						String imprt = "COMPONENT " + cus.getName() + System.lineSeparator() + m.group() + " COMPONENT;";
+						String[] parts = imprt.split("\n");
+						imprt = "";
+						for (String str : parts) {
+							str = str.trim();
+							if (str.toLowerCase().startsWith("component") ||
+								str.toLowerCase().endsWith("component;")) {
+								imprt += "  " + str + System.lineSeparator();
+							} else if (str.toLowerCase().startsWith("port") ||
+								str.toLowerCase().startsWith("generic") ||
+								str.toLowerCase().equals(");")) {
+								imprt += "    " + str + System.lineSeparator();
+							} else {
+								imprt += "      " + str + System.lineSeparator();
+							}
+						}
+						tle.AddImport(imprt);
 					} else {
 						System.out.println("ERROR: custom vhdl component is incorrect");
 					}

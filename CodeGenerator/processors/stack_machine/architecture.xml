@@ -93,6 +93,7 @@
 					<input>progMem.out</input>
 					<input>math.low</input>
 					<input>math.high</input>
+					<input>system.const.0</input>
 				</inputs>
 			</port>
 			<port>
@@ -153,7 +154,6 @@
 		<operations>
 			<operation>add_u</operation>
 			<operation>sub_u</operation>
-			<operation>mul_u</operation>
 		</operations>
 		<control>system.auto</control>
 		<status>math.status</status>
@@ -196,6 +196,32 @@
 			</connector>
 			<connector>
 				<name>system.out.hex1</name>
+				<size>7</size>
+				<type>out</type>
+			</connector>
+		</connectors>
+		<definition>hex_decoder.vhdl</definition>
+	</custom>
+	<custom>
+		<id>hexdigit_2</id>
+		<connectors>
+			<connector>
+				<name>system.clock</name>
+				<size>1</size>
+				<type>in</type>
+			</connector>
+			<connector>
+				<name>stack.out[4,7]</name>
+				<size>4</size>
+				<type>in</type>
+			</connector>
+			<connector>
+				<name>system.auto</name>
+				<size>1</size>
+				<type>in</type>
+			</connector>
+			<connector>
+				<name>system.out.hex2</name>
 				<size>7</size>
 				<type>out</type>
 			</connector>

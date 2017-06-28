@@ -15,6 +15,7 @@ ENTITY stack IS
     p_port0_input0 : in std_logic_vector(g_word_size DOWNTO 0);
     p_port0_input1 : in std_logic_vector(g_word_size DOWNTO 0);
     p_port0_input2 : in std_logic_vector(g_word_size DOWNTO 0);
+    p_port0_input3 : in std_logic_vector(g_word_size DOWNTO 0);
     p_port0_address0 : in std_logic_vector(g_address_size DOWNTO 0);
     p_port1_address0 : in std_logic_vector(g_address_size DOWNTO 0);
     p_port1_output : out std_logic_vector(g_word_size DOWNTO 0);
@@ -35,6 +36,7 @@ BEGIN
     p_port0_input0 WHEN "00",
     p_port0_input1 WHEN "01",
     p_port0_input2 WHEN "10",
+    p_port0_input3 WHEN "11",
     (OTHERS => '0') WHEN OTHERS;
   s_port0_addressSelect <= p_port0_address0;
   s_port1_addressSelect <= p_port1_address0;
