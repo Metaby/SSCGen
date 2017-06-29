@@ -6,8 +6,7 @@
  *
  *	Fields and Parameters:
  *	pcReg_write[0:0] = {H, L}
- *	pcReg_isel[1:1] = {pcInc.out, pcReg.out}
- *	mpcReg_write[2:2] = {H, L}
+ *	pcReg_isel[1:1] = {pcInc.out, pcReg.out} *	mpcReg_write[2:2] = {H, L}
  *	mpcReg_isel[3:3] = {mpcInc.out, progMem.out}
  *	op1_register_write[4:4] = {H, L}
  *	op2_register_write[5:5] = {H, L}
@@ -103,7 +102,6 @@ function addReverse(0x80) {
 	Erhoeht den Stack-Pointer um 1
 */
 virtual incStack() {
-	set stackAlu_csel(ADD_U), stackPtr_isel(stackAlu.out);
 	set stackAlu_csel(ADD_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);
 	set NOP(0);
 }
@@ -112,7 +110,6 @@ virtual incStack() {
 	Veringert den Stack-Pointer um 1
 */
 virtual decStack() {
-	set stackAlu_csel(SUB_U), stackPtr_isel(stackAlu.out);
 	set stackAlu_csel(SUB_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);
 	set NOP(0);
 }

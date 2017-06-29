@@ -48,8 +48,15 @@ public class MicrocodeFunction {
 	 * 
 	 * @return the code
 	 */
-	public List<String> getFunctionLines() {
-		return funcRow;
+	public List<String> getFunctionLines(Boolean surround) {
+		if (!surround) {
+			return funcRow;
+		}
+		List<String> lines = new ArrayList<String>();
+		lines.add("b:" + name);
+		lines.addAll(funcRow);
+		lines.add("e:" + name);
+		return lines;
 	}
 
 	/**

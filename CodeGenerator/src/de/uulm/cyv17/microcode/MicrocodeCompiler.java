@@ -24,6 +24,8 @@ import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser;
  */
 public class MicrocodeCompiler {
 	
+	private int maxCodeSize = 0;
+	
 	/**
 	 * Compiles the microcode given as a file and writes the output to a specified hex-file.
 	 * 
@@ -78,128 +80,54 @@ public class MicrocodeCompiler {
 	}
 	
 	/**
-	 * Tests if the given microcode has cycles in the code.
-	 * If so, it will return true, otherwise it returns false.
-	 * 
-	 * @param mc the microcode to be tested
-	 * @return true if the microcode has cycles, false otherwise
-	 */
-	private Boolean hasCycles(Microcode mc) {
-		List<MicrocodeFunction> funcs = mc.getFunctions();
-		int[][] adj = new int[funcs.size()][funcs.size()];
-		String[] names = new String[funcs.size()];
-		for (int i = 0; i < funcs.size(); i++) {
-			names[i] = funcs.get(i).getName();
-		}
-		for (int i = 0; i < funcs.size(); i++) {
-			for (String str : funcs.get(i).getFunctionLines()) {
-				if (str.startsWith("c:")) {
-					String f = str.substring(2, str.length() - 2);
-					for (int j = 0; j < names.length; j++) {
-						if (names[j].equals(f)) {
-							adj[i][j] = 1;
-						}
-					}
-				}
-			}
-		}
-		for (int i = 0; i < funcs.size(); i++) {
-			int[][] adjprod = power(adj, adj, funcs.size(), i + 1);
-			int diagSum = 0;
-			for (int j = 0; j < adj.length; j++) {
-				diagSum += adjprod[j][j];
-			}
-			if (diagSum != 0) {
-				System.out.println(i + 1);
-				return true;
-			}			
-		}
-		return false;
-	}
-	
-	// TODO: a und b -> nur eine matrix als parameter
-	/**
-	 * Calculates and returns A^n of a quadratic matrix.
-	 * @param a the matrix to be raised
-	 * @param b the matrix to be raised
-	 * @param size the size of the matrix (m x m)
-	 * @param exp the epxonent
-	 * @return a^exp
-	 */
-	private int[][] power(int[][] a, int[][] b, int size, int exp) {
-		int[][] prod = multiply(a, b, size);
-		for (int i = 0; i < exp - 1; i++) {
-			prod = multiply(prod, b, size);
-		}
-		return prod;
-	}
-	
-	/**
-	 * Multiplies two quadratic matrices.
-	 * 
-	 * @param a the first matrix
-	 * @param b the second matrix
-	 * @param size the size of the matrices
-	 * @return a*b
-	 */
-	private int[][] multiply(int[][] a, int[][] b, int size) {
-		int[][] adjprod = new int[size][size];
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				for (int z = 0; z < size; z++) {
-					adjprod[x][y] = adjprod[x][y] + a[x][z] * b[z][y];
-				}
-			}
-		}
-		return adjprod;
-	}
-	
-	/**
 	 * Replaces all calls in the given microcode by. Each call
 	 * is replaced with the code of the called microcode function.
 	 * The function iterates until all calls are solved.
 	 * 
-	 * If the code has cycles, the function will enter an infinite
-	 * loop. It is highly recommended to test the microcode for
-	 * cycles with the "hasCycles" function before.
+	 * If the code has cycles, the function will abort with an
+	 * appropriate error message.
 	 * 
-	 * @param mc the microcode with calls
-	 * @return mc without calls
+	 * @param mc microcode with calls
+	 * @return mc microcode without calls
 	 */
 	private Microcode replaceCalls(Microcode mc) {
 		List<MicrocodeFunction> functions = mc.getFunctions();
 		Boolean replace;
-		do {
-			replace = false;
-			List<MicrocodeFunction> replacedFunctions = new ArrayList<MicrocodeFunction>();
-			for (MicrocodeFunction function : functions) {
-				MicrocodeFunction newFunction = new MicrocodeFunction(function.isVirtual());
-				newFunction.setName(function.getName());
-				newFunction.setPosition(function.getPosition());
-				for (String functionLine : function.getFunctionLines()) {
-					if (functionLine.startsWith("c:")) {
+		List<MicrocodeFunction> newFunctions = new ArrayList<MicrocodeFunction>();
+		for (MicrocodeFunction function : functions) {
+			MicrocodeFunction newFunction = new MicrocodeFunction(function.isVirtual());
+			newFunction.setName(function.getName());
+			newFunction.setPosition(function.getPosition());
+			List<String> lines = function.getFunctionLines(true);
+				for (int i = 0; i < lines.size(); i++) {
+					if (lines.get(i).startsWith("c:")) {
 						replace = true;
-						String functionName = functionLine.substring(2, functionLine.length() - 2);
+						String functionName = lines.get(i).substring(2, lines.get(i).length() - 2);
+						if (functionName.equals(function.getName())) {
+							System.out.println("Error: Microcode has cycles in the hierarchy");
+							System.exit(1);
+						}
 						for (MicrocodeFunction calledFunction : functions) {
 							if (calledFunction.getName().equals(functionName)) {
-								for (String calledFunctionLine : calledFunction.getFunctionLines()) {
-									newFunction.addFunctionLine(calledFunctionLine);
-								}
+								lines.remove(i);
+								lines.addAll(i, calledFunction.getFunctionLines(true));
+								i--;
+								break;
 							}
 						}
-					} else {
-						newFunction.addFunctionLine(functionLine);
 					}
 				}
-				replacedFunctions.add(newFunction);
+			for (String line : lines) {					
+				newFunction.addFunctionLine(line);
 			}
-			functions = replacedFunctions;
-		} while (replace);
+			newFunctions.add(newFunction);
+		}
+		functions = newFunctions;
 		Microcode replacedMc = new Microcode();
 		for (MicrocodeField field : mc.getFields()) {
 			replacedMc.addField(field);
 		}
-		for (MicrocodeFunction function : functions) {
+		for (MicrocodeFunction function : newFunctions) {
 			replacedMc.addFunction(function);
 		}
 		return replacedMc;
@@ -215,11 +143,15 @@ public class MicrocodeCompiler {
 	 * @return the intermediate code of the microcode
 	 */
 	private String compileMicrocode(Microcode mc) {
+		/*
+		 * b: = begin [function name]
+		 * p: = position [auto, integer]
+		 * s: = set
+		 * P: = perm
+		 * f: = fix
+		 * e: = end [function name]
+		 */
 		if (mc != null) {
-			if (hasCycles(mc)) {
-				System.out.println("Error: Microcode has cycles in the call hirarchy.");
-				System.exit(1);
-			}
 			mc = replaceCalls(mc);
 			String bytes = "";
 			// Alle Funktionszeilen einlesen
@@ -230,7 +162,7 @@ public class MicrocodeCompiler {
 					} else {
 						bytes += "p:auto" + System.lineSeparator();
 					}
-					for (String str : mf.getFunctionLines()) {
+					for (String str : mf.getFunctionLines(false)) {
 						bytes += str + System.lineSeparator();
 					}
 				}
@@ -240,21 +172,20 @@ public class MicrocodeCompiler {
 			String[] split = bytes.split(System.lineSeparator());
 			String intermediateCode = "";
 			perm = 0;
-			int fix = 0;
+			int[] fix = new int[1000];
+			int fixPtr = -1;
 			List<MicrocodeField> fields = mc.getFields();
 			for (String str : split) {
 				if (str.startsWith("s:")) {
-					intermediateCode += "s:" + (microcodeFieldLookup(fields, str.substring(2)) | perm | fix) + System.lineSeparator();
+					intermediateCode += "s:" + (microcodeFieldLookup(fields, str.substring(2)) | perm | fix[fixPtr]) + System.lineSeparator();
 					addressCounter++;
 				} else if (str.startsWith("P:")) {
 					perm |= microcodeFieldLookup(fields, str.substring(2));
 				} else if (str.startsWith("f:")) {
-					fix |= microcodeFieldLookup(fields, str.substring(2));
+					fix[fixPtr] |= microcodeFieldLookup(fields, str.substring(2));
 				} else if (str.startsWith("p:auto")) {
-					fix = 0;
 					intermediateCode += "p:" + addressCounter + System.lineSeparator();
 				} else if (str.startsWith("p:")) {
-					fix = 0;
 					int address = Integer.parseInt(str.substring(2));
 					if (address < addressCounter) {
 						System.out.println("Error: Code already assigned to address \"0x" + Integer.toHexString(address) + "\".");
@@ -262,6 +193,11 @@ public class MicrocodeCompiler {
 					}
 					addressCounter = address;
 					intermediateCode += "p:" +  address + System.lineSeparator();
+				} else if (str.startsWith("b:")) {
+					fixPtr++;
+					fix[fixPtr] = 0;
+				} else if (str.startsWith("e:")) {
+					fixPtr--;
 				}
 			}
 			return intermediateCode;
@@ -304,6 +240,10 @@ public class MicrocodeCompiler {
 				}
 			}
 		}
+		int codeSize = Integer.toBinaryString(code).length();
+		if (codeSize > maxCodeSize) {
+			maxCodeSize = codeSize;
+		}
 		return code;
 	}
 	
@@ -312,9 +252,9 @@ public class MicrocodeCompiler {
 	 * converts it into bytes represented as hex-codes and saves it
 	 * to the specified url.
 	 * 
-	 * The generated format is the same as used in "Logisim". It 
-	 * starts with "v2.0 raw" in the first line and is then followed
-	 * by 10 8 Bit hex-codes per line.
+	 * The generated format is the same as used in the "Logisim"
+	 * Software. It starts with "v2.0 raw" in the first line and is
+	 * then followed by 8 hex-codes per line.
 	 * 
 	 * @param intermediateCode the intermediate code to convert and save
 	 * @param outputFile the url of the file to which the hex code is saved
@@ -322,26 +262,22 @@ public class MicrocodeCompiler {
 	private void saveMicrocode(String intermediateCode, String outputFile) {
 		String hexContent = "v2.0 raw" + System.lineSeparator();
 		int currentPos = 0;
+		int bvSize = maxCodeSize;
+		int length =(int)Math.ceil(bvSize / 4.0);
 		String[] parts = intermediateCode.split(System.lineSeparator());
 		for (String part : parts) {
 			if (part.startsWith("p:")) {
 				int pos = Integer.parseInt(part.substring(2));
 				while (pos > currentPos) {
-					String cb = Integer.toHexString(perm);
-					if (cb.length() == 1) {
-						cb = "0" + cb;
-					}
-					hexContent += "00" + " ";
+					String cb = addZeros(Integer.toHexString(perm), 4);
+					hexContent += addZeros("0", length) + " ";
 					currentPos++;
 					if (currentPos % 8 == 0) {
 						hexContent += System.lineSeparator();
 					}
 				}
 			} else if (part.startsWith("s:")) {
-				String cb = Integer.toHexString(Integer.parseInt(part.substring(2)));
-				if (cb.length() == 1) {
-					cb = "0" + cb;
-				}
+				String cb = addZeros(Integer.toHexString(Integer.parseInt(part.substring(2))), length);
 				hexContent += cb + " ";
 				currentPos++;
 				if (currentPos % 8 == 0) {
@@ -359,5 +295,20 @@ public class MicrocodeCompiler {
 			e.printStackTrace();
 			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
 		}
+	}
+	
+	/**
+	 * Expands the given hex-code with leading zeros until it has
+	 * the desired length.
+	 * 
+	 * @param hex the hex-code to expand
+	 * @param length the desired length of the hex-code
+	 * @return the hex-code with leading zeros
+	 */
+	private String addZeros(String hex, int length) {
+		while (hex.length() < length) {
+			hex = "0" + hex;
+		}
+		return hex;
 	}
 }
