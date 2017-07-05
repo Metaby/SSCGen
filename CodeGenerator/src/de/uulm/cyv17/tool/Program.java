@@ -62,6 +62,8 @@ public class Program {
 			}
 			mdfContent = mdfContent.substring(0, mdfContent.length() -2) + "}" + System.lineSeparator();
 		}
+		mdfContent += " *" + System.lineSeparator();
+		mdfContent += " *\tUse noop(0) for one clock cycle without any operation" + System.lineSeparator();
 		mdfContent += " */" + System.lineSeparator() + System.lineSeparator();
 		String defFile = outputFile;
 		if (defFile.contains(".")) {
@@ -89,6 +91,7 @@ public class Program {
 			values += "};";
 			fields = fields + "}" + values + System.lineSeparator();
 		}
+		fields += "field noop = {0," + (cv.getSize() - 1) + "}{0}{0};";
 		File mdfPath = new File(outputFile);
 		File defPath = new File(defFile);
 		try {

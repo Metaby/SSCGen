@@ -1,2 +1,0 @@
--- control-vector:
--- portA_isel(0), portA_write, pp_isel(0), pp_write, ir_write, mcPc_isel(0), mcPc_write, jmpBuffer_write, pcStack_incr, pcStack_decr, pcStack_write, microcode_write, reg_p0_asel(0:1), reg_p1_asel(0:1), reg_p2_isel(0:2), reg_p2_write, mainMem_p0_isel(0:1), mainMem_p0_asel(0), mainMem_p0_write, mainMem_p1_isel(0:1), mainMem_p1_asel(0), alu_op1(0:1), alu_op2(0:1), alu_csel(0:3), jmpLgc_jcsel(0:1)

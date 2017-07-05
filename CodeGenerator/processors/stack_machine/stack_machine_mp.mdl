@@ -21,9 +21,6 @@
 
 #include processors/stack_machine/stack_machine_mp_def.mdl
 
-// No-Operation field
-field NOP = {0,16}{0}{0};
-
 /*
 	Initialisierungssequenz fuer die Stack-Maschine
 	init:
@@ -103,7 +100,7 @@ function addReverse(0x80) {
 */
 virtual incStack() {
 	set stackAlu_csel(ADD_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);
-	set NOP(0);
+	set noop(0);
 }
 
 /*
@@ -111,7 +108,7 @@ virtual incStack() {
 */
 virtual decStack() {
 	set stackAlu_csel(SUB_U), stackPtr_isel(stackAlu.out), stackPtr_write(H);
-	set NOP(0);
+	set noop(0);
 }
 
 /*

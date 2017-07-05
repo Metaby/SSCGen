@@ -13,3 +13,4 @@ field math_csel = {12,12}{ADD_U, SUB_U}{0, 1};
 field stackAlu_csel = {13,13}{ADD_U, SUB_U}{0, 1};
 field hexdigit_1_custom = {14,14}{H, L}{1, 0};
 field hexdigit_2_custom = {15,15}{H, L}{1, 0};
+field noop = {0,15}{0}{0};

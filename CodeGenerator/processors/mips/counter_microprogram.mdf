@@ -1,2 +1,0 @@
--- control-vector:
--- PortA_Register_isel(0), PortA_Register_write, ProgramPointer_Register_write, InstructionWord_Register_write, MicroProgrammPointer_isel(0), MicroProgrammPointer_write, JumpBuffer_Register_write, Microcode_Rom_write, ProgramRom_write, Cache_RegisterFile_p2_isel(0:2), Cache_RegisterFile_p2_write, Calculator_Alu_op1(0:1), Calculator_Alu_op2(0:1), Calculator_Alu_csel(0:3), ProgramPath_JumpLogic_jcsel(0:1)
