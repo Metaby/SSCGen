@@ -1,2 +1,0 @@
-gr_single_def: 'single' gr_qualifier '=' '{' gr_number '}' ';';
-gr_field_def: 'field' gr_qualifier '=' '{' gr_number ',' gr_number '}' '{' (gr_field | ((gr_field ',')+ gr_field)) '}' '{' (gr_number | ((gr_number ',')+ gr_number)) '}' ';';

@@ -1,19 +1,9 @@
 package de.uulm.cyv17.tool;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import de.uulm.cyv17.antlr.MicrocodeDesignLanguageLexer;
-import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser;
-import de.uulm.cyv17.microcode.Microcode;
 import de.uulm.cyv17.microcode.MicrocodeCompiler;
-import de.uulm.cyv17.microcode.MicrocodeDesignLanguageVisitor;
 import de.uulm.cyv17.wrapper.*;
 
 @SuppressWarnings("ucd")
@@ -30,10 +20,20 @@ public class Program {
 	}
 	
 	public static void main(String[] args) {
+		/*
 		String processor = "stack_machine";
 		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_mp.mdl");
 		compileMicrocode("processors/" + processor + "/" + processor + "_mp.mdl", "processors/" + processor + "/" + processor + "_mp.hex");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
+		*/
+		ArgumentHandler pm = new ArgumentHandler(args);
+		if (pm.getOp() == ToolOperation.GENERATE_MICROCODE_TEMPLATE) {
+			generateMicrocodeDesignFiles(pm.getInputFile(), pm.getOutputFile());
+		} else if (pm.getOp() == ToolOperation.COMPILE_MICROCODE) {
+			compileMicrocode(pm.getInputFile(), pm.getOutputFile());
+		} else if (pm.getOp() == ToolOperation.GENERATE_ARCHITECTURE) {
+			generateArchitecture(pm.getInputFile(), pm.getOutputFile());
+		}
 		System.out.println("fin");
 	}
 	
@@ -101,7 +101,7 @@ public class Program {
 			Files.write(defPath.toPath(), fields.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
+			ErrorHandler.throwError(5);
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class Program {
 		compiler.compile(mdfFile, targetFile);
 	}
 	
-	public static void generateArchitecture(String architectureFile, String mdf, String outputDirectory) {
+	public static void generateArchitecture(String architectureFile, String outputDirectory) {
 		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory factory = new ArchitectureFactory();
 		Architecture arch = validateAndLoadArchitecture(architectureFile);
@@ -119,8 +119,7 @@ public class Program {
 	
 	public static void assertion(Boolean pass) {
 		if (!pass) {
-			System.out.println("Process aborted");
-			System.exit(-1);			
+			ErrorHandler.throwError(4);		
 		}
 	}
 	

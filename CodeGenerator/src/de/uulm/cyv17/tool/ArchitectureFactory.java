@@ -88,7 +88,7 @@ class ArchitectureFactory {
 		List<String> ids = new ArrayList<String>();
 		for (BaseEntity be : arch.getAllEntites()) {
 			if (ids.contains(be.getId())) {
-				System.out.println("Error: Id \"" + be.getId() + "\" already exist, Ids have to be unique");
+				ErrorHandler.throwError(9);
 				return false;
 			} else {
 				ids.add(be.getId());
@@ -113,8 +113,8 @@ class ArchitectureFactory {
 		for (Connector inputCon : inputConnectors) {
 			if (!outputConnectors.contains(inputCon)) {
 				if (!inputCon.origin.startsWith("system")) {
-					System.out.println("Error: Input \"" + inputCon.origin + "." + inputCon.pin + "\" does not exist");
-					return false;					
+					System.out.println(inputCon.origin + "." + inputCon.pin);
+					ErrorHandler.throwError(8);	
 				}
 			} else {
 				Connector sourceCon = outputConnectors.get(outputConnectors.indexOf(inputCon));
@@ -123,18 +123,18 @@ class ArchitectureFactory {
 						int lb = inputCon.lowerBound;
 						int ub = inputCon.upperBound;
 						if (ub - lb + 1 > inputCon.size) {
-							System.out.println("Error: Source-Connection-Size \"" + inputCon.origin + "." + inputCon.pin + "\" does not fit size of Input-Connection");
-							return false;
+							System.out.println(inputCon.origin + "." + inputCon.pin);
+							ErrorHandler.throwError(7);
 						} else if (ub - lb + 1 < inputCon.size) {
-							System.out.println("Warning: Input-Connection-Size is lower than expected, Zeros are added as MSBs");
+							ErrorHandler.throwWarning(1);
 							System.out.println("\t> " + sourceCon.origin + "." + sourceCon.pin + " -> " + inputCon.origin + "." + inputCon.pin);				
 						}
 					} else {
-						System.out.println("Error: Source-Connection-Size \"" + inputCon.origin + "." + inputCon.pin + "\" does not fit size of Input-Connection");
-						return false;
+						System.out.println(inputCon.origin + "." + inputCon.pin);
+						ErrorHandler.throwError(7);
 					}
 				} else if (sourceCon.size < inputCon.size) {
-					System.out.println("Warning: Input-Connection-Size is lower than expected, Zeros are added as MSBs");
+					ErrorHandler.throwWarning(1);
 					System.out.println("\t> " + sourceCon.origin + "." + sourceCon.pin + " -> " + inputCon.origin + "." + inputCon.pin);
 					
 				}
@@ -218,7 +218,7 @@ class ArchitectureFactory {
 			Files.write(outputFile.toPath(), topLevelEntity.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + directory + "processor.vhdl" + ")");
+			ErrorHandler.throwError(5);
 		}
 	}
 	
@@ -260,7 +260,7 @@ class ArchitectureFactory {
 						}
 						tle.AddImport(imprt);
 					} else {
-						System.out.println("ERROR: custom vhdl component is incorrect");
+						ErrorHandler.throwError(6);
 					}
 				}
 			} catch (IOException e) {
