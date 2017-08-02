@@ -1,0 +1,137 @@
+/*
+ *	Conventions:
+ *	isel = input-select
+ *	asel = address-select
+ *	csel = command-select
+ *
+ *	Fields and Parameters:
+ *	pc_register_write[0:0] = {H, L}
+ *	mpc_register_write[1:1] = {H, L}
+ *	port2_register_write[2:2] = {H, L}
+ *	port3_register_write[3:3] = {H, L}
+ *	operand1_register_write[4:4] = {H, L}
+ *	operand2_register_write[5:5] = {H, L}
+ *	address_register_write[6:6] = {H, L}
+ *	cache_register_file_port0_isel[7:9] = {system.port1, system.port0, CONST(0), program_rom.out, math_alu.high, math_alu.low}
+ *	cache_register_file_port0_write[10:10] = {H, L}
+ *	math_alu_iselB[11:13] = {CONST(1), CONST(0), math_alu.high, math_alu.low, operand2_register.out}
+ *	math_alu_csel[14:18] = {RR, GEQ_U, ADD, LEQ_U, SRA, LT, SRL, SUB_U, SLL, MUL_U, SUB, GT_U, OR, ADD_U, MUL, DIV_U, EQ, GT, DIV, NOT, GEQ, AND, LEQ, RL, XOR, LT_U}
+ *	m2_multiplexer_isel[19:19] = {cmd_trans_rom.out, mpc_inc_alu.out}
+ *
+ *	Use noop(0) for one clock cycle without any operation
+ */
+
+
+#include processors/example_cpu/microprogram_def.mdl
+
+init(0x00) {
+	perm mpc_register_write(H);
+	set m2_multiplexer_isel(cmd_trans_rom.out);
+}
+
+function load_port_0(0x10) {
+	set pc_register_write(H);
+	set addres_register_write(H);
+	set cache_register_file_port0_isel(system.port0);
+	set cache_register_file_port0_write(H), cache_register_file_port0_isel(system.port0);
+	call fetch();
+}
+
+function load_port_1(0x20) {
+	set pc_register_write(H);
+	set address_register_write(H);
+	set cache_register_file_port0_isel(system.port1);
+	set cache_register_file_port0_write(H), cache_register_file_port0_isel(system.port1);
+	call fetch();
+}
+
+function store_port_2(0x30) {
+	set pc_register_write(H);
+	set address_register_write(H);
+	set port2_register_write(H);
+	call fetch();
+}
+
+function store_port_3(0x40) {
+	set pc_register_write(H);
+	set address_register_write(H);
+	set port3_register_write(H);
+	call fetch();
+}
+
+/*
+ * 0x50 Rx Ry Rz
+ * Rz = Rx + Ry
+ */
+function add_u(0x50) {
+	fix math_alu_csel(ADD_U), cache_register_file_port0_isel(math_alu.low), math_alu_iselB(operand2_register.out);
+	call load_operands();
+	set pc_register_write(H);
+	set noop(0);
+	set address_register_write(H);
+	set noop(0);
+	set cache_register_file_port0_write(H);
+	call fetch();
+}
+
+/*
+ * 0x60 Rx Ry Rz
+ * Rz = Rx - Ry
+ */
+function sub_u(0x60) {
+	fix math_alu_csel(SUB_U), cache_register_file_port0_isel(math_alu.low), math_alu_iselB(operand2_register.out);
+	call load_operands();
+	set pc_register_write(H);
+	set noop(0);
+	set address_register_write(H);
+	set noop(0);
+	set cache_register_file_port0_write(H);
+	call fetch();
+}
+
+/*
+ * 0x70 Rx Ry Rz
+ * Rz = Rx * Ry
+ */
+function mul_u(0x70) {
+	fix math_alu_csel(MUL_U), cache_register_file_port0_isel(math_alu.low), math_alu_iselB(operand2_register.out);
+	call load_operands();
+	set pc_register_write(H);
+	set noop(0);
+	set address_register_write(H);
+	set noop(0);
+	set cache_register_file_port0_write(H);
+	call fetch();
+}
+
+/*
+ * 0x80 Rx Ry Rz
+ * Rz = Rx / Ry
+ */
+function div_u(0x80) {
+	fix math_alu_csel(DIV_U), cache_register_file_port0_isel(math_alu.low), math_alu_iselB(operand2_register.out);
+	call load_operands();
+	set pc_register_write(H);
+	set noop(0);
+	set address_register_write(H);
+	set noop(0);
+	set cache_register_file_port0_write(H);
+	call fetch();
+}
+
+virtual fetch() {
+	set pc_register_write(H);
+	set noop(0);
+	set m2_multiplexer_isel(cmd_trans_rom.out);
+}
+
+virtual load_operands() {
+	set pc_register_write(H);
+	set address_register_write(H);
+	set noop(0);
+	set operand1_register_write(H);
+	set pc_register_write(H);
+	set address_register_write(H);
+	set noop(0);
+	set operand2_register_write(H);
+}

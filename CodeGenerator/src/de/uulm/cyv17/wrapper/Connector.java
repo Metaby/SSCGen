@@ -12,6 +12,7 @@ public class Connector {
 	
 	
 	public Connector(String value, int size) {
+		// TODO: Fehler abfangen falls connector leer oder falsches format hat
 		this.size = size;
 		if (value.startsWith("system.auto")) {
 			type = ConnectorType.SYSTEM_AUTO;
@@ -132,7 +133,8 @@ public class Connector {
 			return "SYSTEM_CONTROL";
 		}
 		if (type == ConnectorType.SYSTEM_CONST) {
-			return "CONST(" + constValue + ")";
+			//return "CONST(" + constValue + ")";
+			return "const." + constValue;
 		}
 		return origin + "." + pin;
 	}

@@ -26,14 +26,18 @@ public class Program {
 		compileMicrocode("processors/" + processor + "/" + processor + "_mp.mdl", "processors/" + processor + "/" + processor + "_mp.hex");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
 		*/
-		ArgumentHandler pm = new ArgumentHandler(args);
+		/*ArgumentHandler pm = new ArgumentHandler(args);
 		if (pm.getOp() == ToolOperation.GENERATE_MICROCODE_TEMPLATE) {
 			generateMicrocodeDesignFiles(pm.getInputFile(), pm.getOutputFile());
 		} else if (pm.getOp() == ToolOperation.COMPILE_MICROCODE) {
 			compileMicrocode(pm.getInputFile(), pm.getOutputFile());
 		} else if (pm.getOp() == ToolOperation.GENERATE_ARCHITECTURE) {
 			generateArchitecture(pm.getInputFile(), pm.getOutputFile());
-		}
+		}*/
+		String processor = "example_cpu";
+		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/microprogram.mdl");
+		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
+		generateArchitecture("processors/" + processor + "/architecture.xml", "processors/" + processor + "/code/");
 		System.out.println("fin");
 	}
 	
@@ -63,7 +67,7 @@ public class Program {
 			mdfContent = mdfContent.substring(0, mdfContent.length() -2) + "}" + System.lineSeparator();
 		}
 		mdfContent += " *" + System.lineSeparator();
-		mdfContent += " *\tUse noop(0) for one clock cycle without any operation" + System.lineSeparator();
+		mdfContent += " *\tUse \"call idle_cyle()\" for one clock cycle without any operation" + System.lineSeparator();
 		mdfContent += " */" + System.lineSeparator() + System.lineSeparator();
 		String defFile = outputFile;
 		if (defFile.contains(".")) {
@@ -91,7 +95,10 @@ public class Program {
 			values += "};";
 			fields = fields + "}" + values + System.lineSeparator();
 		}
-		fields += "field noop = {0," + (cv.getSize() - 1) + "}{0}{0};";
+		fields += "field noop = {0," + (cv.getSize() - 1) + "}{0}{0};" + System.lineSeparator() + System.lineSeparator();
+		//fields += "virtual idle_cycle() {" + System.lineSeparator();
+		//fields += "    set noop(0);" + System.lineSeparator();
+		//fields += "}";
 		File mdfPath = new File(outputFile);
 		File defPath = new File(defFile);
 		try {

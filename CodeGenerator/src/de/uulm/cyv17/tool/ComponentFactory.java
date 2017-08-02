@@ -328,7 +328,7 @@ class ComponentFactory {
 		if (alu.getInputsA().size() > 1) {
 			component.AddSignal("s_isel_A", iselASize);
 		}
-		if (alu.getInputsA().size() > 1) {
+		if (alu.getInputsB().size() > 1) {
 			component.AddSignal("s_isel_B", iselBSize);		
 		}
 		if (cselSize > 0) {
@@ -349,21 +349,21 @@ class ComponentFactory {
 		}
 		if (iselASize == 1) {
 			if (ctrlSize > 1) {
-				ctrlBinding += "  s_iselA <= p_ctrl(" + cselSize + ");" + System.lineSeparator();			
+				ctrlBinding += "  s_isel_A <= p_ctrl(" + cselSize + ");" + System.lineSeparator();			
 			} else {	
-				ctrlBinding += "  s_iselA <= p_ctrl;" + System.lineSeparator();
+				ctrlBinding += "  s_isel_A <= p_ctrl;" + System.lineSeparator();
 			}
 		} else if (iselASize > 1) {
-			ctrlBinding += "  s_iselA <= p_ctrl(" + (cselSize + iselASize - 1) + " DOWNTO " + cselSize + ");" + System.lineSeparator();
+			ctrlBinding += "  s_isel_A <= p_ctrl(" + (cselSize + iselASize - 1) + " DOWNTO " + cselSize + ");" + System.lineSeparator();
 		}
 		if (iselBSize == 1) {
 			if (ctrlSize > 1) {
-				ctrlBinding += "  s_iselB <= p_ctrl(" + (cselSize + iselASize) + ");" + System.lineSeparator();			
+				ctrlBinding += "  s_isel_B <= p_ctrl(" + (cselSize + iselASize) + ");" + System.lineSeparator();			
 			} else {	
-				ctrlBinding += "  s_iselB <= p_ctrl;" + System.lineSeparator();	
+				ctrlBinding += "  s_isel_B <= p_ctrl;" + System.lineSeparator();	
 			}
 		} else if (iselBSize > 1) {
-			ctrlBinding += "  s_iselB <= p_ctrl(" + (cselSize + iselASize + iselBSize - 1) + " DOWNTO " + (cselSize + iselASize) + ");" + System.lineSeparator();
+			ctrlBinding += "  s_isel_B <= p_ctrl(" + (cselSize + iselASize + iselBSize - 1) + " DOWNTO " + (cselSize + iselASize) + ");" + System.lineSeparator();
 		}
 		List<String> subComponents = getAluSubComponents(alu);
 		if (conditionsCnt > 0 || subComponents.contains("ADDER")) {
@@ -506,10 +506,10 @@ class ComponentFactory {
 			}
 			if (subComponents.contains("SHIFTER")) {
 				table += "  -- Shifter/Rotater Control" + System.lineSeparator();
-				table += "  s_shft_cmd(0) <= s_shft_ctrl(0)" + System.lineSeparator();
-				table += "  s_shft_cmd(1) <= s_shft_ctrl(1)" + System.lineSeparator();
-				table += "  s_shft_ari <= s_shft_ctrl(2)" + System.lineSeparator();
-				table += "  s_shft_rot <= s_shft_ctrl(3)" + System.lineSeparator();
+				table += "  s_shft_cmd(0) <= s_shft_ctrl(0);" + System.lineSeparator();
+				table += "  s_shft_cmd(1) <= s_shft_ctrl(1);" + System.lineSeparator();
+				table += "  s_shft_ari <= s_shft_ctrl(2);" + System.lineSeparator();
+				table += "  s_shft_rot <= s_shft_ctrl(3);" + System.lineSeparator();
 				table += "  WITH s_csel SELECT s_shft_ctrl <=" + System.lineSeparator();
 				for (int i = 0; i < cmd.length; i++) {
 					if (cmd[i].equals("RR")) {
@@ -787,16 +787,16 @@ class ComponentFactory {
 			if (subComponents.contains("COMPARATOR")) {
 				copy(new File("processors/components/alu/comparator"), new File(targetDirectory + "/components/alu"));
 				String imprt = "";
-				imprt += "  COMPONENT tree_comparator" + System.lineSeparator();
+				imprt += "  COMPONENT word_comparator " + System.lineSeparator();
 				imprt += "    GENERIC (" + System.lineSeparator();
 				imprt += "      g_size : integer := 31" + System.lineSeparator();
 				imprt += "    );" + System.lineSeparator();
 				imprt += "    PORT (" + System.lineSeparator();
-				imprt += "      p_op_1 : in  std_logic_vector(g_size DOWNTO 0);" + System.lineSeparator();
-				imprt += "      p_op_2 : in  std_logic_vector(g_size DOWNTO 0);" + System.lineSeparator();
-				imprt += "      p_sgnd : in  std_logic;" + System.lineSeparator();				
-				imprt += "      p_g    : out std_logic;" + System.lineSeparator();				
-				imprt += "      p_l    : out std_logic" + System.lineSeparator();
+				imprt += "      p_op_1   : in  std_logic_vector(g_size DOWNTO 0);" + System.lineSeparator();
+				imprt += "      p_op_2   : in  std_logic_vector(g_size DOWNTO 0);" + System.lineSeparator();
+				imprt += "		p_cmd    : in  std_logic_vector(2 DOWNTO 0);" + System.lineSeparator();
+				imprt += "      p_sgnd   : in  std_logic;" + System.lineSeparator();					
+				imprt += "      p_result : out std_logic" + System.lineSeparator();
 				imprt += "    );" + System.lineSeparator();
 				imprt += "  END COMPONENT;";
 				imports.add(imprt);
@@ -865,7 +865,7 @@ class ComponentFactory {
 			return "s_adder_result";
 		}
 		if (cmd.matches("AND|OR|XOR|NOT")) {
-			return "s_logic_resul";
+			return "s_logic_result";
 		}
 		if (cmd.matches("DIV|DIV_U")) {
 			return "s_div_result";
@@ -899,7 +899,7 @@ class ComponentFactory {
 			instances += "  comp : word_comparator GENERIC MAP (g_size => g_word_size) PORT MAP (s_input_A, s_input_B, s_comp_cmd, s_sgnd, s_comp_result);" + System.lineSeparator();
 		}
 		if (subComponents.contains("SHIFTER")) {
-			instances += "  shft : barrel_shifter GENERIC MAP (g_size => g_word_size) PORT MAP (s_shft_cmd, s_shft_ari, s_shft_rot, s_input_A, s_input_B, s_shft_result);" + System.lineSeparator();
+			instances += "  shft : barrel_shifter GENERIC MAP (g_size => g_word_size) PORT MAP (s_shft_ari, s_shft_rot, s_shft_cmd, s_input_A, s_input_B, s_shft_result);" + System.lineSeparator();
 		}
 		return instances;
 	}
@@ -948,18 +948,15 @@ class ComponentFactory {
 		if (inputs == 2) {
 			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
 			behavior += "    " + inputName + "0 WHEN \'0\'," + System.lineSeparator();
-			behavior += "    " + inputName + "1 WHEN \'1\';" + System.lineSeparator();
+			behavior += "    " + inputName + "1 WHEN \'1\'," + System.lineSeparator();
+			behavior += "    (others => '0') WHEN others;" + System.lineSeparator();
 		} else if (inputs > 2) {	
 			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
 			int adrSize = (int)Math.ceil(Math.log(inputs) / Math.log(2));
 			for (int i = 0; i < inputs; i++) {
-				behavior += "    " + inputName + i + " WHEN \"" + getBinaryString(i, adrSize) + "\"";
-				if (i < inputs - 1) {
-					behavior += "," + System.lineSeparator();
-				} else {
-					behavior += ";" + System.lineSeparator();					
-				}
+				behavior += "    " + inputName + i + " WHEN \"" + getBinaryString(i, adrSize) + "\"," + System.lineSeparator();
 			}			
+			behavior += "    (others => '0') WHEN others;" + System.lineSeparator();
 		} else {
 			behavior += "  " + outp + " <= " + inputName + "0;" + System.lineSeparator();
 		}

@@ -64,22 +64,8 @@ public class AluEntity extends BaseEntity {
 			int iselBSize = Wrapper.log2(inputsB.size());
 			int cselSize = Wrapper.log2(operations.size() + conditions.size());
 			ControlVector cv = new ControlVector(iselASize + iselBSize + cselSize);
-			if (iselASize > 0) {
-				ControlField field = new ControlField(id + "_iselA", 0, iselASize - 1);
-				for (int i = 0; i < inputsA.size(); i++) {
-					field.addParameter(inputsA.get(i).toString(), i);		
-				}
-				cv.addField(field);
-			}
-			if (iselBSize > 0) {
-				ControlField field = new ControlField(id + "_iselB", iselASize, iselASize + iselBSize - 1);
-				for (int i = 0; i < inputsB.size(); i++) {
-					field.addParameter(inputsB.get(i).toString(), i);		
-				}
-				cv.addField(field);
-			}
 			if (cselSize > 0) {
-				ControlField field = new ControlField(id + "_csel", iselASize + iselBSize, iselASize + iselBSize + cselSize - 1);
+				ControlField field = new ControlField(id + "_csel", 0, cselSize - 1);
 				for (int i = 0; i < operations.size(); i++) {
 					field.addParameter(operations.get(i).toString(), i);		
 				}
@@ -88,6 +74,44 @@ public class AluEntity extends BaseEntity {
 				}
 				cv.addField(field);
 			}
+			if (iselASize > 0) {
+				ControlField field = new ControlField(id + "_iselA", cselSize, cselSize + iselASize - 1);
+				for (int i = 0; i < inputsA.size(); i++) {
+					field.addParameter(inputsA.get(i).toString(), i);		
+				}
+				cv.addField(field);
+			}
+			if (iselBSize > 0) {
+				ControlField field = new ControlField(id + "_iselB", cselSize + iselASize, cselSize + iselASize + iselBSize - 1);
+				for (int i = 0; i < inputsB.size(); i++) {
+					field.addParameter(inputsB.get(i).toString(), i);		
+				}
+				cv.addField(field);
+			}
+//			if (iselASize > 0) {
+//				ControlField field = new ControlField(id + "_iselA", 0, iselASize - 1);
+//				for (int i = 0; i < inputsA.size(); i++) {
+//					field.addParameter(inputsA.get(i).toString(), i);		
+//				}
+//				cv.addField(field);
+//			}
+//			if (iselBSize > 0) {
+//				ControlField field = new ControlField(id + "_iselB", iselASize, iselASize + iselBSize - 1);
+//				for (int i = 0; i < inputsB.size(); i++) {
+//					field.addParameter(inputsB.get(i).toString(), i);		
+//				}
+//				cv.addField(field);
+//			}
+//			if (cselSize > 0) {
+//				ControlField field = new ControlField(id + "_csel", iselASize + iselBSize, iselASize + iselBSize + cselSize - 1);
+//				for (int i = 0; i < operations.size(); i++) {
+//					field.addParameter(operations.get(i).toString(), i);		
+//				}
+//				for (int i = 0; i < conditions.size(); i++) {
+//					field.addParameter(conditions.get(i), i + operations.size());
+//				}
+//				cv.addField(field);
+//			}
 			return cv;
 		}
 		return new ControlVector(0);
