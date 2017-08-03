@@ -13,7 +13,7 @@ public class ErrorHandler {
 /* 7 */		"Source-Connection-Size does not fit size of Input-Connection",
 /* 8 */		"input-Connection does not exist",
 /* 9 */		"ID already exists",
-/* 10 */	"",
+/* 10 */	"Qualifier not found",
 /* 11 */	"",
 /* 12 */	"",
 /* 13 */	"",

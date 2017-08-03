@@ -3,7 +3,7 @@ grammar MicrocodeDesignLanguage;
 gr_mdf: gr_field_declaration* gr_init (gr_function | gr_virtual)*;
 
 // Function
-gr_function_head: 'function' gr_function_name '(' gr_function_pos? ')' '{';
+gr_function_head: 'function' gr_function_name '(' (gr_function_pos | 'auto') ')' '{';
 gr_function_name: gr_qualifier;
 gr_function_pos: gr_hex;
 gr_function_tail: '}';

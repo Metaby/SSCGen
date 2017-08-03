@@ -167,7 +167,7 @@ class ComponentFactory {
 		return component;
 	}
 	
-	VhdlComponent generateComponent(RomEntity rom) {	
+	VhdlComponent generateComponent(RomEntity rom) {
 		int content[] = new int[] { };
 		String contentFile = rom.getContentFile();
 		int addressSize = rom.getAddressSize();
@@ -251,7 +251,6 @@ class ComponentFactory {
 	
 	VhdlComponent generateComponent(RegisterEntity register) {
 		VhdlComponent component = new VhdlComponent(register.getId());
-		component.AddGeneric("g_word_size : integer := " + (register.getWordSize() - 1));
 		component.AddPort("p_clk : in", 1);
 		component.AddPort("p_rst : in", 1);
 		component.AddSignal("s_write", 1);
@@ -270,7 +269,7 @@ class ComponentFactory {
 			}
 		}
 		for (int i = 0; i < register.getInputs().size(); i++) {
-			component.AddPort("p_input" + i + " : in", "g_word_size");
+			component.AddPort("p_input" + i + " : in", register.getWordSize());
 		}
 		if (register.getInputs().size() > 1) {
 			if (adrSize > 1) {
@@ -279,15 +278,19 @@ class ComponentFactory {
 				component.AddSignal("s_isel", 1);			
 			}			
 		}
-		component.AddPort("p_word : out", "g_word_size");
-		component.AddSignal("s_input", "", "g_word_size");
-		component.AddSignal("s_out", "", "g_word_size");
-		behavior += VhdlComponent.generateMux("s_isel", "s_input", "p_input", register.getInputs().size());
+		component.AddPort("p_word : out", register.getWordSize());
+		component.AddSignal("s_input", register.getWordSize());
+		component.AddSignal("s_out", register.getWordSize());
+		behavior += VhdlComponent.generateMux("s_isel", "s_input", "p_input", register.getInputs().size(), register.getWordSize());
 		behavior += "  p_word <= s_out;" + System.lineSeparator();
 		behavior += "  PROCESS (p_clk) BEGIN" + System.lineSeparator();
 		behavior += "    IF rising_edge(p_clk) THEN" + System.lineSeparator();
 		behavior += "      IF p_rst = '1' THEN" + System.lineSeparator();
-		behavior += "        s_out <= (OTHERS => '0');" + System.lineSeparator();
+		if (register.getWordSize() > 1) {
+			behavior += "        s_out <= (OTHERS => '0');" + System.lineSeparator();
+		} else {
+			behavior += "        s_out <= '0';" + System.lineSeparator();			
+		}
 		behavior += "      ELSIF s_write = '1' THEN" + System.lineSeparator();
 		behavior += "        s_out <= s_input;" + System.lineSeparator();
 		behavior += "      ELSE" + System.lineSeparator();

@@ -22,7 +22,6 @@ class InstanceFactory {
 	
 	String generateInstance(RegisterEntity reg) {
 		String instance = "  " + reg.getId() + "_instance : " + reg.getId() + System.lineSeparator();
-		instance += "    GENERIC MAP (g_word_size => " + (reg.getWordSize() - 1) + ")" + System.lineSeparator();
 		instance += "    PORT MAP (" + System.lineSeparator();
 		instance += "      p_clk," + System.lineSeparator() + "      p_reset," + System.lineSeparator();
 		instance += "      " + generateInputSignal(reg.getControl()) + "," + System.lineSeparator();

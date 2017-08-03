@@ -1,0 +1,16 @@
+lp0,1
+lp1,7
+sp2,d
+sp3,13
+addu,19
+subu,29
+mulu,39
+divu,49
+jmp,59
+beq,60
+gtu,6f
+ltu,7e
+gequ,8d
+lequ,9c
+lc,ab
+nop,b5

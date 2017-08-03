@@ -15,6 +15,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageLexer;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser;
+import de.uulm.cyv17.tool.ErrorHandler;
 
 /**
  * The compiler for the microcode of a specific
@@ -25,6 +26,7 @@ import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser;
 public class MicrocodeCompiler {
 	
 	private int maxCodeSize = 0;
+	private List<String> functionPositions;
 	
 	/**
 	 * Compiles the microcode given as a file and writes the output to a specified hex-file.
@@ -175,6 +177,9 @@ public class MicrocodeCompiler {
 			int[] fix = new int[1000];
 			int fixPtr = -1;
 			List<MicrocodeField> fields = mc.getFields();
+			Boolean newFunction = true;
+			String functionName = "";
+			functionPositions = new ArrayList<String>();
 			for (String str : split) {
 				if (str.startsWith("s:")) {
 					intermediateCode += "s:" + (microcodeFieldLookup(fields, str.substring(2)) | perm | fix[fixPtr]) + System.lineSeparator();
@@ -194,9 +199,17 @@ public class MicrocodeCompiler {
 					addressCounter = address;
 					intermediateCode += "p:" +  address + System.lineSeparator();
 				} else if (str.startsWith("b:")) {
+					if (newFunction && !str.substring(2).equals("")) {
+						functionName = str.substring(2);
+						functionPositions.add(functionName + "," + Integer.toHexString(addressCounter));
+						newFunction = false;
+					}
 					fixPtr++;
 					fix[fixPtr] = 0;
 				} else if (str.startsWith("e:")) {
+					if (!newFunction && str.substring(2).equals(functionName)) {
+						newFunction = true;
+					}
 					fixPtr--;
 				}
 			}
@@ -205,6 +218,10 @@ public class MicrocodeCompiler {
 		return "";
 	}
 	
+	public List<String> getFunctionPositions() {
+		return functionPositions;
+	}
+
 	int perm;
 	
 	/**
@@ -230,6 +247,7 @@ public class MicrocodeCompiler {
 				key = key.substring(0, key.indexOf(")"));
 				bitSet = bitSet.substring(0, bitSet.indexOf('('));
 			}
+			Boolean found = false;
 			for (MicrocodeField field : fields) {
 				if (bitSet.equals(field.getId())) {
 					if (single) {
@@ -237,7 +255,12 @@ public class MicrocodeCompiler {
 					} else {
 						code += (field.getValue(key) << (field.getCvStart()));
 					}
+					found = true;
 				}
+			}
+			if (!found) {
+				System.out.println(bitSet);
+				ErrorHandler.throwError(10);
 			}
 		}
 		int codeSize = Integer.toBinaryString(code).length();

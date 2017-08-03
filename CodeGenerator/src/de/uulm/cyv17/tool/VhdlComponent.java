@@ -155,24 +155,36 @@ class VhdlComponent {
 		this.behavior = behavior;
 	}
 
-	public static String generateMux(String adr, String outp, String inputName, int inputs) {
+	public static String generateMux(String adress, String output, String inputName, int inputs, int wordSize) {
 		String behavior = "";
 		if (inputs == 2) {
-			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
+			behavior += "  WITH " + adress + " SELECT " + output + " <=" + System.lineSeparator();
 			behavior += "    " + inputName + "0 WHEN \'0\'," + System.lineSeparator();
 			behavior += "    " + inputName + "1 WHEN \'1\'," + System.lineSeparator();
-			behavior += "    (OTHERS => '0') WHEN OTHERS;" + System.lineSeparator();
+			if (wordSize == 1) {
+				behavior += "    '0' WHEN OTHERS;" + System.lineSeparator();
+			} else {
+				behavior += "    (OTHERS => '0') WHEN OTHERS;" + System.lineSeparator();
+			}
 		} else if (inputs > 2) {
-			behavior += "  WITH " + adr + " SELECT " + outp + " <=" + System.lineSeparator();
+			behavior += "  WITH " + adress + " SELECT " + output + " <=" + System.lineSeparator();
 			int adrSize = (int)Math.ceil(Math.log(inputs) / Math.log(2));
 			for (int i = 0; i < inputs; i++) {
 				behavior += "    " + inputName + i + " WHEN \"" + String.format("%" + adrSize + "s", Integer.toBinaryString(i)).replace(' ', '0') + "\"," + System.lineSeparator();
-			}	
-			behavior += "    (OTHERS => '0') WHEN OTHERS;" + System.lineSeparator();
+			}
+			if (wordSize == 1) {
+				behavior += "    '0' WHEN OTHERS;" + System.lineSeparator();
+			} else {
+				behavior += "    (OTHERS => '0') WHEN OTHERS;" + System.lineSeparator();
+			}
 		} else {
-			behavior += "  " + outp + " <= " + inputName + "0;" + System.lineSeparator();
+			behavior += "  " + output + " <= " + inputName + "0;" + System.lineSeparator();
 		}
 		return behavior;
+	}
+	
+	public static String generateMux(String adress, String output, String inputName, int inputs) {
+		return generateMux(adress, output, inputName, inputs, 2);
 	}
 	
 	public String getImport() {
