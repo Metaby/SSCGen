@@ -35,13 +35,20 @@ public class Program {
 			generateArchitecture(pm.getInputFile(), pm.getOutputFile());
 		} else if (pm.getOp() == ToolOperation.GENERATE_TRANSLATION) {
 			generateTranslationTable(pm.getInputFile(), pm.getOutputFile());
+		} else if (pm.getOp() == ToolOperation.RUN_EDITOR) {
+			Assembler asm = new Assembler();
+			asm.initWindow();
+			asm.initReplacement();
 		}
 		*/
 		String processor = "example_cpu";
 		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/microprogram.mdl");
 		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
+		Assembler asm = new Assembler();
+		asm.initWindow();
+		asm.initReplacement("processors/" + processor + "/mnemonics.csv");
+		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
 		generateArchitecture("processors/" + processor + "/architecture.xml", "processors/" + processor + "/code/");
-		generateTranslationTable("processors/" + processor + "/microprogram_functions.csv", "processors/" + processor + "/cmd_trans.hex");
 		System.out.println("fin");
 	}
 	
@@ -119,12 +126,7 @@ public class Program {
 	public static void compileMicrocode(String mdfFile, String targetFile) {
 		MicrocodeCompiler compiler = new MicrocodeCompiler();
 		compiler.compile(mdfFile, targetFile);
-		if (targetFile.endsWith(".hex")) {
-			targetFile = targetFile.substring(0, targetFile.lastIndexOf(".")) + "_functions.csv";
-		} else {
-			targetFile += "_functions.csv";
-		}
-		File f = new File(targetFile);
+		File f = new File(targetFile.substring(0, targetFile.lastIndexOf("/") + 1) + "mnemonics.csv");
 		try {
 			String content = "";
 			for (String line : compiler.getFunctionPositions()) {
@@ -133,7 +135,7 @@ public class Program {
 			Files.write(f.toPath(), content.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+			System.out.println("Error: Could not write to target file. (mnemonics.csv)");
 		}
 	}
 	
@@ -142,10 +144,6 @@ public class Program {
 		ArchitectureFactory factory = new ArchitectureFactory();
 		Architecture arch = validateAndLoadArchitecture(architectureFile);
 		factory.generateArchitecture(outputDirectory, arch);		
-	}
-	
-	public static void generateTranslationTable(String functionsFile, String targetFile) {
-		// TODO: Command Translation generieren
 	}
 	
 	public static void assertion(Boolean pass) {

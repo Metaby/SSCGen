@@ -67,8 +67,12 @@ ARCHITECTURE behavior OF processor IS
     PORT (
       p_clk : in std_logic;
       p_rst : in std_logic;
-      p_ctrl : in std_logic;
+      p_ctrl : in  std_logic_vector(3 DOWNTO 0);
       p_input0 : in std_logic_vector(15 DOWNTO 0);
+      p_input1 : in std_logic_vector(15 DOWNTO 0);
+      p_input2 : in std_logic_vector(15 DOWNTO 0);
+      p_input3 : in std_logic_vector(15 DOWNTO 0);
+      p_input4 : in std_logic_vector(15 DOWNTO 0);
       p_word : out std_logic_vector(15 DOWNTO 0)
     );
   END COMPONENT;
@@ -174,11 +178,7 @@ ARCHITECTURE behavior OF processor IS
     PORT (
       p_input_A0 : in std_logic_vector(g_word_size DOWNTO 0);
       p_input_B0 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_input_B1 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_input_B2 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_input_B3 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_input_B4 : in std_logic_vector(g_word_size DOWNTO 0);
-      p_ctrl : in std_logic_vector(7 DOWNTO 0);
+      p_ctrl : in std_logic_vector(4 DOWNTO 0);
       p_flag : out std_logic;
       p_output_1 : out std_logic_vector(g_word_size DOWNTO 0);
       p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
@@ -268,15 +268,19 @@ BEGIN
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(5),
+      s_ctrl_vector(8 DOWNTO 5),
       s_cache_register_file_out,
+      "0000000000000000",
+      "0000000000000001",
+      s_math_alu_low,
+      s_math_alu_high,
       s_operand2_register_out
     );
   address_register_instance : address_register
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(6),
+      s_ctrl_vector(9),
       s_program_rom_out,
       s_address_register_out
     );
@@ -284,7 +288,7 @@ BEGIN
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(9 DOWNTO 7),
+      s_ctrl_vector(12 DOWNTO 10),
       s_math_alu_status,
       '0',
       '1',
@@ -294,7 +298,7 @@ BEGIN
     PORT MAP (
       p_clk,
       p_reset,
-      s_ctrl_vector(12 DOWNTO 10),
+      s_ctrl_vector(15 DOWNTO 13),
       s_math_alu_status,
       '0',
       '1',
@@ -326,7 +330,7 @@ BEGIN
       s_address_register_out,
       s_address_register_out,
       s_cache_register_file_out,
-      s_ctrl_vector(16 DOWNTO 13)
+      s_ctrl_vector(19 DOWNTO 16)
     );  pc_inc_alu_instance : pc_inc_alu
     GENERIC MAP (g_word_size => 15)
     PORT MAP (
@@ -350,11 +354,7 @@ BEGIN
     PORT MAP (
       s_operand1_register_out,
       s_operand2_register_out,
-      "0000000000000000",
-      "0000000000000001",
-      s_math_alu_low,
-      s_math_alu_high,
-      s_ctrl_vector(24 DOWNTO 17),
+      s_ctrl_vector(24 DOWNTO 20),
       s_math_alu_status,
       s_math_alu_low,
       s_math_alu_high

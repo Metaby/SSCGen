@@ -10,11 +10,7 @@ ENTITY math_alu IS
   PORT (
     p_input_A0 : in std_logic_vector(g_word_size DOWNTO 0);
     p_input_B0 : in std_logic_vector(g_word_size DOWNTO 0);
-    p_input_B1 : in std_logic_vector(g_word_size DOWNTO 0);
-    p_input_B2 : in std_logic_vector(g_word_size DOWNTO 0);
-    p_input_B3 : in std_logic_vector(g_word_size DOWNTO 0);
-    p_input_B4 : in std_logic_vector(g_word_size DOWNTO 0);
-    p_ctrl : in std_logic_vector(7 DOWNTO 0);
+    p_ctrl : in std_logic_vector(4 DOWNTO 0);
     p_flag : out std_logic;
     p_output_1 : out std_logic_vector(g_word_size DOWNTO 0);
     p_output_2 : out std_logic_vector(g_word_size DOWNTO 0)
@@ -97,7 +93,6 @@ ARCHITECTURE behavior OF math_alu IS
       p_result : out std_logic_vector(g_size DOWNTO 0)
     );
   END COMPONENT;
-  SIGNAL s_isel_B : std_logic_vector(2 DOWNTO 0);
   SIGNAL s_csel : std_logic_vector(4 DOWNTO 0);
   SIGNAL s_input_A : std_logic_vector(g_word_size DOWNTO 0);
   SIGNAL s_input_B : std_logic_vector(g_word_size DOWNTO 0);
@@ -121,17 +116,10 @@ ARCHITECTURE behavior OF math_alu IS
 BEGIN
   -- Control Vector Binding
   s_csel <= p_ctrl(4 DOWNTO 0);
-  s_isel_B <= p_ctrl(7 DOWNTO 5);
   -- Input A Multiplexing
   s_input_A <= p_input_A0;
   -- Input B Multiplexing
-  WITH s_isel_B SELECT s_input_B <=
-    p_input_B0 WHEN "000",
-    p_input_B1 WHEN "001",
-    p_input_B2 WHEN "010",
-    p_input_B3 WHEN "011",
-    p_input_B4 WHEN "100",
-    (others => '0') WHEN others;
+  s_input_B <= p_input_B0;
   -- Instances of Sub-Components
   adder : carry_select_adder GENERIC MAP (g_block_size => 7, g_blocks => 1) PORT MAP (s_sgnd, s_adder_sub, s_input_A, s_input_B, s_adder_result, s_adder_ovflw);
   logic : bit_manipulator GENERIC MAP (g_size => g_word_size) PORT MAP (s_input_A, s_input_B, s_logic_cmd, s_logic_result);

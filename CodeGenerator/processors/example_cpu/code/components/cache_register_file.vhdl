@@ -26,7 +26,7 @@ ENTITY cache_register_file IS
 END cache_register_file;
 
 ARCHITECTURE behavior OF cache_register_file IS
-  TYPE registerArray IS ARRAY(65536 DOWNTO 0) OF std_logic_vector(g_word_size DOWNTO 0);
+  TYPE registerArray IS ARRAY(65535 DOWNTO 0) OF std_logic_vector(g_word_size DOWNTO 0);
   SIGNAL s_port0_isel : std_logic_vector(2 DOWNTO 0);
   SIGNAL s_port0_inputSelect : std_logic_vector(g_word_size DOWNTO 0);
   SIGNAL s_port0_addressSelect : std_logic_vector(g_address_size DOWNTO 0);

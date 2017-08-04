@@ -51,6 +51,10 @@
 		<size>16</size>
 		<inputs>
 			<input>cache_register_file.out</input>
+			<input>system.const.0</input>
+			<input>system.const.1</input>
+			<input>math_alu.low</input>
+			<input>math_alu.high</input>
 		</inputs>
 		<output>operand2_register.out</output>
 		<control>system.auto</control>
@@ -193,10 +197,6 @@
 		</inputsOperandA>
 		<inputsOperandB>
 			<input>operand2_register.out</input>
-			<input>system.const.0</input>
-			<input>system.const.1</input>
-			<input>math_alu.low</input>
-			<input>math_alu.high</input>
 		</inputsOperandB>
 		<output1>math_alu.low</output1>
 		<output2>math_alu.high</output2>

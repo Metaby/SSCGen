@@ -33,8 +33,8 @@ public class ArgumentHandler {
 				op = ToolOperation.COMPILE_MICROCODE;
 			} else if (params[i].equals("-generate")) {
 				op = ToolOperation.GENERATE_ARCHITECTURE;
-			} else if (params[i].equals("-translation")) {
-				op = ToolOperation.GENERATE_TRANSLATION;
+			} else if (params[i].equals("-editor")) {
+				op = ToolOperation.RUN_EDITOR;
 			} else if (params[i].equals("-in")) {
 				if (params.length - 1 == i) {
 					ErrorHandler.throwError(0);

@@ -201,7 +201,7 @@ public class MicrocodeCompiler {
 				} else if (str.startsWith("b:")) {
 					if (newFunction && !str.substring(2).equals("")) {
 						functionName = str.substring(2);
-						functionPositions.add(functionName + "," + Integer.toHexString(addressCounter));
+						functionPositions.add(functionName + ";" + Integer.toHexString(addressCounter) + ";0");
 						newFunction = false;
 					}
 					fixPtr++;

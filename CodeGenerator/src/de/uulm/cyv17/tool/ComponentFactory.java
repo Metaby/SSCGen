@@ -107,7 +107,7 @@ class ComponentFactory {
 				component.AddPort("p_port" + j + "_output : out", "g_word_size");
 			}
 		}
-		component.AddType("registerArray IS ARRAY(" + (int)Math.pow(2, rf.getAddressSize()) + " DOWNTO 0) OF std_logic_vector(g_word_size DOWNTO 0)");
+		component.AddType("registerArray IS ARRAY(" + ((int)Math.pow(2, rf.getAddressSize()) - 1) + " DOWNTO 0) OF std_logic_vector(g_word_size DOWNTO 0)");
 		if (tmp == 1) {
 			component.AddPort("p_ctrl : in", 1);
 		} else if (tmp > 1) {
