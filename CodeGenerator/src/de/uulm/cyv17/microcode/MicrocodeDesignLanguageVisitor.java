@@ -96,7 +96,18 @@ public class MicrocodeDesignLanguageVisitor extends de.uulm.cyv17.antlr.Microcod
 	
 	@Override
 	public String visitGr_function_pos(Gr_function_posContext ctx) {
-		function.setPosition(ctx.getText());
+		if (ctx.getText().contains(",")) {
+			String[] parts = ctx.getText().split(",");
+			if (parts[0].equals("auto")) {
+				function.setPosition("");
+			} else {
+				function.setPosition(parts[0]);
+			}
+			function.setOpcode(parts[1]);
+			function.setOperandCount(Integer.parseInt(parts[2]));
+		} else {
+			function.setPosition(ctx.getText());
+		}
 		return ctx.getText();
 	}
 	

@@ -26,7 +26,8 @@ import de.uulm.cyv17.tool.ErrorHandler;
 public class MicrocodeCompiler {
 	
 	private int maxCodeSize = 0;
-	private List<String> functionPositions;
+	private List<String> functionMnemonicInformations;
+	private List<String> commandTranslation;
 	
 	/**
 	 * Compiles the microcode given as a file and writes the output to a specified hex-file.
@@ -94,7 +95,6 @@ public class MicrocodeCompiler {
 	 */
 	private Microcode replaceCalls(Microcode mc) {
 		List<MicrocodeFunction> functions = mc.getFunctions();
-		Boolean replace;
 		List<MicrocodeFunction> newFunctions = new ArrayList<MicrocodeFunction>();
 		for (MicrocodeFunction function : functions) {
 			MicrocodeFunction newFunction = new MicrocodeFunction(function.isVirtual());
@@ -103,7 +103,6 @@ public class MicrocodeCompiler {
 			List<String> lines = function.getFunctionLines(true);
 				for (int i = 0; i < lines.size(); i++) {
 					if (lines.get(i).startsWith("c:")) {
-						replace = true;
 						String functionName = lines.get(i).substring(2, lines.get(i).length() - 2);
 						if (functionName.equals(function.getName())) {
 							System.out.println("Error: Microcode has cycles in the hierarchy");
@@ -122,6 +121,8 @@ public class MicrocodeCompiler {
 			for (String line : lines) {					
 				newFunction.addFunctionLine(line);
 			}
+			newFunction.setOpcode(function.getOpcode());
+			newFunction.setOperandCount(function.getOperandCount());
 			newFunctions.add(newFunction);
 		}
 		functions = newFunctions;
@@ -179,7 +180,8 @@ public class MicrocodeCompiler {
 			List<MicrocodeField> fields = mc.getFields();
 			Boolean newFunction = true;
 			String functionName = "";
-			functionPositions = new ArrayList<String>();
+			functionMnemonicInformations = new ArrayList<String>();
+			commandTranslation = new ArrayList<String>();
 			for (String str : split) {
 				if (str.startsWith("s:")) {
 					intermediateCode += "s:" + (microcodeFieldLookup(fields, str.substring(2)) | perm | fix[fixPtr]) + System.lineSeparator();
@@ -201,7 +203,17 @@ public class MicrocodeCompiler {
 				} else if (str.startsWith("b:")) {
 					if (newFunction && !str.substring(2).equals("")) {
 						functionName = str.substring(2);
-						functionPositions.add(functionName + ";" + Integer.toHexString(addressCounter) + ";0");
+						MicrocodeFunction mf = GetFunction(mc, functionName);
+						if (mf == null) {
+							functionMnemonicInformations.add(functionName + ";" + Integer.toHexString(addressCounter) + ";0");
+						} else {
+							if (mf.getOpcode() != -1) {
+								functionMnemonicInformations.add(mf.getName() + ";" + Integer.toHexString(mf.getOpcode()) + ";" + mf.getOperandCount());
+								commandTranslation.add(Integer.toHexString(mf.getOpcode()) + ";" + Integer.toHexString(addressCounter));
+							} else {
+								functionMnemonicInformations.add(mf.getName() + ";" + Integer.toHexString(addressCounter) + ";0");
+							}
+						}
 						newFunction = false;
 					}
 					fixPtr++;
@@ -218,8 +230,21 @@ public class MicrocodeCompiler {
 		return "";
 	}
 	
-	public List<String> getFunctionPositions() {
-		return functionPositions;
+	public List<String> getCommandTranslation() {
+		return commandTranslation;
+	}
+
+	private MicrocodeFunction GetFunction(Microcode mc, String id) {
+		for (MicrocodeFunction mf : mc.getFunctions()) {
+			if (mf.getName().equals(id)) {
+				return mf;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> getFunctionMnemonicInformations() {
+		return functionMnemonicInformations;
 	}
 
 	int perm;

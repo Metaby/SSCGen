@@ -113,17 +113,17 @@
 		<output>system.control</output>
 		<control>system.auto</control>
 	</rom>
-	<!--<rom>
+	<rom>
 		<id>cmd_trans_rom</id>
 		<wordSize>16</wordSize>
 		<addressSize>16</addressSize>
-		<contentFile>processors/example_cpu/cmd_trans.hex</contentFile>
+		<contentFile>processors/example_cpu/translation.hex</contentFile>
 		<addresses>
 			<address>program_rom.out</address>
 		</addresses>
 		<output>cmd_trans_rom.out</output>
 		<control>system.auto</control>
-	</rom>-->
+	</rom>
 	<!-- REGISTER-FILE -->
 	<registerFile>
 		<id>cache_register_file</id>
@@ -249,8 +249,7 @@
 		<wordSize>16</wordSize>
 		<inputs>
 			<input>mpc_inc_alu.out</input>
-			<input>program_rom.out</input>
-			<!--<input>cmd_trans_rom.out</input>-->
+			<input>cmd_trans_rom.out</input>
 		</inputs>
 		<control>system.auto</control>
 		<output>m2_multiplexer.out</output>

@@ -3,6 +3,9 @@ package de.uulm.cyv17.tool;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.uulm.cyv17.microcode.MicrocodeCompiler;
 import de.uulm.cyv17.wrapper.*;
 
@@ -129,13 +132,49 @@ public class Program {
 		File f = new File(targetFile.substring(0, targetFile.lastIndexOf("/") + 1) + "mnemonics.csv");
 		try {
 			String content = "";
-			for (String line : compiler.getFunctionPositions()) {
+			for (String line : compiler.getFunctionMnemonicInformations()) {
 				content += line + System.lineSeparator();
 			}
 			Files.write(f.toPath(), content.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error: Could not write to target file. (mnemonics.csv)");
+		}
+		List<String> commandTranslation = compiler.getCommandTranslation();
+		int highestAdress = 0;
+		for (String trans : commandTranslation) {
+			String[] parts = trans.split(";");
+			int extern = Integer.parseInt(parts[0], 16);
+			System.out.println(extern);
+			if (extern > highestAdress) {
+				highestAdress = extern;
+			}
+		}
+		String[] table = new String[highestAdress + 1];
+		for (int i = 0; i < table.length; i++) {
+			table[i] = "";
+		}
+		for (String trans : commandTranslation) {
+			String[] parts = trans.split(";");
+			table[Integer.parseInt(parts[0], 16)] = parts[1];
+		}
+		String commandTranslationTable = "v2.0 raw" + System.lineSeparator();
+		for (int i = 0; i < table.length; i++) {
+			if (table[i].equals("")) {
+				commandTranslationTable += "0x0000 ";
+			} else {
+				commandTranslationTable += "0x" + addZeros(table[i], 4) + " ";
+			}
+			if ((i + 1) % 8 == 0) {
+				commandTranslationTable += System.lineSeparator();
+			}
+		}
+		f = new File(targetFile.substring(0, targetFile.lastIndexOf("/") + 1) + "translation.hex");
+		try {
+			Files.write(f.toPath(), commandTranslationTable.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error: Could not write to target file. (translation.hex)");
 		}
 	}
 	
@@ -164,5 +203,20 @@ public class Program {
 	        }
 	    }
 	    folder.delete();
+	}
+	
+	/**
+	 * Expands the given hex-code with leading zeros until it has
+	 * the desired length.
+	 * 
+	 * @param hex the hex-code to expand
+	 * @param length the desired length of the hex-code
+	 * @return the hex-code with leading zeros
+	 */
+	private static String addZeros(String hex, int length) {
+		while (hex.length() < length) {
+			hex = "0" + hex;
+		}
+		return hex;
 	}
 }

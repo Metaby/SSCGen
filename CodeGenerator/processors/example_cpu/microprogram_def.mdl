@@ -13,6 +13,6 @@ field alu_carry_register_isel = {14,15}{const.1, const.0, math_alu.status}{2, 1,
 field cache_register_file_port0_isel = {16,18}{system.port1, system.port0, const.0, program_rom.out, math_alu.high, math_alu.low}{1, 0, 2, 3, 5, 4};
 field cache_register_file_port0_write = {19,19}{H, L}{1, 0};
 field math_alu_csel = {20,24}{RR, GEQ_U, ADD, LEQ_U, SRA, LT, SRL, SUB_U, SLL, MUL_U, SUB, GT_U, OR, ADD_U, MUL, DIV_U, EQ, GT, DIV, NOT, GEQ, AND, LEQ, RL, XOR, LT_U}{8, 19, 4, 20, 12, 22, 10, 1, 11, 2, 5, 17, 14, 0, 6, 3, 25, 21, 7, 16, 23, 13, 24, 9, 15, 18};
-field m2_multiplexer_isel = {25,25}{mpc_inc_alu.out, program_rom.out}{0, 1};
+field m2_multiplexer_isel = {25,25}{cmd_trans_rom.out, mpc_inc_alu.out}{1, 0};
 field noop = {0,25}{0}{0};
 

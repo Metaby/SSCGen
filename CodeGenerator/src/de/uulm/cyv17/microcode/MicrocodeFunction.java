@@ -15,7 +15,8 @@ public class MicrocodeFunction {
 	private Boolean virtual;
 	private String name;
 	private int position;
-
+	private int opcode;
+	private int operandCount;
 	/**
 	 * Constructor for the microcode function which takes
 	 * a Boolean specifying if the microcode function is
@@ -31,6 +32,7 @@ public class MicrocodeFunction {
 		this.funcRow = new ArrayList<String>();
 		this.name = "";
 		this.position = -1;
+		this.opcode = -1;
 		this.virtual = isVirtual;
 	}
 	
@@ -76,6 +78,18 @@ public class MicrocodeFunction {
 	public int getPosition() {
 		return position;
 	}
+	
+	public int getOpcode() {
+		return opcode;
+	}
+
+	public int getOperandCount() {
+		return operandCount;
+	}
+
+	public void setOperandCount(int operandCount) {
+		this.operandCount = operandCount;
+	}
 
 	/**
 	 * Sets the name of the microcode function.
@@ -100,6 +114,18 @@ public class MicrocodeFunction {
 		} else {
 			this.position = -1;
 		}
+	}
+
+	public void setOpcode(String opcode) {
+		if (opcode.length() > 0) {
+			this.opcode = Integer.parseInt(opcode.substring(2), 16);			
+		} else {
+			this.opcode = -1;
+		}
+	}
+	
+	public void setOpcode(int opcode) {
+		this.opcode = opcode;
 	}
 	
 	/**
