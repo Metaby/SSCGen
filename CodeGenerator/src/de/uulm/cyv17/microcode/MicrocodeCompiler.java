@@ -278,7 +278,14 @@ public class MicrocodeCompiler {
 					if (single) {
 						code += (1 << field.getCvStart());
 					} else {
-						code += (field.getValue(key) << (field.getCvStart()));
+						int val = field.getValue(key);
+						//System.out.println(bitSet + ": " + field.getId() + ", " + key + ", " + field.getValue(key));
+						if (val != -1) {
+							code += (val << (field.getCvStart()));
+						} else {
+							System.out.println(bitSet + "(" + key + ")");
+							ErrorHandler.throwError(11);
+						}
 					}
 					found = true;
 				}

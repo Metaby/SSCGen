@@ -14,7 +14,7 @@ public class ErrorHandler {
 /* 8 */		"input-Connection does not exist",
 /* 9 */		"ID already exists",
 /* 10 */	"Qualifier not found",
-/* 11 */	"",
+/* 11 */	"Parameter for qualifier invalid",
 /* 12 */	"",
 /* 13 */	"",
 /* 14 */	"",

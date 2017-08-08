@@ -8,20 +8,20 @@ ENTITY operand2_register IS
     p_clk : in std_logic;
     p_rst : in std_logic;
     p_ctrl : in  std_logic_vector(3 DOWNTO 0);
-    p_input0 : in std_logic_vector(15 DOWNTO 0);
-    p_input1 : in std_logic_vector(15 DOWNTO 0);
-    p_input2 : in std_logic_vector(15 DOWNTO 0);
-    p_input3 : in std_logic_vector(15 DOWNTO 0);
-    p_input4 : in std_logic_vector(15 DOWNTO 0);
-    p_word : out std_logic_vector(15 DOWNTO 0)
+    p_input0 : in std_logic_vector(7 DOWNTO 0);
+    p_input1 : in std_logic_vector(7 DOWNTO 0);
+    p_input2 : in std_logic_vector(7 DOWNTO 0);
+    p_input3 : in std_logic_vector(7 DOWNTO 0);
+    p_input4 : in std_logic_vector(7 DOWNTO 0);
+    p_word : out std_logic_vector(7 DOWNTO 0)
   );
 END operand2_register;
 
 ARCHITECTURE behavior OF operand2_register IS
   SIGNAL s_write : std_logic;
   SIGNAL s_isel : std_logic_vector(2 DOWNTO 0);
-  SIGNAL s_input : std_logic_vector(15 DOWNTO 0);
-  SIGNAL s_out : std_logic_vector(15 DOWNTO 0);
+  SIGNAL s_input : std_logic_vector(7 DOWNTO 0);
+  SIGNAL s_out : std_logic_vector(7 DOWNTO 0);
 BEGIN
   -- Behavior
   s_write <= p_ctrl(0);

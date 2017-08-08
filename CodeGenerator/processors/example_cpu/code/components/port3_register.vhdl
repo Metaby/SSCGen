@@ -8,15 +8,15 @@ ENTITY port3_register IS
     p_clk : in std_logic;
     p_rst : in std_logic;
     p_ctrl : in std_logic;
-    p_input0 : in std_logic_vector(15 DOWNTO 0);
-    p_word : out std_logic_vector(15 DOWNTO 0)
+    p_input0 : in std_logic_vector(7 DOWNTO 0);
+    p_word : out std_logic_vector(7 DOWNTO 0)
   );
 END port3_register;
 
 ARCHITECTURE behavior OF port3_register IS
   SIGNAL s_write : std_logic;
-  SIGNAL s_input : std_logic_vector(15 DOWNTO 0);
-  SIGNAL s_out : std_logic_vector(15 DOWNTO 0);
+  SIGNAL s_input : std_logic_vector(7 DOWNTO 0);
+  SIGNAL s_out : std_logic_vector(7 DOWNTO 0);
 BEGIN
   -- Behavior
   s_write <= p_ctrl;

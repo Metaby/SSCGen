@@ -145,7 +145,6 @@ public class Program {
 		for (String trans : commandTranslation) {
 			String[] parts = trans.split(";");
 			int extern = Integer.parseInt(parts[0], 16);
-			System.out.println(extern);
 			if (extern > highestAdress) {
 				highestAdress = extern;
 			}
@@ -161,9 +160,9 @@ public class Program {
 		String commandTranslationTable = "v2.0 raw" + System.lineSeparator();
 		for (int i = 0; i < table.length; i++) {
 			if (table[i].equals("")) {
-				commandTranslationTable += "0x0000 ";
+				commandTranslationTable += "0000 ";
 			} else {
-				commandTranslationTable += "0x" + addZeros(table[i], 4) + " ";
+				commandTranslationTable += addZeros(table[i], 4) + " ";
 			}
 			if ((i + 1) % 8 == 0) {
 				commandTranslationTable += System.lineSeparator();

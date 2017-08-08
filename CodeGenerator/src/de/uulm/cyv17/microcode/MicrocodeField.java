@@ -1,6 +1,8 @@
 package de.uulm.cyv17.microcode;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class containing one field of the microcode with
@@ -106,5 +108,14 @@ public class MicrocodeField {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String toString() {
+		String params = "";
+		Set<String> keys = fields.keySet();
+		for (String key : keys) {
+			params += key + "=" + fields.get(key) + ", "; 
+		}
+		return id + ": " + params;
 	}
 }

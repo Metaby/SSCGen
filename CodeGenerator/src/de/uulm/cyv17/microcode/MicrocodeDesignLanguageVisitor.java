@@ -163,6 +163,8 @@ public class MicrocodeDesignLanguageVisitor extends de.uulm.cyv17.antlr.Microcod
 	@Override
 	public String visitGr_field_declaration(Gr_field_declarationContext ctx) {
 		field = new MicrocodeField();
+		params = new ArrayList<String>();
+		values = new ArrayList<Integer>();
 		return visitChildren(ctx);
 	}
 	

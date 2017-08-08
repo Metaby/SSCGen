@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<architecture wordSize="16">
+<architecture wordSize="8">
 	<!-- REGISTER -->
 	<register>
 		<id>pc_register</id>
-		<size>16</size>
+		<size>8</size>
 		<inputs>
 			<input>m1_multiplexer.out</input>
 		</inputs>
@@ -21,7 +21,7 @@
 	</register>
 	<register>
 		<id>port2_register</id>
-		<size>16</size>
+		<size>8</size>
 		<inputs>
 			<input>cache_register_file.out</input>
 		</inputs>
@@ -30,7 +30,7 @@
 	</register>
 	<register>
 		<id>port3_register</id>
-		<size>16</size>
+		<size>8</size>
 		<inputs>
 			<input>cache_register_file.out</input>
 		</inputs>
@@ -39,7 +39,7 @@
 	</register>
 	<register>
 		<id>operand1_register</id>
-		<size>16</size>
+		<size>8</size>
 		<inputs>
 			<input>cache_register_file.out</input>
 		</inputs>
@@ -48,7 +48,7 @@
 	</register>
 	<register>
 		<id>operand2_register</id>
-		<size>16</size>
+		<size>8</size>
 		<inputs>
 			<input>cache_register_file.out</input>
 			<input>system.const.0</input>
@@ -61,7 +61,7 @@
 	</register>
 	<register>
 		<id>address_register</id>
-		<size>16</size>
+		<size>8</size>
 		<inputs>
 			<input>program_rom.out</input>
 		</inputs>
@@ -93,8 +93,8 @@
 	<!-- ROM -->
 	<rom>
 		<id>program_rom</id>
-		<wordSize>16</wordSize>
-		<addressSize>16</addressSize>
+		<wordSize>8</wordSize>
+		<addressSize>8</addressSize>
 		<contentFile>processors/example_cpu/program.hex</contentFile>
 		<addresses>
 			<address>pc_register.out</address>
@@ -116,7 +116,7 @@
 	<rom>
 		<id>cmd_trans_rom</id>
 		<wordSize>16</wordSize>
-		<addressSize>16</addressSize>
+		<addressSize>8</addressSize>
 		<contentFile>processors/example_cpu/translation.hex</contentFile>
 		<addresses>
 			<address>program_rom.out</address>
@@ -127,8 +127,8 @@
 	<!-- REGISTER-FILE -->
 	<registerFile>
 		<id>cache_register_file</id>
-		<wordSize>16</wordSize>
-		<addressSize>16</addressSize>
+		<wordSize>8</wordSize>
+		<addressSize>8</addressSize>
 		<ports>
 			<port>
 				<type>in</type>
@@ -157,7 +157,7 @@
 	<!-- ALU -->
 	<alu>
 		<id>pc_inc_alu</id>
-		<wordSize>16</wordSize>
+		<wordSize>8</wordSize>
 		<inputsOperandA>
 			<input>pc_register.out</input>
 		</inputsOperandA>
@@ -191,7 +191,7 @@
 	</alu>
 	<alu>
 		<id>math_alu</id>
-		<wordSize>16</wordSize>
+		<wordSize>8</wordSize>
 		<inputsOperandA>
 			<input>operand1_register.out</input>
 		</inputsOperandA>
@@ -236,7 +236,7 @@
 	<!-- MULTIPLEXER -->
 	<multiplexer>
 		<id>m1_multiplexer</id>
-		<wordSize>16</wordSize>
+		<wordSize>8</wordSize>
 		<inputs>
 			<input>pc_inc_alu.out</input>
 			<input>program_rom.out</input>
