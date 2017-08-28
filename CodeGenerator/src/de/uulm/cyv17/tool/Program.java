@@ -23,36 +23,27 @@ public class Program {
 	}
 	
 	public static void main(String[] args) {
-		/*
-		String processor = "stack_machine";
-		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/" + processor + "_mp.mdl");
-		compileMicrocode("processors/" + processor + "/" + processor + "_mp.mdl", "processors/" + processor + "/" + processor + "_mp.hex");
-		generateArchitecture("processors/" + processor + "/architecture.xml", "", "processors/" + processor + "/code/");
-		*/
-		/*ArgumentHandler pm = new ArgumentHandler(args);
+		ArgumentHandler pm = new ArgumentHandler(args);
 		if (pm.getOp() == ToolOperation.GENERATE_MICROCODE_TEMPLATE) {
 			generateMicrocodeDesignFiles(pm.getInputFile(), pm.getOutputFile());
 		} else if (pm.getOp() == ToolOperation.COMPILE_MICROCODE) {
 			compileMicrocode(pm.getInputFile(), pm.getOutputFile());
 		} else if (pm.getOp() == ToolOperation.GENERATE_ARCHITECTURE) {
 			generateArchitecture(pm.getInputFile(), pm.getOutputFile());
-		} else if (pm.getOp() == ToolOperation.GENERATE_TRANSLATION) {
-			generateTranslationTable(pm.getInputFile(), pm.getOutputFile());
 		} else if (pm.getOp() == ToolOperation.RUN_EDITOR) {
 			Assembler asm = new Assembler();
 			asm.initWindow();
-			asm.initReplacement();
+			asm.initReplacement(pm.getInputFile());
 		}
-		*/
-		String processor = "example_cpu";
-		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/microprogram.mdl");
-		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
-		Assembler asm = new Assembler();
-		asm.initWindow();
-		asm.initReplacement("processors/" + processor + "/mnemonics.csv");
-		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
-		generateArchitecture("processors/" + processor + "/architecture.xml", "processors/" + processor + "/code/");
-		System.out.println("fin");
+//		String processor = "example_cpu";
+//		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/microprogram.mdl");
+//		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
+//		Assembler asm = new Assembler();
+//		asm.initWindow();
+//		asm.initReplacement("processors/" + processor + "/mnemonics.csv");
+//		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
+//		generateArchitecture("processors/" + processor + "/architecture.xml", "processors/" + processor + "/code/");
+		System.out.println("sscgen fin (0)");
 	}
 	
 	public static Architecture validateAndLoadArchitecture(String architectureFile) {

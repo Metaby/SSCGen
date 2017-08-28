@@ -11,37 +11,36 @@ public class ArgumentHandler {
 		outputFile = "NA";
 		op = ToolOperation.NONE;
 		if (params.length == 0) {
-			System.out.println("====================================");
-			System.out.println("= S-imple A-rchitecture G-enerator =");
-			System.out.println("= Version 0.54 - Max Brand - 2017  =");
-			System.out.println("====================================");
+			System.out.println("+------------------------------------+");
+			System.out.println("|               SSCGEN               |");
+			System.out.println("| [S]imple [S]oft [C]ore [GEN]erator |");
+			System.out.println("|  Version 0.54 - Max Brand - 2017   |");
+			System.out.println("+------------------------------------+");
 			System.out.println("");
-			System.out.println("-= Usage =-");
-			System.out.println("Generate Microcode-Design-Language template:");
-			System.out.println("\t./sag.jar -template -in arch.xml -out arch.mdl");
+			System.out.println("usage: sscgen\t[--generate-architecture, -a]");
+			System.out.println("\t\t[--generate-template, -t]");
+			System.out.println("\t\t[--compile-microcode, -c]");
+			System.out.println("\t\t[--editor, -e]");
+			System.out.println("\t\t[--input, -i]");
+			System.out.println("\t\t[--output, -o]");
 			System.out.println("");
-			System.out.println("Compile Microcode-Design-Language:");
-			System.out.println("./sag.jar -compiler -in arch.mdl -out arch.hex");
-			System.out.println("");
-			System.out.println("Generate Architecture:");
-			System.out.println("./sag.jar -generate -in arch.xml -out arch/");
 		}
 		for (int i = 0; i < params.length; i++) {
-			if (params[i].equals("-template")) {
+			if (params[i].equals("--generate-template") || params[i].equals("-t")) {
 				op = ToolOperation.GENERATE_MICROCODE_TEMPLATE;
-			} else if (params[i].equals("-compile")) {
+			} else if (params[i].equals("--compile-microcode") || params[i].equals("-c")) {
 				op = ToolOperation.COMPILE_MICROCODE;
-			} else if (params[i].equals("-generate")) {
+			} else if (params[i].equals("--generate-architecture") || params[i].equals("-a")) {
 				op = ToolOperation.GENERATE_ARCHITECTURE;
-			} else if (params[i].equals("-editor")) {
+			} else if (params[i].equals("--editor") || params[i].equals("-e")) {
 				op = ToolOperation.RUN_EDITOR;
-			} else if (params[i].equals("-in")) {
+			} else if (params[i].equals("-i") || params[i].equals("--input")) {
 				if (params.length - 1 == i) {
 					ErrorHandler.throwError(0);
 				}
 				inputFile = params[i + 1];
 				i++;
-			} else if (params[i].equals("-out")) {
+			} else if (params[i].equals("-o") || params[i].equals("--output")) {
 				if (params.length - 1 == i) {
 					ErrorHandler.throwError(1);
 				}	
