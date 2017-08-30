@@ -486,12 +486,19 @@ function NOP(auto, 0x50, 0) {
 	call fetch();
 }
 
+/*
+ * Fetch next command
+ */
 virtual fetch() {
 	set pc_register_write(H);
 	set noop(0);
 	set m2_multiplexer_isel(cmd_trans_rom.out);
 }
 
+/*
+ * Load the two operands addressed by the next two bytes
+ * of the program code to the alu registers.
+ */
 virtual load_operands() {
 	fix operand2_register_isel(cache_register_file.out);
 	set pc_register_write(H);

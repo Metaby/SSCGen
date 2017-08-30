@@ -20,14 +20,33 @@ import de.uulm.cyv17.wrapper.entities.RegisterEntity;
 import de.uulm.cyv17.wrapper.entities.RegisterFileEntity;
 import de.uulm.cyv17.wrapper.entities.RomEntity;
 
+/**
+ * Factory class for generating the components of
+ * an architecture.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 class ComponentFactory {
 	
 	private String targetDirectory;
 	
+	/**
+	 * The constructor of the factory class.
+	 * 
+	 * @param targetDirectory the target directory in which to store the generated components
+	 */
 	ComponentFactory(String targetDirectory) {
 		this.targetDirectory = targetDirectory;
 	}
 	
+	/**
+	 * Function for generating the vhdl component out
+	 * of a register file entity.
+	 * 
+	 * @param rf the register file entity to be converted
+	 * @return a working vhdl component
+	 */
 	VhdlComponent generateComponent(RegisterFileEntity rf) {
 		VhdlComponent component = new VhdlComponent(rf.getId());
 		component.AddLibrary("USE ieee.numeric_std.all;");
@@ -136,11 +155,19 @@ class ComponentFactory {
 			Files.write(outputFile.toPath(), component.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+			System.err.println(targetFile);
+			ErrorHandler.throwError(5);
 		}
 		return component;
 	}
 	
+	/**
+	 * Function for generating the vhdl component out
+	 * of a multiplexer entity.
+	 * 
+	 * @param mux the multiplexer entity to be converted
+	 * @return a working vhdl component
+	 */
 	VhdlComponent generateComponent(MultiplexerEntity mux) {
 		VhdlComponent component = new VhdlComponent(mux.getId());
 		int inputsCnt = mux.getInputs().size();
@@ -162,11 +189,19 @@ class ComponentFactory {
 			Files.write(outputFile.toPath(), component.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+			System.err.println(targetFile);
+			ErrorHandler.throwError(5);
 		}	
 		return component;
 	}
 	
+	/**
+	 * Function for generating the vhdl component out
+	 * of a rom entity.
+	 * 
+	 * @param rom the rom entity to be converted
+	 * @return a working vhdl component
+	 */
 	VhdlComponent generateComponent(RomEntity rom) {
 		int content[] = new int[] { };
 		String contentFile = rom.getContentFile();
@@ -180,9 +215,8 @@ class ComponentFactory {
 		} else {
 			File inputFile = new File(contentFile);
 			if (!inputFile.exists()) {
-				System.out.println("Error: Content file does not exist. (" + contentFile + ")");
-				System.exit(-1);
-				return null;
+				System.err.println(contentFile);
+				ErrorHandler.throwError(15);
 			}
 			try {
 				List<String> strContent = Files.readAllLines(inputFile.toPath());
@@ -197,15 +231,13 @@ class ComponentFactory {
 						content[i] = Integer.parseInt(strBytesArray[i], 16);
 					}
 				} else {
-					System.out.println("Error: Wrong file format. (" + contentFile + ")");
-					System.exit(-1);
-					return null;
+					System.err.println(contentFile);
+					ErrorHandler.throwError(16);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("Error: Reading content file. (" + contentFile + ")");
-				System.exit(-1);
-				return null;
+				System.err.println(contentFile);
+				ErrorHandler.throwError(17);
 			}		
 		}
 		VhdlComponent component = new VhdlComponent(rom.getId());
@@ -230,13 +262,7 @@ class ComponentFactory {
 			behavior += "\",";
 			behavior += System.lineSeparator();
 		}
-//		if (content.length < Math.pow(2, addressSize)) {
-			behavior += "    \"" + getBinaryString(0, wordSize) + "\" WHEN OTHERS;" + System.lineSeparator();			
-//		} else {
-//			char ca[] = behavior.toCharArray();
-//			ca[behavior.length() - 3] = ';';
-//			behavior = new String(ca);
-//		}
+		behavior += "    \"" + getBinaryString(0, wordSize) + "\" WHEN OTHERS;" + System.lineSeparator();			
 		component.setBehavior(behavior);
 		String targetFile = targetDirectory + "/components/" + rom.getId() + ".vhdl";
 		File outputFile = new File(targetFile);
@@ -244,11 +270,19 @@ class ComponentFactory {
 			Files.write(outputFile.toPath(), component.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+			System.err.println(targetFile);
+			ErrorHandler.throwError(5);
 		}		
 		return component;	
 	}
 	
+	/**
+	 * Function for generating the vhdl component out
+	 * of a register entity.
+	 * 
+	 * @param register the register entity to be converted
+	 * @return a working vhdl component
+	 */
 	VhdlComponent generateComponent(RegisterEntity register) {
 		VhdlComponent component = new VhdlComponent(register.getId());
 		component.AddPort("p_clk : in", 1);
@@ -305,11 +339,19 @@ class ComponentFactory {
 			Files.write(outputFile.toPath(), component.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+			System.err.println(targetFile);
+			ErrorHandler.throwError(5);
 		}			
 		return component;
 	}
 	
+	/**
+	 * Function for generating the vhdl component out
+	 * of a alu entity.
+	 * 
+	 * @param alu the alu entity to be converted
+	 * @return a working vhdl component
+	 */
 	VhdlComponent generateComponent(AluEntity alu) {
 		VhdlComponent component = new VhdlComponent(alu.getId());
 		// Variables
@@ -428,11 +470,19 @@ class ComponentFactory {
 			Files.write(outputFile.toPath(), component.getComponent().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + targetFile + ")");
+			System.err.println(targetFile);
+			ErrorHandler.throwError(5);
 		}
 		return component;
 	}
 	
+	/**
+	 * Converts the given bit string to a bit string in 
+	 * vhdl syntax by adding '' or "".
+	 * 
+	 * @param bits the bit string
+	 * @return the converted bit string
+	 */
 	private String getVhdlBitString(String bits) {
 		if (bits.length() == 1) {
 			return "\'" + bits + "\'";
@@ -441,6 +491,12 @@ class ComponentFactory {
 		}
 	}
 	
+	/**
+	 * This function creates the command table for a given alu.
+	 * 
+	 * @param alu the alu entity to use
+	 * @return a string containing the command table
+	 */
 	private String generateAluCommandTable(AluEntity alu) {
 		String table = "";
 		List<String> subComponents = getAluSubComponents(alu);
@@ -655,6 +711,12 @@ class ComponentFactory {
 		}
 	}
 	
+	/**
+	 * Generates the output multiplexer for a given alu.
+	 * 
+	 * @param alu the alu entity to use
+	 * @return a string containing the multiplexing mechanism of the alu outputs
+	 */
 	private String generateAluOutputMultiplexers(AluEntity alu) {
 		int operationsCnt = alu.getOperations().size();
 		int conditionsCnt = alu.getConditions().size();
@@ -748,6 +810,12 @@ class ComponentFactory {
 		}
 	}
 
+	/**
+	 * Generates the imports used within the vhdl component of the alu.
+	 * 
+	 * @param alu the alu entity to be used
+	 * @return a list of strings containing the import definitions
+	 */
 	private List<String> getAluImports(AluEntity alu) {
 		List<String> imports = new ArrayList<String>();
 		List<String> subComponents = getAluSubComponents(alu);
@@ -863,6 +931,12 @@ class ComponentFactory {
 		return imports;
 	}
 	
+	/**
+	 * Determines the output signal of a command for the alu.
+	 * 
+	 * @param cmd the command to be evaluated
+	 * @return a string containing the appropriate output signal
+	 */
 	private String getAluOutputSignal(String cmd) {
 		if (cmd.matches("ADD|ADD_U|SUB|SUB_U")) {
 			return "s_adder_result";
@@ -882,6 +956,12 @@ class ComponentFactory {
 		return "";
 	}
 	
+	/**
+	 * Generates the instances for the components used within the alu.
+	 * 
+	 * @param alu the alu entity to be used
+	 * @return a string containing the the instance declarations
+	 */
 	private String generateAluSubComponentsInstances(AluEntity alu) {
 		String instances = "";
 		List<String> subComponents = getAluSubComponents(alu);
@@ -907,6 +987,12 @@ class ComponentFactory {
 		return instances;
 	}
 	
+	/**
+	 * Creates a list of the needed alu sub components.
+	 * 
+	 * @param alu the alu entity to be used
+	 * @return a list of strings containing the needed sub components
+	 */
 	private List<String> getAluSubComponents(AluEntity alu) {
 		List<String> components = new ArrayList<String>();
 		for (String op : alu.getOperations()) {
@@ -946,6 +1032,34 @@ class ComponentFactory {
 		return components;
 	}
 
+	/**
+	 * This function generates a complete multiplexer in vhdl code.
+	 * Various parameters are needed in order to successfully generate
+	 * an appropriate multiplexer.
+	 * 
+	 * The scheme is as followed:
+	 * The multiplexer uses one input name for all cases. This input name
+	 * is extended by an indicating number for each case. An example is
+	 * given beneath.
+	 * 
+	 * Parameters:
+	 * inputName := inp
+	 * inputs := 4
+	 * 
+	 * Generated vhdl code:
+	 * WITH adr SELECT output <=
+	 * 	inp0 WHEN "00",
+	 * 	inp1 WHEN "01",
+	 * 	inp2 WHEN "10",
+	 * 	inp3 WHEN "11",
+	 * 	(others => '0') WHEN others;
+	 * 
+	 * @param adr the signal or port to be used for the condition
+	 * @param outp the signal or port specifying the output
+	 * @param inputName the signal or port used to connect to the output
+	 * @param inputs the number of inputs
+	 * @return a functioning vhdl multiplexer
+	 */
 	private String generateMux(String adr, String outp, String inputName, int inputs) {
 		String behavior = "";
 		if (inputs == 2) {
@@ -966,14 +1080,37 @@ class ComponentFactory {
 		return behavior;
 	}
 	
+	/**
+	 * Calculates the logarithm to the base 2 of a given value.
+	 * 
+	 * @param value the integer value to be used
+	 * @return the base two logarithm of the integer
+	 */
 	private int log2(int value) {
 		return (int)Math.ceil(Math.log(value) / Math.log(2));
 	}
 	
+	/**
+	 * Converts a given integer to a binary string under the
+	 * restriction of a given number of digits. This is needed
+	 * due to the syntax of vhdl.
+	 * 
+	 * @param value the value to be converted
+	 * @param digits the number of digits
+	 * @return a string containing the binary representation
+	 */
 	private String getBinaryString(int value, int digits) {
 		return String.format("%" + digits + "s", Integer.toBinaryString(value)).replace(' ', '0');
 	}
 	
+	/**
+	 * This method is used to copy complete directories with
+	 * the files from the source to the target.
+	 * 
+	 * @param sourceLocation the source location
+	 * @param targetLocation the target location
+	 * @throws IOException
+	 */
 	private void copy(File sourceLocation, File targetLocation) throws IOException {
 	    if (sourceLocation.isDirectory()) {
 	        copyDirectory(sourceLocation, targetLocation);
@@ -981,7 +1118,14 @@ class ComponentFactory {
 	        copyFile(sourceLocation, targetLocation);
 	    }
 	}
-
+	
+	/**
+	 * This method is used to copy directories from the source to the target.
+	 * 
+	 * @param source the source file
+	 * @param target the target file
+	 * @throws IOException
+	 */
 	private void copyDirectory(File source, File target) throws IOException {
 	    if (!target.exists()) {
 	        target.mkdir();
@@ -990,7 +1134,14 @@ class ComponentFactory {
 	        copy(new File(source, f), new File(target, f));
 	    }
 	}
-
+	
+	/**
+	 * This method is used to copy files from the source to the target.
+	 * 
+	 * @param source the source file
+	 * @param target the target file
+	 * @throws IOException
+	 */
 	private void copyFile(File source, File target) throws IOException {        
 	    try (
 	            InputStream in = new FileInputStream(source);

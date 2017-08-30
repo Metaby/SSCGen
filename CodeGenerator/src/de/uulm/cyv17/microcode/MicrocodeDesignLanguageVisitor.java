@@ -26,11 +26,11 @@ import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser.Gr_init_permContext;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser.Gr_init_perm_codeContext;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser.Gr_mdfContext;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser.Gr_virtual_headContext;
+import de.uulm.cyv17.tool.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// TODO: URL von [1]
 /**
  *  The following class will not be documented in fact
  *  it is only an overwritten auto generated class.
@@ -40,7 +40,7 @@ import java.util.HashMap;
  *  into an object of the type "Microcode". The microcode
  *  itself is documented in the specific classes.
  *  
- *  [1] antlr.org (4.7)
+ *  [1] https://github.com/antlr/antlr4/blob/4.6/doc/index.md (URL-Date: 08/30/2017)
  *  
  * @author Max Brand (max.brand@uni-ulm.de)
  *
@@ -52,7 +52,7 @@ public class MicrocodeDesignLanguageVisitor extends de.uulm.cyv17.antlr.Microcod
 	private MicrocodeFunction function;
 	private MicrocodeField field;
 	private Microcode microcode;
-	
+
 	public MicrocodeDesignLanguageVisitor() {
 		microcode = new Microcode();
 		functionNames = new ArrayList<String>();
@@ -211,8 +211,8 @@ public class MicrocodeDesignLanguageVisitor extends de.uulm.cyv17.antlr.Microcod
 	public String visitGr_function_tail(Gr_function_tailContext ctx) {
 		microcode.addFunction(function);
 		if (functionNames.contains(function.getName())) {
-			System.out.println("Error: Qualifier \"" + function.getName() + "\" for function or virtual already in use.");
-			System.exit(-1);
+			System.err.println(function.getName());
+			ErrorHandler.throwError(14);
 		} else {
 			functionNames.add(function.getName());
 		}

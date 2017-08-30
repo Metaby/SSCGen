@@ -18,6 +18,13 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * This class implements a graphical assembler with
+ * which a given architecture can be programmed.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 public class Assembler implements ActionListener {
 
 	private Map<String, String> replacement;
@@ -31,6 +38,10 @@ public class Assembler implements ActionListener {
 	private JButton assembleButton;
 	private JFrame window;
 	
+	/**
+	 * The constructor of the assembler program. It
+	 * builds and initializes the graphical interface.
+	 */
 	public void initWindow() {
 		asmTextBox = new JTextPane();
 		asmTextBox.setFont(Font.getFont("Courier New"));
@@ -68,6 +79,14 @@ public class Assembler implements ActionListener {
 		window.setVisible(true);
 	}
 	
+	/**
+	 * Initializes the replacement function of the assembler.
+	 * The method generates the labels for registers (Rn) and
+	 * constants (#n). Also it reads the mnemonics out of the
+	 * mnemonics file and prepares them.
+	 * 
+	 * @param mnemonicFile the path of the mnemonics file
+	 */
 	public void initReplacement(String mnemonicFile) {
 		replacement = new HashMap<String, String>();
 		cmdLength = new HashMap<String, Integer>();
@@ -87,12 +106,15 @@ public class Assembler implements ActionListener {
 			hexTextBox.setText(mnemonicFile + "not found");
 			assembleButton.setEnabled(false);
 		}
-		for (int i = 0; i < 256; i++) {
+		for (int i = 0; i < Math.pow(2, 16); i++) {
 			replacement.put("R" + i, Integer.toHexString(i));
 			replacement.put("#" + i, Integer.toHexString(i));
 		}
 	}
 	
+	/**
+	 * The button event for the open assembler file dialog.
+	 */
 	public void OpenAsmButtonEvent() {
 		JFileChooser openDialog = new JFileChooser();
 		openDialog.setCurrentDirectory(new File(System.getProperty("user.dir")));
@@ -112,6 +134,9 @@ public class Assembler implements ActionListener {
 		}
 	}
 	
+	/**
+	 * The button event for the save assembler file dialog.
+	 */
 	public void SaveAsmButtonEvent() {
 		JFileChooser saveDialog = new JFileChooser();
 		saveDialog.setCurrentDirectory(new File(System.getProperty("user.dir")));
@@ -133,7 +158,9 @@ public class Assembler implements ActionListener {
 			}
 		}		
 	}
-	
+	/**
+	 * The button event for the save hex file dialog.
+	 */
 	public void SaveHexButtonEvent() {
 		JFileChooser saveDialog = new JFileChooser();
 		saveDialog.setCurrentDirectory(new File(System.getProperty("user.dir")));
@@ -157,6 +184,10 @@ public class Assembler implements ActionListener {
 		}
 	}
 	
+	/**
+	 * The button event to start the assembly of the assembler code
+	 * to hex code.
+	 */
 	public void AssembleButtonEvent() {
 		String asm[] = asmTextBox.getText().trim().split("[ \t(\r\n)]+");
 		Vector<String> commands = new Vector<String>();
@@ -210,6 +241,9 @@ public class Assembler implements ActionListener {
 		hexTextBox.setText(hexCode);
 	}
 
+	/**
+	 * Action handler for the buttons.
+	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(saveAsmButton)) {
 			SaveAsmButtonEvent();
@@ -222,6 +256,11 @@ public class Assembler implements ActionListener {
 		}
 	}
 	
+	/**
+	 * Function to test if the given command is a real command or not.
+	 * @param cmd
+	 * @return true if it is, false otherwise
+	 */
 	public boolean IsCommand(String cmd) {
 		return replacement.containsKey(cmd) && !cmd.startsWith("R") && !cmd.startsWith("#");
 	}

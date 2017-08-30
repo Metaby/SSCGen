@@ -14,6 +14,9 @@ public class Microcode {
 	private List<MicrocodeFunction> functions;
 	private List<MicrocodeField> fields;
 	
+	/**
+	 * The constructor of the Microcode class
+	 */
 	public Microcode() {
 		functions = new ArrayList<MicrocodeFunction>();
 		fields = new ArrayList<MicrocodeField>();

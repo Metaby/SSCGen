@@ -11,10 +11,25 @@ import de.uulm.cyv17.wrapper.Port;
 import de.uulm.cyv17.wrapper.PortDirection;
 import de.uulm.cyv17.wrapper.Wrapper;
 
+/**
+ * This class represents the register file entity.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 public class RegisterFileEntity extends BaseEntity {
+	
 	private List<Port> ports;
 	private int addressSize;
 	
+	/**
+	 * The constructor of the register file entity. It takes
+	 * an register file object of the jaxb packages and converts
+	 * it into an object of the wrapper.entities 
+	 * package.
+	 * 
+	 * @param alu the jaxb register file object
+	 */
 	public RegisterFileEntity(de.uulm.cyv17.jaxb.RegisterFile rf) {
 		id = rf.getId();
 		addressSize = rf.getAddressSize();
@@ -34,7 +49,12 @@ public class RegisterFileEntity extends BaseEntity {
 		}
 		control = new Connector(rf.getControl(), ctrlSize);
 	}
-	
+
+	/**
+	 * This method is used to set the word size of the entity.
+	 * 
+	 * @param wordSize the word size to be set
+	 */
 	@Override
 	public void setWordSize(int wordSize) {
 		this.wordSize = wordSize;
@@ -48,7 +68,12 @@ public class RegisterFileEntity extends BaseEntity {
 			}
 		}
 	}
-	
+
+	/**
+	 * Returns the control vector of the entity
+	 * 
+	 * @return the control vector
+	 */
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int cvSize = 0;
@@ -105,10 +130,20 @@ public class RegisterFileEntity extends BaseEntity {
 		return new ControlVector(0);
 	}
 	
+	/**
+	 * Returns the ports of the register file entity.
+	 * 
+	 * @return a list containing the ports
+	 */
 	public List<Port> getPorts() {
 		return ports;
 	}
 
+	/**
+	 * Returns the address size of the register file entity.
+	 * 
+	 * @return an integer containing the address size
+	 */
 	public int getAddressSize() {
 		return addressSize;
 	}	

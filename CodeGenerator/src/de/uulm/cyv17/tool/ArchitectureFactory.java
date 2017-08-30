@@ -208,11 +208,9 @@ class ArchitectureFactory {
 			topLevelEntity.AddImport(vc.getImport());
 		}
 		handleCustomEntities(topLevelEntity, arch.getCustoms(), directory);
-		//
-		// PROVISORISCH FÜR MODELSIM
-		//
-		topLevelEntity.setBehavior(replaceInfix(behavior, topLevelEntity));
-		//topLevelEntity.setBehavior(behavior);
+		// Provisional code replacement to match the code conditions of ModelSim.
+		topLevelEntity.setBehavior(replaceInfix(behavior, topLevelEntity)); // comment this line to remove the code replacement
+		//topLevelEntity.setBehavior(behavior); // uncomment this line, if the one above is commented
 		File outputFile = new File(directory + "processor.vhdl");
 		try {
 			Files.write(outputFile.toPath(), topLevelEntity.getComponent().getBytes());
@@ -222,6 +220,16 @@ class ArchitectureFactory {
 		}
 	}
 	
+	/**
+	 * The function is used to handle the import and usage
+	 * of custom entities in the specification. Also the
+	 * method is used to copy the custom entities to the
+	 * architecture directory.
+	 * 
+	 * @param tle the top-level-entity of the architecture
+	 * @param customs a list containing the custom entities
+	 * @param targetLocation the target location of the architecture
+	 */
 	private void handleCustomEntities(VhdlComponent tle, List<CustomEntity> customs, String targetLocation) {
 		for (CustomEntity cus : customs) {
 			try {
@@ -269,6 +277,13 @@ class ArchitectureFactory {
 		}
 	}
 	
+	/**
+	 * This method is used to copy files from the source to the target.
+	 * 
+	 * @param source the source file
+	 * @param target the target file
+	 * @throws IOException
+	 */
 	private void copyFile(File source, File target) throws IOException {        
 	    try (
 	            InputStream in = new FileInputStream(source);
@@ -282,9 +297,7 @@ class ArchitectureFactory {
 	    }
 	}
 
-	//
-	// PROVISORISCH FÜR MODELSIM TEST
-	//
+	// Provisional code replacement to match the code conditions of ModelSim.
 	/**
 	 * This function replaces concatenated signals in the given behavior
 	 * of a given VHDL-Component. It replaces only concatenated signals
@@ -312,9 +325,7 @@ class ArchitectureFactory {
 		return behavior;
 	}
 
-	//
-	// PROVISORISCH FÜR MODELSIM
-	//
+	// Provisional code replacement to match the code conditions of ModelSim.
 	/**
 	 * This function retrieves the signal size of the given
 	 * infix (signal concatenation) in its VHDL-Component.

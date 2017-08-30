@@ -9,11 +9,25 @@ import de.uulm.cyv17.wrapper.Connector;
 import de.uulm.cyv17.wrapper.ConnectorType;
 import de.uulm.cyv17.wrapper.Wrapper;
 
+/**
+ * This class represents the register entity.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 public class RegisterEntity extends BaseEntity {
 	
 	private List<Connector> inputs;
 	private Connector output;
 	
+	/**
+	 * The constructor of the register entity. It takes
+	 * an register object of the jaxb packages and converts
+	 * it into an object of the wrapper.entities 
+	 * package.
+	 * 
+	 * @param alu the jaxb register object
+	 */
 	public RegisterEntity(de.uulm.cyv17.jaxb.Register reg) {
 		id = reg.getId();
 		wordSize = reg.getSize();
@@ -25,6 +39,11 @@ public class RegisterEntity extends BaseEntity {
 		control = new Connector(reg.getControl(), (int)Math.ceil(Math.log(inputs.size()) / Math.log(2)) + 1);
 	}
 	
+	/**
+	 * This method is used to set the word size of the entity.
+	 * 
+	 * @param wordSize the word size to be set
+	 */
 	@Override
 	public void setWordSize(int wordSize) {
 		this.wordSize = wordSize;
@@ -34,6 +53,11 @@ public class RegisterEntity extends BaseEntity {
 		}
 	}
 
+	/**
+	 * Returns the control vector of the entity
+	 * 
+	 * @return the control vector
+	 */
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int iselSize = Wrapper.log2(inputs.size());
@@ -54,10 +78,20 @@ public class RegisterEntity extends BaseEntity {
 		return new ControlVector(0);
 	}
 	
+	/**
+	 * Returns the input connectors of the entity.
+	 * 
+	 * @return a list containing the input connectors
+	 */
 	public List<Connector> getInputs() {
 		return inputs;
 	}
-
+	
+	/**
+	 * Returns the output connector of the entity.
+	 * 	
+	 * @return the output connector
+	 */
 	public Connector getOutput() {
 		return output;
 	}

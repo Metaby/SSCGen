@@ -110,6 +110,12 @@ public class MicrocodeField {
 		this.id = id;
 	}
 	
+	/**
+	 * Transforms the microcode field into a human readable
+	 * String.
+	 * 
+	 * @return the human readable String
+	 */
 	public String toString() {
 		String params = "";
 		Set<String> keys = fields.keySet();

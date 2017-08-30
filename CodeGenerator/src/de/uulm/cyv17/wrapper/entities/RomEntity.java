@@ -9,6 +9,13 @@ import de.uulm.cyv17.wrapper.Connector;
 import de.uulm.cyv17.wrapper.ConnectorType;
 import de.uulm.cyv17.wrapper.Wrapper;
 
+
+/**
+ * This class represents the rom entity.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 public class RomEntity extends BaseEntity{
 
 	private List<Connector> addresses;
@@ -16,6 +23,14 @@ public class RomEntity extends BaseEntity{
 	private String contentFile;
 	private int addressSize;
 	
+	/**
+	 * The constructor of the rom entity. It takes
+	 * an rom object of the jaxb packages and converts
+	 * it into an object of the wrapper.entities 
+	 * package.
+	 * 
+	 * @param alu the jaxb register object
+	 */
 	public RomEntity(de.uulm.cyv17.jaxb.Rom rom) {
 		id = rom.getId();
 		contentFile = rom.getContentFile();
@@ -28,13 +43,23 @@ public class RomEntity extends BaseEntity{
 		}	
 		control = new Connector(rom.getControl(), (int)Math.ceil(Math.log(addresses.size()) / Math.log(2)));	
 	}
-	
+
+	/**
+	 * This method is used to set the word size of the entity.
+	 * 
+	 * @param wordSize the word size to be set
+	 */
 	@Override
 	public void setWordSize(int wordSize) {
 		this.wordSize = wordSize;
 		output.size = wordSize;
 	}
-	
+
+	/**
+	 * Returns the control vector of the entity
+	 * 
+	 * @return the control vector
+	 */
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int aselSize = Wrapper.log2(addresses.size());
@@ -50,19 +75,39 @@ public class RomEntity extends BaseEntity{
 		}
 		return new ControlVector(0);
 	}
-	
+
+	/**
+	 * Returns the address connectors of the entity.
+	 * 
+	 * @return a list containing the address connectors
+	 */
 	public List<Connector> getAddresses() {
 		return addresses;
 	}
 
+	/**
+	 * Returns the output connector of the entity.
+	 * 	
+	 * @return the output connector
+	 */
 	public Connector getOutput() {
 		return output;
 	}
 
+	/**
+	 * Returns the address size of the register file entity.
+	 * 
+	 * @return an integer containing the address size
+	 */
 	public int getAddressSize() {
 		return addressSize;
 	}
-	
+
+	/**
+	 * Returns the file path of the content definition of the rom entity.
+	 * 
+	 * @return a string containing the file path
+	 */
 	public String getContentFile() {
 		return contentFile;
 	}	

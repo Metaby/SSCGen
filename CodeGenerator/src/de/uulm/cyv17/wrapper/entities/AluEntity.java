@@ -9,7 +9,14 @@ import de.uulm.cyv17.wrapper.Connector;
 import de.uulm.cyv17.wrapper.ConnectorType;
 import de.uulm.cyv17.wrapper.Wrapper;
 
+/**
+ * This class represents the alu entity.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 public class AluEntity extends BaseEntity {
+	
 	private List<Connector> inputsA;
 	private List<Connector> inputsB;
 	private List<String> operations;
@@ -18,6 +25,14 @@ public class AluEntity extends BaseEntity {
 	private Connector output2;
 	private Connector status;
 	
+	/**
+	 * The constructor of the alu entity. It takes
+	 * an alu object of the jaxb packages and converts
+	 * it into an object of the wrapper.entities 
+	 * package.
+	 * 
+	 * @param alu the jaxb alu object
+	 */
 	public AluEntity(de.uulm.cyv17.jaxb.Alu alu) {
 		id = alu.getId();
 		wordSize = alu.getWordSize();
@@ -45,6 +60,11 @@ public class AluEntity extends BaseEntity {
 		control = new Connector(alu.getControl(), Wrapper.log2(inputsA.size()) + Wrapper.log2(inputsB.size()) + Wrapper.log2(operations.size() + conditions.size()));
 	}
 	
+	/**
+	 * This method is used to set the word size of the entity.
+	 * 
+	 * @param wordSize the word size to be set
+	 */
 	@Override
 	public void setWordSize(int wordSize) {
 		this.wordSize = wordSize;
@@ -58,6 +78,11 @@ public class AluEntity extends BaseEntity {
 		}
 	}
 	
+	/**
+	 * Returns the control vector of the entity
+	 * 
+	 * @return the control vector
+	 */
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int iselASize = Wrapper.log2(inputsA.size());
@@ -88,59 +113,72 @@ public class AluEntity extends BaseEntity {
 				}
 				cv.addField(field);
 			}
-//			if (iselASize > 0) {
-//				ControlField field = new ControlField(id + "_iselA", 0, iselASize - 1);
-//				for (int i = 0; i < inputsA.size(); i++) {
-//					field.addParameter(inputsA.get(i).toString(), i);		
-//				}
-//				cv.addField(field);
-//			}
-//			if (iselBSize > 0) {
-//				ControlField field = new ControlField(id + "_iselB", iselASize, iselASize + iselBSize - 1);
-//				for (int i = 0; i < inputsB.size(); i++) {
-//					field.addParameter(inputsB.get(i).toString(), i);		
-//				}
-//				cv.addField(field);
-//			}
-//			if (cselSize > 0) {
-//				ControlField field = new ControlField(id + "_csel", iselASize + iselBSize, iselASize + iselBSize + cselSize - 1);
-//				for (int i = 0; i < operations.size(); i++) {
-//					field.addParameter(operations.get(i).toString(), i);		
-//				}
-//				for (int i = 0; i < conditions.size(); i++) {
-//					field.addParameter(conditions.get(i), i + operations.size());
-//				}
-//				cv.addField(field);
-//			}
 			return cv;
 		}
 		return new ControlVector(0);
 	}
 
+	/**
+	 * Returns the input connectors for operand a.
+	 * 
+	 * @return a list containing the input connectors
+	 */
 	public List<Connector> getInputsA() {
 		return inputsA;
 	}
 
+	/**
+	 * Returns the input connectors for operand b.
+	 * 
+	 * @return a list containing the input connectors
+	 */
 	public List<Connector> getInputsB() {
 		return inputsB;
 	}
 
+	/**
+	 * Returns the supported operations of the alu entity.
+	 * 
+	 * @return a list of strings containing the operations
+	 */
 	public List<String> getOperations() {
 		return operations;
 	}
 
+	/**
+	 * Returns the supported conditions of the alu entity.
+	 * 
+	 * @return a list of strings containing the conditions
+	 */
 	public List<String> getConditions() {
 		return conditions;
 	}
 
+	/**
+	 * Returns the output connector for the LSBs of the result
+	 * from the alu entity.
+	 * 
+	 * @return an output connector
+	 */
 	public Connector getOutput1() {
 		return output1;
 	}
-
+	
+	/**
+	 * Returns the output connector for the MSBs of the result
+	 * from the alu entity.
+	 * 
+	 * @return the output connector
+	 */
 	public Connector getOutput2() {
 		return output2;
 	}
 
+	/**
+	 * Returns the status connector of the alu entity.
+	 * 
+	 * @return the status connector
+	 */
 	public Connector getStatus() {
 		return status;
 	}

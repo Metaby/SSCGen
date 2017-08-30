@@ -9,19 +9,20 @@ import java.util.List;
 import de.uulm.cyv17.microcode.MicrocodeCompiler;
 import de.uulm.cyv17.wrapper.*;
 
+/**
+ * The class containing the main function for the program entry. 
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 @SuppressWarnings("ucd")
 public class Program {
 	
-	private static long time;
-	
-	public static void startTimeMeasuring() {
-		time = System.nanoTime();
-	}
-	
-	public static void stopTimeMeasureing() {
-		System.out.println("Finished after " + (System.nanoTime() - time) / 1000000.0 + " ms");		
-	}
-	
+	/**
+	 * The program entry of the tool.
+	 * 
+	 * @param args the program arguments given while called
+	 */
 	public static void main(String[] args) {
 		ArgumentHandler pm = new ArgumentHandler(args);
 		if (pm.getOp() == ToolOperation.GENERATE_MICROCODE_TEMPLATE) {
@@ -35,17 +36,15 @@ public class Program {
 			asm.initWindow();
 			asm.initReplacement(pm.getInputFile());
 		}
-//		String processor = "example_cpu";
-//		generateMicrocodeDesignFiles("processors/" + processor + "/architecture.xml", "processors/" + processor + "/microprogram.mdl");
-//		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
-//		Assembler asm = new Assembler();
-//		asm.initWindow();
-//		asm.initReplacement("processors/" + processor + "/mnemonics.csv");
-//		compileMicrocode("processors/" + processor + "/microprogram.mdl", "processors/" + processor + "/microprogram.hex");
-//		generateArchitecture("processors/" + processor + "/architecture.xml", "processors/" + processor + "/code/");
 		System.out.println("sscgen fin (0)");
 	}
 	
+	/**
+	 * Validates and loads an architecture out of a given specification file.
+	 * 
+	 * @param architectureFile the path of the specification file
+	 * @return the validated, parsed and prepared architecture
+	 */
 	public static Architecture validateAndLoadArchitecture(String architectureFile) {
 		ArchitectureFactory factory = new ArchitectureFactory();
 		assertion(factory.validateSpecification(architectureFile, "processors/specification.xsd"));
@@ -55,6 +54,12 @@ public class Program {
 		return arch;
 	}
 	
+	/**
+	 * Generates the microcode templates of a given architecture specification.
+	 * 
+	 * @param architectureFile the path of the architectural specification file
+	 * @param outputFile the output file name for the templates
+	 */
 	public static void generateMicrocodeDesignFiles(String architectureFile, String outputFile) {
 		Architecture arch = validateAndLoadArchitecture(architectureFile);
 		ControlVector cv = arch.getControlVector();
@@ -72,7 +77,6 @@ public class Program {
 			mdfContent = mdfContent.substring(0, mdfContent.length() -2) + "}" + System.lineSeparator();
 		}
 		mdfContent += " *" + System.lineSeparator();
-		mdfContent += " *\tUse \"call idle_cyle()\" for one clock cycle without any operation" + System.lineSeparator();
 		mdfContent += " */" + System.lineSeparator() + System.lineSeparator();
 		String defFile = outputFile;
 		if (defFile.contains(".")) {
@@ -101,9 +105,6 @@ public class Program {
 			fields = fields + "}" + values + System.lineSeparator();
 		}
 		fields += "field noop = {0," + (cv.getSize() - 1) + "}{0}{0};" + System.lineSeparator() + System.lineSeparator();
-		//fields += "virtual idle_cycle() {" + System.lineSeparator();
-		//fields += "    set noop(0);" + System.lineSeparator();
-		//fields += "}";
 		File mdfPath = new File(outputFile);
 		File defPath = new File(defFile);
 		try {
@@ -113,10 +114,17 @@ public class Program {
 			Files.write(defPath.toPath(), fields.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.err.println(outputFile + ", " + defFile);
 			ErrorHandler.throwError(5);
 		}
 	}
 	
+	/**
+	 * Compiles the given microcode and generates the appropriate hex file.
+	 * 
+	 * @param mdfFile the path of the microcode file
+	 * @param targetFile the target path of the hex file
+	 */
 	public static void compileMicrocode(String mdfFile, String targetFile) {
 		MicrocodeCompiler compiler = new MicrocodeCompiler();
 		compiler.compile(mdfFile, targetFile);
@@ -129,7 +137,8 @@ public class Program {
 			Files.write(f.toPath(), content.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (mnemonics.csv)");
+			System.err.println("mnemonics.csv");
+			ErrorHandler.throwError(5);
 		}
 		List<String> commandTranslation = compiler.getCommandTranslation();
 		int highestAdress = 0;
@@ -164,10 +173,17 @@ public class Program {
 			Files.write(f.toPath(), commandTranslationTable.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (translation.hex)");
+			System.err.println("translation.hex");
+			ErrorHandler.throwError(5);
 		}
 	}
 	
+	/**
+	 * Generates the complete vhdl code for a given architecture.
+	 * 
+	 * @param architectureFile the path of the specification file
+	 * @param outputDirectory the output directory where the vhdl code is saved to
+	 */
 	public static void generateArchitecture(String architectureFile, String outputDirectory) {
 		deleteFolder(new File(outputDirectory));
 		ArchitectureFactory factory = new ArchitectureFactory();
@@ -175,12 +191,23 @@ public class Program {
 		factory.generateArchitecture(outputDirectory, arch);		
 	}
 	
+	/**
+	 * Assertion function for the validation. It throws an error
+	 * with the error handler if the given parameter is false.
+	 * 
+	 * @param pass the boolean if the assertion should fire or not
+	 */
 	public static void assertion(Boolean pass) {
 		if (!pass) {
 			ErrorHandler.throwError(4);		
 		}
 	}
 	
+	/**
+	 * A method for deleting a complete directory with all its content.
+	 * 
+	 * @param folder the directory to be deleted
+	 */
 	public static void deleteFolder(File folder) {
 	    File[] files = folder.listFiles();
 	    if(files != null) {

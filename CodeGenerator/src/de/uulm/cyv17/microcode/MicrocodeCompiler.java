@@ -91,7 +91,7 @@ public class MicrocodeCompiler {
 	 * appropriate error message.
 	 * 
 	 * @param mc microcode with calls
-	 * @return mc microcode without calls
+	 * @return the microcode object mc without calls
 	 */
 	private Microcode replaceCalls(Microcode mc) {
 		List<MicrocodeFunction> functions = mc.getFunctions();
@@ -105,8 +105,7 @@ public class MicrocodeCompiler {
 					if (lines.get(i).startsWith("c:")) {
 						String functionName = lines.get(i).substring(2, lines.get(i).length() - 2);
 						if (functionName.equals(function.getName())) {
-							System.out.println("Error: Microcode has cycles in the hierarchy");
-							System.exit(1);
+							ErrorHandler.throwError(12);
 						}
 						for (MicrocodeFunction calledFunction : functions) {
 							if (calledFunction.getName().equals(functionName)) {
@@ -157,7 +156,7 @@ public class MicrocodeCompiler {
 		if (mc != null) {
 			mc = replaceCalls(mc);
 			String bytes = "";
-			// Alle Funktionszeilen einlesen
+			// read all function lines
 			for (MicrocodeFunction mf : mc.getFunctions()) {
 				if (!mf.isVirtual()) {
 					if (mf.getPosition() != -1) {
@@ -170,7 +169,7 @@ public class MicrocodeCompiler {
 					}
 				}
 			}
-			// Positionen berechnen und felder ersetzen
+			// calculate positions and replace fields
 			int addressCounter = 0;
 			String[] split = bytes.split(System.lineSeparator());
 			String intermediateCode = "";
@@ -195,8 +194,8 @@ public class MicrocodeCompiler {
 				} else if (str.startsWith("p:")) {
 					int address = Integer.parseInt(str.substring(2));
 					if (address < addressCounter) {
-						System.out.println("Error: Code already assigned to address \"0x" + Integer.toHexString(address) + "\".");
-						System.exit(-1);
+						System.err.println("\"0x" + Integer.toHexString(address) + "\"");
+						ErrorHandler.throwError(13);
 					}
 					addressCounter = address;
 					intermediateCode += "p:" +  address + System.lineSeparator();
@@ -230,10 +229,24 @@ public class MicrocodeCompiler {
 		return "";
 	}
 	
+	/**
+	 * Returns the command translation table.
+	 * 
+	 * @return a List<String> containing the command translation table
+	 */
 	public List<String> getCommandTranslation() {
 		return commandTranslation;
 	}
 
+	/**
+	 * Searches for the microcode function with the given id. The function
+	 * will be searched within a complete set of microcode represented by
+	 * the Microcode class.
+	 * 
+	 * @param mc The microcode with its functions in which is searched
+	 * @param id The id of the wanted function
+	 * @return the microcode function if it is found, null otherwise
+	 */
 	private MicrocodeFunction GetFunction(Microcode mc, String id) {
 		for (MicrocodeFunction mf : mc.getFunctions()) {
 			if (mf.getName().equals(id)) {
@@ -243,6 +256,11 @@ public class MicrocodeCompiler {
 		return null;
 	}
 	
+	/**
+	 * Returns the mnemonic informations of a microcode function.
+	 * 
+	 * @return a List<String> containing the mnemonic informations
+	 */
 	public List<String> getFunctionMnemonicInformations() {
 		return functionMnemonicInformations;
 	}
@@ -279,7 +297,6 @@ public class MicrocodeCompiler {
 						code += (1 << field.getCvStart());
 					} else {
 						int val = field.getValue(key);
-						//System.out.println(bitSet + ": " + field.getId() + ", " + key + ", " + field.getValue(key));
 						if (val != -1) {
 							code += (val << (field.getCvStart()));
 						} else {
@@ -348,7 +365,8 @@ public class MicrocodeCompiler {
 			Files.write(f.toPath(), hexContent.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: Could not write to target file. (" + outputFile + ")");
+			System.err.println(outputFile);
+			ErrorHandler.throwError(5);
 		}
 	}
 	

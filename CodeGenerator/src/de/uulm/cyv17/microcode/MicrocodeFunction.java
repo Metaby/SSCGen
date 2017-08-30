@@ -79,10 +79,21 @@ public class MicrocodeFunction {
 		return position;
 	}
 	
+	/**
+	 * Returns the opcode of the microcode function.
+	 * 
+	 * @return the opcode
+	 */
 	public int getOpcode() {
 		return opcode;
 	}
 
+	/**
+	 * Returns the number of operands the microcode function
+	 * is using.
+	 * 
+	 * @return the number of operands
+	 */
 	public int getOperandCount() {
 		return operandCount;
 	}
@@ -116,6 +127,11 @@ public class MicrocodeFunction {
 		}
 	}
 
+	/**
+	 * Sets the given opcode as the microcode functions opcode.
+	 * 
+	 * @param opcode the opcode given as a hexadecimal string
+	 */
 	public void setOpcode(String opcode) {
 		if (opcode.length() > 0) {
 			this.opcode = Integer.parseInt(opcode.substring(2), 16);			
@@ -123,7 +139,12 @@ public class MicrocodeFunction {
 			this.opcode = -1;
 		}
 	}
-	
+
+	/**
+	 * Sets the given opcode as the microcode functions opcode.
+	 * 
+	 * @param opcode the opcode given as an integer value
+	 */
 	public void setOpcode(int opcode) {
 		this.opcode = opcode;
 	}

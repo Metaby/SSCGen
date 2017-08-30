@@ -9,10 +9,24 @@ import de.uulm.cyv17.wrapper.Connector;
 import de.uulm.cyv17.wrapper.ConnectorType;
 import de.uulm.cyv17.wrapper.Wrapper;
 
+/**
+ * This class represents the multiplexer entity.
+ * 
+ * @author Max Brand (max.brand@uni-ulm.de)
+ *
+ */
 public class MultiplexerEntity extends BaseEntity {
 	private List<Connector> inputs;
 	private Connector output;
 	
+	/**
+	 * The constructor of the multiplexer entity. It takes
+	 * an multiplexer object of the jaxb packages and converts
+	 * it into an object of the wrapper.entities 
+	 * package.
+	 * 
+	 * @param alu the jaxb multiplexer object
+	 */
 	public MultiplexerEntity(de.uulm.cyv17.jaxb.Multiplexer mux) {
 		id = mux.getId();
 		wordSize = mux.getWordSize();
@@ -23,7 +37,12 @@ public class MultiplexerEntity extends BaseEntity {
 		}
 		control = new Connector(mux.getControl(), (int)Math.ceil(Math.log(inputs.size()) / Math.log(2)));
 	}
-	
+
+	/**
+	 * This method is used to set the word size of the entity.
+	 * 
+	 * @param wordSize the word size to be set
+	 */
 	@Override
 	public void setWordSize(int wordSize) {
 		this.wordSize = wordSize;
@@ -32,6 +51,11 @@ public class MultiplexerEntity extends BaseEntity {
 		}
 	}
 	
+	/**
+	 * Returns the control vector of the entity
+	 * 
+	 * @return the control vector
+	 */
 	public ControlVector getControlVector() {
 		if (control.type == ConnectorType.SYSTEM_AUTO) {
 			int iselSize = Wrapper.log2(inputs.size());
@@ -48,10 +72,20 @@ public class MultiplexerEntity extends BaseEntity {
 		return new ControlVector(0);
 	}
 	
+	/**
+	 * Returns the input connectors of the entity.
+	 * 
+	 * @return a list containing the input connectors
+	 */
 	public List<Connector> getInputs() {
 		return inputs;
 	}
 	
+	/**
+	 * Returns the output connector of the entity.
+	 * 	
+	 * @return the output connector
+	 */
 	public Connector getOutput() {
 		return output;
 	}
