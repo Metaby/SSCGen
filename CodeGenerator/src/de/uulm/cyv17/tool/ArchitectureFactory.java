@@ -193,7 +193,10 @@ class ArchitectureFactory {
 		for (Connector con : arch.getOutputConnectors(true)) {
 			if (con != null) {
 				if (con.type == ConnectorType.SYSTEM_OUT) {
-					topLevelEntity.AddPort("p_" + con.pin.substring(con.pin.lastIndexOf('.') + 1) + " : out", con.size);
+					String pin_name = con.pin.substring(con.pin.lastIndexOf('.') + 1);
+					topLevelEntity.AddPort("p_" + pin_name + " : out", con.size);
+					topLevelEntity.AddSignal("ps_" + pin_name, con.size);
+					behavior += "  p_" + pin_name + " <= " + "ps_" + pin_name + ";" + System.lineSeparator(); 
 				} else if (con.type == ConnectorType.SYSTEM_IN) {
 					topLevelEntity.AddPort("p_" + con.pin.substring(con.pin.lastIndexOf('.') + 1) + " : in ", con.size);					
 				} else if (con.size > 0 && con.type == ConnectorType.STANDARD) {

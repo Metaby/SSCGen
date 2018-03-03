@@ -163,8 +163,10 @@ public class Connector {
 			} else {
 				return "\'" + getBinaryString(constValue, size).substring(0, size) + "\'";
 			}
-		} else if (type == ConnectorType.SYSTEM_IN || type == ConnectorType.SYSTEM_OUT) {
-			return "p_" + pin.replace('.', '_');			
+		} else if (type == ConnectorType.SYSTEM_IN) {
+			return "p_" + pin.replace('.', '_');	
+		} else if (type == ConnectorType.SYSTEM_OUT) {
+			return "ps_" + pin.replace('.', '_');
 		} else if (type == ConnectorType.SYSTEM_OPEN) {
 			return "OPEN";
 		} else if (type == ConnectorType.SYSTEM_CLOCK) {
