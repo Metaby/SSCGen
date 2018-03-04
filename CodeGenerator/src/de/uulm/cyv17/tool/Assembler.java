@@ -158,13 +158,43 @@ public class Assembler implements ActionListener {
 			}
 		}		
 	}
+	
+	/**
+	 * This function generates a single line of the intel hex format for the given hexadecimal codes and start address.
+	 */
+	public String GenerateIntelHexLine(String[] hexCodes, int start) {
+		String startAdr = Integer.toHexString(start);
+		while (startAdr.length() < 4) {
+			startAdr = "0" + startAdr;
+		}
+		String byteCount = Integer.toHexString(hexCodes.length);
+		while (byteCount.length() < 2) {
+			byteCount = "0" + byteCount;
+		}
+		String ihxLine = ":" + byteCount + startAdr + "00";
+		int chksum = hexCodes.length + start;
+		for (int i = 0; i < hexCodes.length; i++) {
+			ihxLine += hexCodes[i];
+			chksum += Integer.valueOf(hexCodes[i], 16);
+		}
+		chksum *= -1;
+		String hexChksum = Integer.toHexString(chksum);
+		hexChksum = hexChksum.substring(hexChksum.length() - 2);
+		ihxLine += hexChksum + "\n";
+		return ihxLine;
+	}
+	
 	/**
 	 * The button event for the save hex file dialog.
 	 */
 	public void SaveHexButtonEvent() {
 		JFileChooser saveDialog = new JFileChooser();
+		FileNameExtensionFilter logisimFileFilter = new FileNameExtensionFilter("Logisim Format (.hex)", "hex");
+		FileNameExtensionFilter intelFileFilter = new FileNameExtensionFilter("Intel Format (.hex)", "hex");
 		saveDialog.setCurrentDirectory(new File(System.getProperty("user.dir")));
-		saveDialog.setFileFilter(new FileNameExtensionFilter("Hex File (.hex)", "hex"));
+		saveDialog.addChoosableFileFilter(intelFileFilter);
+		saveDialog.addChoosableFileFilter(logisimFileFilter);
+		saveDialog.setFileFilter(intelFileFilter);
 		if (saveDialog.showSaveDialog(window) == JFileChooser.APPROVE_OPTION) {
 			File f = saveDialog.getSelectedFile();
 			try {
@@ -172,10 +202,25 @@ public class Assembler implements ActionListener {
 				if (!fn.endsWith(".hex")) {
 					fn += ".hex";
 				}
-				PrintWriter writer = new PrintWriter(fn, "UTF-8");
-				writer.println("v2.0 raw");
-				writer.println(hexTextBox.getText());
-				writer.close();
+				if (saveDialog.getFileFilter().equals(intelFileFilter)) {
+					PrintWriter writer = new PrintWriter(fn, "UTF-8");
+					String hexCodes[] = hexTextBox.getText().split("[ \\t\\n\r]+");
+					for (int i = 0; i < hexCodes.length; i += 10) {
+						int s = i;
+						int e = Math.min(i + 10, hexCodes.length);
+						int d = e - s;
+						String[] tmp = new String[d];
+						System.arraycopy(hexCodes, s, tmp, 0, d);
+						writer.write(GenerateIntelHexLine(tmp, s));
+					}
+					writer.write(":00000001FF");				
+					writer.close();
+				} else if (saveDialog.getFileFilter().equals(logisimFileFilter)) {
+					PrintWriter writer = new PrintWriter(fn, "UTF-8");
+					writer.println("v2.0 raw");
+					writer.println(hexTextBox.getText());
+					writer.close();
+				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (UnsupportedEncodingException e) {
