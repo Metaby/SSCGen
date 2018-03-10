@@ -160,31 +160,6 @@ public class Assembler implements ActionListener {
 	}
 	
 	/**
-	 * This function generates a single line of the intel hex format for the given hexadecimal codes and start address.
-	 */
-	public String GenerateIntelHexLine(String[] hexCodes, int start) {
-		String startAdr = Integer.toHexString(start);
-		while (startAdr.length() < 4) {
-			startAdr = "0" + startAdr;
-		}
-		String byteCount = Integer.toHexString(hexCodes.length);
-		while (byteCount.length() < 2) {
-			byteCount = "0" + byteCount;
-		}
-		String ihxLine = ":" + byteCount + startAdr + "00";
-		int chksum = hexCodes.length + start;
-		for (int i = 0; i < hexCodes.length; i++) {
-			ihxLine += hexCodes[i];
-			chksum += Integer.valueOf(hexCodes[i], 16);
-		}
-		chksum *= -1;
-		String hexChksum = Integer.toHexString(chksum);
-		hexChksum = hexChksum.substring(hexChksum.length() - 2);
-		ihxLine += hexChksum + "\n";
-		return ihxLine;
-	}
-	
-	/**
 	 * The button event for the save hex file dialog.
 	 */
 	public void SaveHexButtonEvent() {
@@ -203,18 +178,12 @@ public class Assembler implements ActionListener {
 					fn += ".hex";
 				}
 				if (saveDialog.getFileFilter().equals(intelFileFilter)) {
-					PrintWriter writer = new PrintWriter(fn, "UTF-8");
-					String hexCodes[] = hexTextBox.getText().split("[ \\t\\n\r]+");
-					for (int i = 0; i < hexCodes.length; i += 10) {
-						int s = i;
-						int e = Math.min(i + 10, hexCodes.length);
-						int d = e - s;
-						String[] tmp = new String[d];
-						System.arraycopy(hexCodes, s, tmp, 0, d);
-						writer.write(GenerateIntelHexLine(tmp, s));
+					String hexString = hexTextBox.getText().replaceAll("\\s", "");
+					String hexCodes[] = new String[hexString.length() / 2];
+					for (int i = 0; i < hexString.length() - 1; i += 2) {
+						hexCodes[i / 2] = "" + hexString.charAt(i) + hexString.charAt(i + 1);
 					}
-					writer.write(":00000001FF");				
-					writer.close();
+					HexGenerator.WriteIntelHexFile(fn, hexCodes, 1);
 				} else if (saveDialog.getFileFilter().equals(logisimFileFilter)) {
 					PrintWriter writer = new PrintWriter(fn, "UTF-8");
 					writer.println("v2.0 raw");

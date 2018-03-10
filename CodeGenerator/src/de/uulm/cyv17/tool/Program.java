@@ -139,43 +139,42 @@ public class Program {
 			e.printStackTrace();
 			System.err.println("mnemonics.csv");
 			ErrorHandler.throwError(5);
-		}
+		}		
 		List<String> commandTranslation = compiler.getCommandTranslation();
 		int highestAdress = 0;
+		int tmp = 0;
 		for (String trans : commandTranslation) {
 			String[] parts = trans.split(";");
-			int extern = Integer.parseInt(parts[0], 16);
+			int extern = Integer.parseInt(parts[1], 16);
+			int tmp2 = Integer.parseInt(parts[0], 16);
 			if (extern > highestAdress) {
 				highestAdress = extern;
 			}
+			if (tmp2 > tmp) {
+				tmp = tmp2;
+			}
 		}
-		String[] table = new String[highestAdress + 1];
+		tmp += 1;
+		int wordSize = (int)Math.ceil((Math.log(highestAdress) / Math.log(2)) / 8);
+		int[] table = new int[highestAdress + 1];
 		for (int i = 0; i < table.length; i++) {
-			table[i] = "";
+			table[i] = 0;
 		}
 		for (String trans : commandTranslation) {
 			String[] parts = trans.split(";");
-			table[Integer.parseInt(parts[0], 16)] = parts[1];
+			table[Integer.parseInt(parts[0], 16)] = Integer.parseInt(parts[1]);
 		}
-		String commandTranslationTable = "v2.0 raw" + System.lineSeparator();
-		for (int i = 0; i < table.length; i++) {
-			if (table[i].equals("")) {
-				commandTranslationTable += "0000 ";
-			} else {
-				commandTranslationTable += addZeros(table[i], 4) + " ";
+		String[] hexCodes = new String[tmp * wordSize];
+		for (int i = 0; i < tmp; i++) {
+			for (int j = 0; j < wordSize; j++) {
+				 String hex = Integer.toHexString((char)(255 & (table[i] >> 8 * j)));
+				 while (hex.length() < 2) {
+					 hex = "0" + hex;
+				 }
+				 hexCodes[i * wordSize + (wordSize - j - 1)] = hex;
 			}
-			if ((i + 1) % 8 == 0) {
-				commandTranslationTable += System.lineSeparator();
-			}
 		}
-		f = new File(targetFile.substring(0, targetFile.lastIndexOf("/") + 1) + "translation.hex");
-		try {
-			Files.write(f.toPath(), commandTranslationTable.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println("translation.hex");
-			ErrorHandler.throwError(5);
-		}
+		HexGenerator.WriteIntelHexFile(targetFile.substring(0, targetFile.lastIndexOf("/") + 1) + "translation.hex", hexCodes, wordSize);
 	}
 	
 	/**

@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageLexer;
 import de.uulm.cyv17.antlr.MicrocodeDesignLanguageParser;
 import de.uulm.cyv17.tool.ErrorHandler;
+import de.uulm.cyv17.tool.HexGenerator;
 
 /**
  * The compiler for the microcode of a specific
@@ -208,7 +209,7 @@ public class MicrocodeCompiler {
 						} else {
 							if (mf.getOpcode() != -1) {
 								functionMnemonicInformations.add(mf.getName() + ";" + Integer.toHexString(mf.getOpcode()) + ";" + mf.getOperandCount());
-								commandTranslation.add(Integer.toHexString(mf.getOpcode()) + ";" + Integer.toHexString(addressCounter));
+								commandTranslation.add(Integer.toHexString(mf.getOpcode()) + ";" + addressCounter);
 							} else {
 								functionMnemonicInformations.add(mf.getName() + ";" + Integer.toHexString(addressCounter) + ";0");
 							}
@@ -332,7 +333,7 @@ public class MicrocodeCompiler {
 	 * @param outputFile the url of the file to which the hex code is saved
 	 */
 	private void saveMicrocode(String intermediateCode, String outputFile) {
-		String hexContent = "v2.0 raw" + System.lineSeparator();
+		String hexContent = "";
 		int currentPos = 0;
 		int bvSize = maxCodeSize;
 		int length =(int)Math.ceil(bvSize / 4.0);
@@ -341,33 +342,24 @@ public class MicrocodeCompiler {
 			if (part.startsWith("p:")) {
 				int pos = Integer.parseInt(part.substring(2));
 				while (pos > currentPos) {
-					String cb = addZeros(Integer.toHexString(perm), 4);
-					hexContent += addZeros("0", length) + " ";
+					hexContent += addZeros("0", length);
 					currentPos++;
-					if (currentPos % 8 == 0) {
-						hexContent += System.lineSeparator();
-					}
 				}
 			} else if (part.startsWith("s:")) {
 				String cb = addZeros(Integer.toHexString(Integer.parseInt(part.substring(2))), length);
-				hexContent += cb + " ";
+				hexContent += cb;
 				currentPos++;
-				if (currentPos % 8 == 0) {
-					hexContent += System.lineSeparator();
-				}
 			}
 		}
+		
 		if (!outputFile.contains(".")) {
 			outputFile += ".hex";
 		}
-		File f = new File(outputFile);
-		try {
-			Files.write(f.toPath(), hexContent.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println(outputFile);
-			ErrorHandler.throwError(5);
+		String[] hexCodes = new String[(int)(hexContent.length() / 2)];
+		for (int i = 0; i < hexContent.length() - 1; i += 2) {
+			hexCodes[i / 2] = "" + hexContent.charAt(i) + hexContent.charAt(i + 1);
 		}
+		HexGenerator.WriteIntelHexFile(outputFile, hexCodes, (int)Math.ceil(bvSize / 8.0));
 	}
 	
 	/**

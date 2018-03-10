@@ -218,27 +218,7 @@ class ComponentFactory {
 				System.err.println(contentFile);
 				ErrorHandler.throwError(15);
 			}
-			try {
-				List<String> strContent = Files.readAllLines(inputFile.toPath());
-				if (strContent.size() > 0 && strContent.get(0).equals("v2.0 raw")) {
-					String strBytes = "";
-					for (int i = 1; i < strContent.size(); i++) {
-						strBytes += strContent.get(i) + " ";
-					}
-					String strBytesArray[] = strBytes.split("\\s+");
-					content = new int[strBytesArray.length];
-					for (int i = 0; i < strBytesArray.length; i++) {
-						content[i] = Integer.parseInt(strBytesArray[i], 16);
-					}
-				} else {
-					System.err.println(contentFile);
-					ErrorHandler.throwError(16);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.err.println(contentFile);
-				ErrorHandler.throwError(17);
-			}		
+			content = HexGenerator.ReadIntelHexFile(contentFile, (int)Math.ceil(wordSize / 8));
 		}
 		VhdlComponent component = new VhdlComponent(rom.getId());
 		component.AddGeneric("g_address_size : integer := " + (addressSize - 1));
